@@ -1,5 +1,7 @@
 .PHONY: directories all clean clean_object_files format
 
+MKDIR_P :=	mkdir -p
+OUT_DIR :=	dist
 
 all: $(OUT_DIR)/as8085 $(OUT_DIR)/aslink
 
@@ -37,9 +39,6 @@ SRCMISC	:=	$(ASXBAS)asxxmisc/
 SRCLNK	:=	$(ASXBAS)linksrc/
 
 ASXXSRC =	$(addprefix $(SRCASX),$(ASXX))
-
-MKDIR_P :=	mkdir -p
-OUT_DIR :=	dist
 
 ####################################################################
 # Directories
