@@ -47,17 +47,15 @@
  *	side effects:
  *		none
  */
- 
-VOID
-pexpr(esp)
+
+VOID pexpr(esp)
 struct expr *esp;
 {
-	printf("%s\r\n", "printexpr() {");
-	printf("    e_mode   =       %2.2X\r\n", esp->e_mode);
-	printf("    e_flag   =       %2.2X\r\n", esp->e_flag);
-	printf("    e_addr   = %8.8X\r\n", esp->e_addr);
-	printf("    e_base{} = %8.8X\r\n", (a_uint) esp->e_base.e_ap);
-	printf("    e_rlcf   =       %2.2X\r\n", esp->e_rlcf);
-	printf("};\r\n");
+  printf("%s\r\n", "printexpr() {");
+  printf("    e_mode   =       %2.2X\r\n", esp->e_mode);
+  printf("    e_flag   =       %2.2X\r\n", esp->e_flag);
+  printf("    e_addr   = %8.8X\r\n", esp->e_addr);
+  printf("    e_base{} = %8.8X\r\n", (a_uint)esp->e_base.e_ap);
+  printf("    e_rlcf   =       %2.2X\r\n", esp->e_rlcf);
+  printf("};\r\n");
 }
-

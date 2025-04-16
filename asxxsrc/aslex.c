@@ -94,25 +94,24 @@
  *		assembler-source text line.
  */
 
-VOID
-getid(id, c)
+VOID getid(id, c)
 int c;
 char *id;
 {
-	char *p;
+  char *p;
 
-	if (c < 0) {
-		c = getnb();
-		if ((ctype[c] & LETTER) == 0)
-			qerr();
-	}
-	p = id;
-	do {
-		if (p < &id[NCPS-1])
-			*p++ = c;
-	} while (ctype[c=get()] & (LETTER|DIGIT));
-	unget(c);
-	*p++ = 0;
+  if (c < 0) {
+    c = getnb();
+    if ((ctype[c] & LETTER) == 0)
+      qerr();
+  }
+  p = id;
+  do {
+    if (p < &id[NCPS - 1])
+      *p++ = c;
+  } while (ctype[c = get()] & (LETTER | DIGIT));
+  unget(c);
+  *p++ = 0;
 }
 
 /*)Function	VOID	getst(id,c)
@@ -158,25 +157,24 @@ char *id;
  *		assembler-source text line.
  */
 
-VOID
-getst(id, c)
+VOID getst(id, c)
 int c;
 char *id;
 {
-	char *p;
+  char *p;
 
-	if (c < 0) {
-		c = getnb();
-		if ((ctype[c] & LETTER) == 0)
-			qerr();
-	}
-	p = id;
-	do {
-		if (p < &id[NCPS-1])
-			*p++ = c;
-	} while (ctype[c=get()] & ~(SPACE|ILL) & 0xFF);
-	unget(c);
-	*p++ = 0;
+  if (c < 0) {
+    c = getnb();
+    if ((ctype[c] & LETTER) == 0)
+      qerr();
+  }
+  p = id;
+  do {
+    if (p < &id[NCPS - 1])
+      *p++ = c;
+  } while (ctype[c = get()] & ~(SPACE | ILL) & 0xFF);
+  unget(c);
+  *p++ = 0;
 }
 
 /*)Function	int	getdstr(str, slen)
@@ -208,28 +206,27 @@ char *id;
  *		is found or the input line terminates unexpectedly.
  */
 
-VOID
-getdstr(str, slen)
-char * str;
+VOID getdstr(str, slen)
+char *str;
 int slen;
 {
-	char *p;
-	int c, d;
+  char *p;
+  int c, d;
 
-	d = getdlm();
+  d = getdlm();
 
-	p = str;
-	while ((c = get()) != d) {
-		if (c == '\0') {
-			qerr();
-		}
-		if (p < &str[slen-1]) {
-			*p++ = c;
-		} else {
-			break;
-		}
-	}
-	*p = 0;
+  p = str;
+  while ((c = get()) != d) {
+    if (c == '\0') {
+      qerr();
+    }
+    if (p < &str[slen - 1]) {
+      *p++ = c;
+    } else {
+      break;
+    }
+  }
+  *p = 0;
 }
 
 /*)Function	int	getdlm()
@@ -258,22 +255,20 @@ int slen;
  *		comment returns causes a 'q' error.
  */
 
-int
-getdlm()
-{
-	int c;
+int getdlm() {
+  int c;
 
-	if (more()) {
-		if ((c = getnb()) == '^') {
-			c = get();
-		}
-	} else {
-		c = '\0';
-	}
-	if (c == '\0') {
-		qerr();
-	}
-	return (c);
+  if (more()) {
+    if ((c = getnb()) == '^') {
+      c = get();
+    }
+  } else {
+    c = '\0';
+  }
+  if (c == '\0') {
+    qerr();
+  }
+  return (c);
 }
 
 /*)Function	int	getnb()
@@ -296,14 +291,12 @@ getdlm()
  *		in the current assembler-source text line
  */
 
-int
-getnb()
-{
-	int c;
+int getnb() {
+  int c;
 
-	while ((c=get()) == ' ' || c == '\t')
-		;
-	return (c);
+  while ((c = get()) == ' ' || c == '\t')
+    ;
+  return (c);
 }
 
 /*)Function	int	get()
@@ -329,14 +322,12 @@ getnb()
  *		line, ip is not updated.
  */
 
-int
-get()
-{
-	int c;
+int get() {
+  int c;
 
-	if ((c = *ip) != 0)
-		++ip;
-	return (c & 0x007F);
+  if ((c = *ip) != 0)
+    ++ip;
+  return (c & 0x007F);
 }
 
 /*)Function	VOID	unget(c)
@@ -367,13 +358,12 @@ get()
  *		ip decremented by 1 character position
  */
 
-VOID
-unget(c)
+VOID unget(c)
 int c;
 {
-	if (c)
-		if (ip != ib)
-			--ip;
+  if (c)
+    if (ip != ib)
+      --ip;
 }
 
 /*)Function	int	getmap(d)
@@ -406,67 +396,66 @@ int c;
  *		in the current assembler-source text line
  */
 
-int
-getmap(d)
+int getmap(d)
 int d;
 {
-	int c, n, v;
+  int c, n, v;
 
-	if ((c=get()) == '\0')
-		qerr();
-	if (c == d)
-		return (-1);
-	if (c == '\\') {
-		c = get();
-		switch (c) {
+  if ((c = get()) == '\0')
+    qerr();
+  if (c == d)
+    return (-1);
+  if (c == '\\') {
+    c = get();
+    switch (c) {
 
-		default:
-			unget(c);
+    default:
+      unget(c);
 
-		case '\\':
-			c = '\\';
-			break;
+    case '\\':
+      c = '\\';
+      break;
 
-		case 'b':
-			c = '\b';
-			break;
+    case 'b':
+      c = '\b';
+      break;
 
-		case 'f':
-			c = '\f';
-			break;
+    case 'f':
+      c = '\f';
+      break;
 
-		case 'n':
-			c = '\n';
-			break;
+    case 'n':
+      c = '\n';
+      break;
 
-		case 'r':
-			c = '\r';
-			break;
+    case 'r':
+      c = '\r';
+      break;
 
-		case 't':
-			c = '\t';
-			break;
+    case 't':
+      c = '\t';
+      break;
 
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-			n = 0;
-			v = 0;
-			while (++n<=3 && c>='0' && c<='7') {
-				v = (v<<3) + c - '0';
-				c = get();
-			}
-			unget(c);
-			c = v;
-			break;
-		}
-	}
-	return (c);
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+      n = 0;
+      v = 0;
+      while (++n <= 3 && c >= '0' && c <= '7') {
+        v = (v << 3) + c - '0';
+        c = get();
+      }
+      unget(c);
+      c = v;
+      break;
+    }
+  }
+  return (c);
 }
 
 /*)Function	int	comma(flag)
@@ -495,21 +484,20 @@ int d;
  *		assembler-source text line pointer updated
  */
 
-int
-comma(flag)
+int comma(flag)
 int flag;
 {
-	int c;
+  int c;
 
-	if ((c = getnb()) != ',') {
-		if (flag) {
-			qerr();
-		} else {
-			unget(c);
-		}
-		return(0);
-	}
-	return(1);
+  if ((c = getnb()) != ',') {
+    if (flag) {
+      qerr();
+    } else {
+      unget(c);
+    }
+    return (0);
+  }
+  return (1);
 }
 
 /*)Function	int	nxtline()
@@ -536,13 +524,12 @@ int flag;
  *	global variables:
  *		char	afn[]		afile() constructed filespec
  *		int	afp		afile constructed path length
- *		asmf *	asmc 		pointer to current assembler file structure
- *		asmf *	asmi 		pointer to a queued include file structure
- *		asmf *	asmp		pointer to first assembler file structure
- *		asmf *	asmq 		pointer to a queued macro structure
- *		char	ib[]		string buffer containing
- *					assembler-source text line for processing
- *		char	ic[]		string buffer containing
+ *		asmf *	asmc 		pointer to current assembler file
+ *structure asmf *	asmi 		pointer to a queued include file
+ *structure asmf *	asmp		pointer to first assembler file
+ *structure asmf *	asmq 		pointer to a queued macro structure char
+ *ib[]		string buffer containing assembler-source text line for
+ *processing char	ic[]		string buffer containing
  *					assembler-source text line for listing
  *		int	asmline		source file line number
  *		int	incline		include file line number
@@ -585,11 +572,11 @@ int flag;
  *	which will process any -i command line string T_INSERT
  *	asmf structures and then process the files in sequence.
  *
- *	             -------------       -------------               -------------
- *                  | File 1      |     | File 2      |             | File N      |
- *	 ------     |       ------|     |       ------|             |       ------|      
- *	| asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
- *	 ------      -------------       -------------               -------------
+ *	             -------------       ------------- ------------- | File 1 |
+ *| File 2      |             | File N      |
+ *	 ------     |       ------|     |       ------|             | ------| |
+ *asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
+ *	 ------      -------------       ------------- -------------
  *
  *	If the source file invokes the .include directive to process a
  *	file then a new asmf structure is prepended to the asmc structure
@@ -597,19 +584,19 @@ int flag;
  *	processing resumes at the point the asmc structure was interrupted.
  *	This is shown in the following:
  *
- *	             ------------- 
+ *	             -------------
  *                  | Incl File 1 |
  *	            |       ------|
  *	            |      | next |
- *	             ------------- 
+ *	             -------------
  *	                       |
  *	asmf structures:       |
  *	                       V
- *	             -------------       -------------               -------------
- *                  | File 1      |     | File 2      |             | File N      |
- *	 ------     |       ------|     |       ------|             |       ------|      
- *	| asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
- *	 ------      -------------       -------------               -------------
+ *	             -------------       ------------- ------------- | File 1 |
+ *| File 2      |             | File N      |
+ *	 ------     |       ------|     |       ------|             | ------| |
+ *asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
+ *	 ------      -------------       ------------- -------------
  *
  *	At the .include point link the asmi structure to asmc
  *	and then set asmc = asmi (the include file asmf structure).
@@ -628,11 +615,11 @@ int flag;
  *	                       |                   |
  *	asmf structures:       |                   |
  *	                       V                   V
- *	             -------------       -------------               -------------
- *                  | File 1      |     | File 2      |             | File N      |
- *	 ------     |       ------|     |       ------|             |       ------|      
- *	| asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
- *	 ------      -------------       -------------               -------------
+ *	             -------------       ------------- ------------- | File 1 |
+ *| File 2      |             | File N      |
+ *	 ------     |       ------|     |       ------|             | ------| |
+ *asmp | -->|      | next | --> |      | next | --> ... --> |      | NULL |
+ *	 ------      -------------       ------------- -------------
  *
  *	At the macro point link the asmq structure to asmc
  *	and then set asmc = asmq (the macro asmf structure).
@@ -648,145 +635,156 @@ int flag;
  *
  */
 
-int
-nxtline()
-{
-	struct asmf *asmt;
+int nxtline() {
+  struct asmf *asmt;
 
-loop:	if (asmc == NULL) return(0);
+loop:
+  if (asmc == NULL)
+    return (0);
 
-	/*
-	 * Insert Include File
-	 */
-	if (asmi != NULL) {
-		asmc = asmi;
-		asmi = NULL;
-		incline = 0;
-	}
-	/*
-	 * Insert Queued Macro
-	 */
-	if (asmq != NULL) {
-		asmc = asmq;
-		asmq = NULL;
-		mcrline = 0;
-	}
+  /*
+   * Insert Include File
+   */
+  if (asmi != NULL) {
+    asmc = asmi;
+    asmi = NULL;
+    incline = 0;
+  }
+  /*
+   * Insert Queued Macro
+   */
+  if (asmq != NULL) {
+    asmc = asmq;
+    asmq = NULL;
+    mcrline = 0;
+  }
 
-	switch(asmc->objtyp) {
-	case T_INSERT:
-		strcpy(ib,asmc->afn);
-		if (asmc->lnlist != 0) {
-			srcline++;
-		}
-		asmc = asmc->next;
-		break;
+  switch (asmc->objtyp) {
+  case T_INSERT:
+    strcpy(ib, asmc->afn);
+    if (asmc->lnlist != 0) {
+      srcline++;
+    }
+    asmc = asmc->next;
+    break;
 
-	case T_ASM:
-		if (fgets(ib, NINPUT, asmc->fp) == NULL) {
-			if ((asmc->flevel != flevel) || (asmc->tlevel != tlevel)) {
-				err('i');
-				fprintf(stderr, "?ASxxxx-Error-<i> at end of assembler file\n");
-				fprintf(stderr, "              %s\n", geterr('i'));
-			}
-			flevel = asmc->flevel;
-			tlevel = asmc->tlevel;
-			lnlist = asmc->lnlist;
-			asmc = asmc->next;
-			if (asmc != NULL) {
-				asmline = 0;
-			}
-			if ((lnlist & LIST_PAG) || (uflag == 1)) {
-				lop = NLPP;
-			}
-			goto loop;
-		} else {
-			if (asmline++ == 0) {
-				strcpy(afn, asmc->afn);
-				afp = asmc->afp;
-			}
-			srcline = asmline;
-		}
-		break;
+  case T_ASM:
+    if (fgets(ib, NINPUT, asmc->fp) == NULL) {
+      if ((asmc->flevel != flevel) || (asmc->tlevel != tlevel)) {
+        err('i');
+        fprintf(stderr, "?ASxxxx-Error-<i> at end of assembler file\n");
+        fprintf(stderr, "              %s\n", geterr('i'));
+      }
+      flevel = asmc->flevel;
+      tlevel = asmc->tlevel;
+      lnlist = asmc->lnlist;
+      asmc = asmc->next;
+      if (asmc != NULL) {
+        asmline = 0;
+      }
+      if ((lnlist & LIST_PAG) || (uflag == 1)) {
+        lop = NLPP;
+      }
+      goto loop;
+    } else {
+      if (asmline++ == 0) {
+        strcpy(afn, asmc->afn);
+        afp = asmc->afp;
+      }
+      srcline = asmline;
+    }
+    break;
 
-	case T_INCL:
-		if (fgets(ib, NINPUT, asmc->fp) == NULL) {
-			fclose(asmc->fp);
-			incfil -= 1;
-			if ((asmc->flevel != flevel) || (asmc->tlevel != tlevel)) {
-				err('i');
-				fprintf(stderr, "?ASxxxx-Error-<i> at end of include file\n");
-				fprintf(stderr, "              %s\n", geterr('i'));
-			}
-			srcline = asmc->line;
-			flevel = asmc->flevel;
-			tlevel = asmc->tlevel;
-			lnlist = asmc->lnlist;
-			asmc = asmc->next;
-			switch (asmc->objtyp) {
-			default:
-			case T_ASM:	asmline = srcline;	break;
-			case T_INCL:	incline = srcline;	break;
-			case T_MACRO:	mcrline = srcline;	break;
-			}
-			/*
-		 	 * Scan for parent file
-		 	 */
-			asmt = asmc;
-			while (asmt != NULL) {
-				if (asmt->objtyp != T_MACRO) {
-					strcpy(afn, asmt->afn);
-					afp = asmt->afp;
-					break;
-				}
-				asmt = asmt->next;
-			}
-			if ((lnlist & LIST_PAG) || (uflag == 1)) {
-				lop = NLPP;
-			}
-			goto loop;
-		} else {
-			if (incline++ == 0) {
-				strcpy(afn, asmc->afn);
-				afp = asmc->afp;
-			}
-			srcline = incline;
-		}
-		break;
+  case T_INCL:
+    if (fgets(ib, NINPUT, asmc->fp) == NULL) {
+      fclose(asmc->fp);
+      incfil -= 1;
+      if ((asmc->flevel != flevel) || (asmc->tlevel != tlevel)) {
+        err('i');
+        fprintf(stderr, "?ASxxxx-Error-<i> at end of include file\n");
+        fprintf(stderr, "              %s\n", geterr('i'));
+      }
+      srcline = asmc->line;
+      flevel = asmc->flevel;
+      tlevel = asmc->tlevel;
+      lnlist = asmc->lnlist;
+      asmc = asmc->next;
+      switch (asmc->objtyp) {
+      default:
+      case T_ASM:
+        asmline = srcline;
+        break;
+      case T_INCL:
+        incline = srcline;
+        break;
+      case T_MACRO:
+        mcrline = srcline;
+        break;
+      }
+      /*
+       * Scan for parent file
+       */
+      asmt = asmc;
+      while (asmt != NULL) {
+        if (asmt->objtyp != T_MACRO) {
+          strcpy(afn, asmt->afn);
+          afp = asmt->afp;
+          break;
+        }
+        asmt = asmt->next;
+      }
+      if ((lnlist & LIST_PAG) || (uflag == 1)) {
+        lop = NLPP;
+      }
+      goto loop;
+    } else {
+      if (incline++ == 0) {
+        strcpy(afn, asmc->afn);
+        afp = asmc->afp;
+      }
+      srcline = incline;
+    }
+    break;
 
-	case T_MACRO:
-		if (fgetm(ib, NINPUT, asmc->fp) == NULL) {
-			mcrfil -= 1;
-			srcline = asmc->line;
-			flevel = asmc->flevel;
-			tlevel = asmc->tlevel;
-			lnlist = asmc->lnlist;
-			asmc = asmc->next;
-			switch (asmc->objtyp) {
-			default:
-			case T_ASM:	asmline = srcline;	break;
-			case T_INCL:	incline = srcline;	break;
-			case T_MACRO:	mcrline = srcline;	break;
-			}
-			goto loop;
-		} else {
-			if (mcrline++ == 0) {
-				;
-			}
-			srcline = mcrline;
-		}
-		break;
+  case T_MACRO:
+    if (fgetm(ib, NINPUT, asmc->fp) == NULL) {
+      mcrfil -= 1;
+      srcline = asmc->line;
+      flevel = asmc->flevel;
+      tlevel = asmc->tlevel;
+      lnlist = asmc->lnlist;
+      asmc = asmc->next;
+      switch (asmc->objtyp) {
+      default:
+      case T_ASM:
+        asmline = srcline;
+        break;
+      case T_INCL:
+        incline = srcline;
+        break;
+      case T_MACRO:
+        mcrline = srcline;
+        break;
+      }
+      goto loop;
+    } else {
+      if (mcrline++ == 0) {
+        ;
+      }
+      srcline = mcrline;
+    }
+    break;
 
-	default:
-		fprintf(stderr, "?ASxxxx-Internal-nxtline(objtyp)-Error.\n\n");
-		asexit(ER_FATAL);
-		break;
-	}
-	chopcrlf(ib);
-	strcpy(ic, ib);
-	scanline();
-	return(1);
+  default:
+    fprintf(stderr, "?ASxxxx-Internal-nxtline(objtyp)-Error.\n\n");
+    asexit(ER_FATAL);
+    break;
+  }
+  chopcrlf(ib);
+  strcpy(ic, ib);
+  scanline();
+  return (1);
 }
-
 
 /*)Function	VOID	scanline()
  *
@@ -814,7 +812,8 @@ loop:	if (asmc == NULL) return(0);
  *					being processed.
  *		int	flevel		IF-ELSE-ENDIF level
  *		char	ib[]		assembler-source text line
- *		char *	ip		pointer into the assembler-source text line
+ *		char *	ip		pointer into the assembler-source text
+ *line
  *
  *	called functions:
  *		int	endline()	aslex.c
@@ -828,59 +827,49 @@ loop:	if (asmc == NULL) return(0);
  *		and a substitution made for the string id[].
  */
 
-VOID
-scanline()
-{
-	int c;
-	char id[NINPUT];
+VOID scanline() {
+  int c;
+  char id[NINPUT];
 
-	if (flevel)
-		return;
+  if (flevel)
+    return;
 
-	ip = ib;
-	while ((c = endline()) != 0) {
-		if (ctype[c] & DIGIT) {
-			while (ctype[c] & (LETTER|DIGIT)) c = get();
-			unget(c);
-		} else
-		if (ctype[c] & LETTER) {
-			getid(id, c);
-			if (symeq(id, ".define", 1)) {
-				break;
-			} else
-			if (symeq(id, ".undefine", 1)) {
-				break;
-			} else
-			if (symeq(id, ".ifdef", 1)) {
-				break;
-			} else
-			if (symeq(id, ".ifndef", 1)) {
-				break;
-			} else
-			if (symeq(id, ".iifdef", 1)) {
-				break;
-			} else
-			if (symeq(id, ".iifndef", 1)) {
-				break;
-			} else
-			if (symeq(id, ".if", 1) || symeq(id, ".iif", 1)) {
-				comma(0);
-				getid(id, getnb());
-				if (symeq(id, "def", 1)) {
-					break;
-				} else
-				if (symeq(id, "ndef", 1)) {
-					break;
-				}
-			}
-			if (replace(id)) {
-				err('s');
-				break;
-			}
-		}
-	}
+  ip = ib;
+  while ((c = endline()) != 0) {
+    if (ctype[c] & DIGIT) {
+      while (ctype[c] & (LETTER | DIGIT))
+        c = get();
+      unget(c);
+    } else if (ctype[c] & LETTER) {
+      getid(id, c);
+      if (symeq(id, ".define", 1)) {
+        break;
+      } else if (symeq(id, ".undefine", 1)) {
+        break;
+      } else if (symeq(id, ".ifdef", 1)) {
+        break;
+      } else if (symeq(id, ".ifndef", 1)) {
+        break;
+      } else if (symeq(id, ".iifdef", 1)) {
+        break;
+      } else if (symeq(id, ".iifndef", 1)) {
+        break;
+      } else if (symeq(id, ".if", 1) || symeq(id, ".iif", 1)) {
+        comma(0);
+        getid(id, getnb());
+        if (symeq(id, "def", 1)) {
+          break;
+        } else if (symeq(id, "ndef", 1)) {
+          break;
+        }
+      }
+      if (replace(id)) {
+        err('s');
+        break;
+      }
+    }
+  }
 }
-
 
 /*)Function	int	replace(id)
  *
@@ -896,7 +885,7 @@ scanline()
  *
  *	If the -bb option was specified and a listing file is open then
  *	the current assembler-source text line is listed before the
- *	substitution is made.  
+ *	substitution is made.
  *
  *	local variables:
  *		char *	p		pointer to beginning of id
@@ -913,16 +902,13 @@ scanline()
  *					The index is the character
  *					being processed.
  *		char	ib[]		assembler-source text line
- *		char *	ip		pointer into the assembler-source text line
- *		FILE *	lfp		list output file handle
- *		int	line		current assembler source line number
- *		int	lmode		listing mode
- *		int	lnlist		LIST-NLIST state
- *		int	pass		assembler pass number
- *		int	pflag		paging flag
- *		int	srcline		source file line number
- *		int	uflag		-u, disable .list/.nlist processing
- *		int	zflag		case sensitivity flag
+ *		char *	ip		pointer into the assembler-source text
+ *line FILE *	lfp		list output file handle int	line
+ *current assembler source line number int	lmode		listing mode int
+ *lnlist		LIST-NLIST state int	pass		assembler pass
+ *number int	pflag		paging flag int	srcline		source file line
+ *number int	uflag		-u, disable .list/.nlist processing int	zflag
+ *case sensitivity flag
  *
  *	called functions:
  *		int	fprintf()	c_library
@@ -938,79 +924,80 @@ scanline()
  *		and a substitution made for the string id[].
  */
 
-int
-replace(id)
+int replace(id)
 char *id;
 {
-	char *p;
-	char str[NINPUT*2];
-	char *frmt;
-	struct def *dp;
+  char *p;
+  char str[NINPUT * 2];
+  char *frmt;
+  struct def *dp;
 
-	/*
-	 * Check for .define substitution
-	 */
-	dp = defp;
-	while (dp) {
-		if (dp->d_dflag && symeq(id, dp->d_id, zflag)) {
-			if ((pass == 2) && (bflag == 2)) {
-				if (lfp == NULL || lmode == NLIST) {
-					;
-				} else
-				if ((lnlist & LIST_SRC) || (uflag == 1)) {
-					/*
-					 * Get Correct Line Number
-					 */
-					line = getlnm();
+  /*
+   * Check for .define substitution
+   */
+  dp = defp;
+  while (dp) {
+    if (dp->d_dflag && symeq(id, dp->d_id, zflag)) {
+      if ((pass == 2) && (bflag == 2)) {
+        if (lfp == NULL || lmode == NLIST) {
+          ;
+        } else if ((lnlist & LIST_SRC) || (uflag == 1)) {
+          /*
+           * Get Correct Line Number
+           */
+          line = getlnm();
 
-					/*
-					 * Move to next line.
-					 */
-					slew(lfp, !pflag && ((lnlist & LIST_PAG) || (uflag == 1)));
+          /*
+           * Move to next line.
+           */
+          slew(lfp, !pflag && ((lnlist & LIST_PAG) || (uflag == 1)));
 
-					/*
-					 * Source listing only option.
-					 */
-					switch(a_bytes) {
-					default:
-					case 2: frmt = "  %24s%5u %s\n"; break;
-					case 3:
-					case 4: frmt = "  %32s%5u %s\n"; break;
-					}
-					fprintf(lfp, frmt, "", line, ib);
-				}
-			}
-			/*
-			 * Verify string space is available
-			 */
-			if ((strlen(ib) - strlen(id) + strlen(dp->d_define)) > (NINPUT*2 - 1)) {
-				return(1);
-			}
-			/*
-			 * Beginning of Substitutable string
-			 */
-			p  = ip - strlen(id);
-			/*
-			 * Make a copy of the string from the end of the
-			 * substitutable string to the end of the line.
-			 */
-			strcpy(str, ip);
-			/*
-			 * Replace the substitutable string
-			 * with the new string and append
-			 * the tail of the original string.
-			 */
-			*p = 0;
-			strcat(ib, dp->d_define);
-			strcat(ib, str);
-			ip = p;
-			return(0);
-		}
-		dp = dp->d_dp;
-	}
-	return(0);
+          /*
+           * Source listing only option.
+           */
+          switch (a_bytes) {
+          default:
+          case 2:
+            frmt = "  %24s%5u %s\n";
+            break;
+          case 3:
+          case 4:
+            frmt = "  %32s%5u %s\n";
+            break;
+          }
+          fprintf(lfp, frmt, "", line, ib);
+        }
+      }
+      /*
+       * Verify string space is available
+       */
+      if ((strlen(ib) - strlen(id) + strlen(dp->d_define)) > (NINPUT * 2 - 1)) {
+        return (1);
+      }
+      /*
+       * Beginning of Substitutable string
+       */
+      p = ip - strlen(id);
+      /*
+       * Make a copy of the string from the end of the
+       * substitutable string to the end of the line.
+       */
+      strcpy(str, ip);
+      /*
+       * Replace the substitutable string
+       * with the new string and append
+       * the tail of the original string.
+       */
+      *p = 0;
+      strcat(ib, dp->d_define);
+      strcat(ib, str);
+      ip = p;
+      return (0);
+    }
+    dp = dp->d_dp;
+  }
+  return (0);
 }
-
 
 /*)Function:	int	getlnm()
  *
@@ -1018,12 +1005,13 @@ char *id;
  *	originating assembler or include file.
  *
  *	local variables:
- *		struct asmf	*asmt	temporary pointer to the processing structure
+ *		struct asmf	*asmt	temporary pointer to the processing
+ *structure
  *
  *	global variables:
- *		struct asmf	*asmc	pointer to the current input processing structure
- *		int		asmline	line number in current assembler file
- *		int		line	line number
+ *		struct asmf	*asmc	pointer to the current input processing
+ *structure int		asmline	line number in current assembler file int
+ *line	line number
  *
  *	functions called:
  *		none
@@ -1032,25 +1020,26 @@ char *id;
  *		Sets line to the source file line number.
  */
 
-int
-getlnm()
-{
-	struct asmf *asmt;
+int getlnm() {
+  struct asmf *asmt;
 
-	line = srcline;
-	if (asmc->objtyp == T_MACRO) {
-		asmt = asmc->next;
-		while (asmt != NULL) {
-			switch (asmt->objtyp) {
-			case T_ASM:	return(line = asmline);
-			case T_INCL:	return(line = asmt->line);
-			default:	asmt = asmt->next;		break;
-			}
-		}
-	}
-	return(line);
+  line = srcline;
+  if (asmc->objtyp == T_MACRO) {
+    asmt = asmc->next;
+    while (asmt != NULL) {
+      switch (asmt->objtyp) {
+      case T_ASM:
+        return (line = asmline);
+      case T_INCL:
+        return (line = asmt->line);
+      default:
+        asmt = asmt->next;
+        break;
+      }
+    }
+  }
+  return (line);
 }
-
 
 /*)Function	int	more()
  *
@@ -1075,14 +1064,12 @@ getlnm()
  *		the position in the current assembler-source text line
  */
 
-int
-more()
-{
-	int c;
+int more() {
+  int c;
 
-	c = getnb();
-	unget(c);
-	return( (c == '\0' || c == ';') ? 0 : 1 );
+  c = getnb();
+  unget(c);
+  return ((c == '\0' || c == ';') ? 0 : 1);
 }
 
 /*)Function	char	endline()
@@ -1107,13 +1094,11 @@ more()
  *		position in the current assembler-source text line
  */
 
-char
-endline()
-{
-	int c;
+char endline() {
+  int c;
 
-	c = getnb();
-	return( (c == '\0' || c == ';') ? 0 : c );
+  c = getnb();
+  return ((c == '\0' || c == ';') ? 0 : c);
 }
 
 /*)Function	VOID	chopcrlf(str)
@@ -1137,20 +1122,17 @@ endline()
  *		All CR and LF characters removed.
  */
 
-VOID
-chopcrlf(str)
+VOID chopcrlf(str)
 char *str;
 {
-	char *p;
-	char c;
+  char *p;
+  char c;
 
-	p = str;
-	do {
-		c = *p++ = *str++;
-		if ((c == '\r') || (c == '\n')) {
-			p--;
-		}
-	} while (c != 0);
+  p = str;
+  do {
+    c = *p++ = *str++;
+    if ((c == '\r') || (c == '\n')) {
+      p--;
+    }
+  } while (c != 0);
 }
-
-

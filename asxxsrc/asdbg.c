@@ -82,25 +82,22 @@
  */
 
 #if SDCDB
-VOID
-DefineSDCC_Line()
-{
-	char name[ NCPS ];
-        struct sym *pSym;
+VOID DefineSDCC_Line() {
+  char name[NCPS];
+  struct sym *pSym;
 
-	/*
-	 * Symbol is A$FILE$nnn
-	 */
-        sprintf( name, "A$%s$%u", BaseFileName( asmc ), srcline );
+  /*
+   * Symbol is A$FILE$nnn
+   */
+  sprintf(name, "A$%s$%u", BaseFileName(asmc), srcline);
 
-        pSym = lookup( name );
-        pSym->s_type = S_USER;
-        pSym->s_area = dot.s_area;
-        pSym->s_addr = laddr;
-        pSym->s_flag |= S_GBL;
+  pSym = lookup(name);
+  pSym->s_type = S_USER;
+  pSym->s_area = dot.s_area;
+  pSym->s_addr = laddr;
+  pSym->s_flag |= S_GBL;
 }
 #endif
-
 
 /*)Function	VOID	DefineNoICE_Line()
  *
@@ -129,25 +126,22 @@ DefineSDCC_Line()
  */
 
 #if NOICE
-VOID
-DefineNoICE_Line()
-{
-	char name[ NCPS ];
-        struct sym *pSym;
+VOID DefineNoICE_Line() {
+  char name[NCPS];
+  struct sym *pSym;
 
-	/*
-	 * Symbol is FILE.nnn
-	 */
-        sprintf( name, "%s.%u", BaseFileName( asmc ), srcline );
+  /*
+   * Symbol is FILE.nnn
+   */
+  sprintf(name, "%s.%u", BaseFileName(asmc), srcline);
 
-        pSym = lookup( name );
-        pSym->s_type = S_USER;
-        pSym->s_area = dot.s_area;
-        pSym->s_addr = laddr;
-        pSym->s_flag |= S_GBL;
+  pSym = lookup(name);
+  pSym->s_type = S_USER;
+  pSym->s_area = dot.s_area;
+  pSym->s_addr = laddr;
+  pSym->s_flag |= S_GBL;
 }
 #endif
-
 
 /*)Function	char *	BaseFileName(currFile)
  *
@@ -178,42 +172,43 @@ DefineNoICE_Line()
  */
 
 #if (NOICE || SDCDB)
-static	struct	asmf *	prevFile = NULL;
-static	char	baseName[FILSPC];
+static struct asmf *prevFile = NULL;
+static char baseName[FILSPC];
 
-char*
-BaseFileName(currFile)
-struct	asmf * currFile;
+char *BaseFileName(currFile)
+struct asmf *currFile;
 {
-        char *p1, *p2;
+  char *p1, *p2;
 
-	if (currFile != prevFile) {
-        	prevFile = currFile;
+  if (currFile != prevFile) {
+    prevFile = currFile;
 
-		strcpy(baseName, afn);
-                p1 = baseName;
+    strcpy(baseName, afn);
+    p1 = baseName;
 
-                /*
-	         * Dump a FILE command with full path and extension
-		 */
-                fprintf(ofp, ";!FILE %s\n", p1);
+    /*
+     * Dump a FILE command with full path and extension
+     */
+    fprintf(ofp, ";!FILE %s\n", p1);
 
-		/*
-		 * The name starts after the last
-		 * '/' (Unices) or
-		 * ':' or '\' (DOS)
-		 *
-		 * and ends at the last
-		 * separator 'FSEPX'
-		 */
-		if ((p2 = strrchr(p1,  '\\')) != NULL)  p1 = ++p2;
-		if ((p2 = strrchr(p1,   '/')) != NULL)  p1 = ++p2;
-		if ((p2 = strrchr(p1,   ':')) != NULL)  p1 = ++p2;
-		if ((p2 = strrchr(p1, FSEPX)) != NULL) *p2 = 0;
-		strcpy(baseName, p1);
-	}
-	return(baseName);
+    /*
+     * The name starts after the last
+     * '/' (Unices) or
+     * ':' or '\' (DOS)
+     *
+     * and ends at the last
+     * separator 'FSEPX'
+     */
+    if ((p2 = strrchr(p1, '\\')) != NULL)
+      p1 = ++p2;
+    if ((p2 = strrchr(p1, '/')) != NULL)
+      p1 = ++p2;
+    if ((p2 = strrchr(p1, ':')) != NULL)
+      p1 = ++p2;
+    if ((p2 = strrchr(p1, FSEPX)) != NULL)
+      *p2 = 0;
+    strcpy(baseName, p1);
+  }
+  return (baseName);
 }
 #endif
-
-
