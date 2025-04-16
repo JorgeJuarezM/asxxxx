@@ -41,7 +41,7 @@
  */
 
 /*)Function	VOID	newarea()
- * 
+ *
  *	The function newarea() creates and/or modifies area
  *	and areax structures for each A directive read from
  *	the .rel file(s).  The function lkparea() is called
@@ -105,163 +105,162 @@
  * A xxxxxx size nnnn flags mm bank n bndry mmmm
  *   |           |          |       |       |
  *   |           |          |       |       `-- axp->a_bndry
- *   |           |          |       `----------  ap->a_bank  
+ *   |           |          |       `----------  ap->a_bank
  *   |           |          `------------------  ap->a_flag
  *   |           `----------------------------- axp->a_size
  *   `-----------------------------------------  ap->a_id
  *
  */
-VOID
-newarea()
-{
-	a_uint i;
-	int k, narea;
-	int aflags, iflags;
-	struct areax *taxp;
-	struct areax **halp;
-	struct bank **hblp;
-	char id[NCPS];
-	char opt[NCPS];
+VOID newarea() {
+  a_uint i;
+  int k, narea;
+  int aflags, iflags;
+  struct areax *taxp;
+  struct areax **halp;
+  struct bank **hblp;
+  char id[NCPS];
+  char opt[NCPS];
 
-	if (headp == NULL) {
-		fprintf(stderr, "No header defined\n");
-		lkexit(ER_FATAL);
-	}
-	/*
-	 * Create Area entry
-	 */
-	getid(id, -1);
-	lkparea(id);
-	/*
-	 * Evaluate Parameters
-	 */
-	while (more()) {
-		getid(opt, -1);
-		i = eval();
-		/*
-		 * Evaluate size
-		 */
-		if (symeq("size", opt, 1)) {
-			axp->a_size = i;
-		} else
-		/*
-		 * Evaluate flags
-		 */
-		if (symeq("flags", opt, 1)) {
-			if (ASxxxx_VERSION == 3) {
-				/*
-				 * Create version 4 area flags.
-				 */
-				i &= (A3_OVR | A3_ABS | A3_PAG);
-				i = ((i << 8) | i);
-			}
-			taxp = ap->a_axp;
-			if (taxp->a_axp) {
-				aflags = ap->a_flag;
-				iflags = (int) (i & A4_OVR);
-				if (iflags) {
-			 		if (aflags & A4_OVR) {
-						if (iflags != (aflags & A4_OVR)) {
-							fprintf(stderr, "Conflicting CON/OVR flags in area %s\n", id);
-							lkerr++;
-						}
-					} else {
-						ap->a_flag |= iflags;
-					}
-				}
-				iflags = (int) (i & A4_ABS);
-				if (iflags) {
-			 		if (aflags & A4_ABS) {
-						if (iflags != (aflags & A4_ABS)) {
-							fprintf(stderr, "Conflicting REL/ABS flags in area %s\n", id);
-							lkerr++;
-						}
-					} else {
-						ap->a_flag |= iflags;
-					}
-				}
-				iflags = (int) (i & A4_PAG);
-				if (iflags) {
-			 		if (aflags & A4_PAG) {
-						if (iflags != (aflags & A4_PAG)) {
-							fprintf(stderr, "Conflicting NOPAG/PAG flags in area %s\n", id);
-							lkerr++;
-						}
-					} else {
-						ap->a_flag |= iflags;
-					}
-				}
-				if (i & A4_DSEG) {
-					iflags = (int) (i & (A4_DSEG | A4_WLMSK));
-				 	if (aflags & A4_DSEG) {
-						if (iflags != (aflags & (A4_DSEG | A4_WLMSK))) {
-							fprintf(stderr, "Conflicting CSEG/DSEG flags in area %s\n", id);
-							lkerr++;
-						}
-					} else {
-						ap->a_flag |= iflags;
-					}
-				}
-				/*
-				 * Merge Output Code Flag
-				 */
-				ap->a_flag |= (int) (i & A4_OUT);
-			} else {
-				ap->a_flag = (int) i;
-			}
-		} else
-		/*
-		 * Evaluate bank
-		 */
-		if (symeq("bank", opt, 1)) {
-			hblp = hp->b_list;
-			if (hblp == NULL) {
-				fprintf(stderr, "No banks defined\n");
-				lkexit(ER_FATAL);
-			}
-			if (i >= (unsigned) hp->h_nbank) {
-				fprintf(stderr, "Invalid bank number\n");
-				lkexit(ER_FATAL);
-			}
-			if (hblp[(int) i] == NULL) {
-				fprintf(stderr, "Bank not defined\n");
-				lkexit(ER_FATAL);
-			}
-			if (ap->a_bp != NULL) {
-				if (ap->a_bp != hblp[(int) i]) {
-					fprintf(stderr, "Multiple Bank assignments for area %s ( %s / %s )\n",
-						id, ap->a_bp->b_id, hblp[(int) i]->b_id);
-					lkerr++;
-				}
-			} else {
-				ap->a_bp = hblp[(int) i];
-			}
-		} else
-		/*
-		 * Evaluate Area Boundary
-		 */
-		if (symeq("bndry", opt, 1)) {
-			axp->a_bndry = i;
-		}
-	}
+  if (headp == NULL) {
+    fprintf(stderr, "No header defined\n");
+    lkexit(ER_FATAL);
+  }
+  /*
+   * Create Area entry
+   */
+  getid(id, -1);
+  lkparea(id);
+  /*
+   * Evaluate Parameters
+   */
+  while (more()) {
+    getid(opt, -1);
+    i = eval();
+    /*
+     * Evaluate size
+     */
+    if (symeq("size", opt, 1)) {
+      axp->a_size = i;
+    } else
+      /*
+       * Evaluate flags
+       */
+      if (symeq("flags", opt, 1)) {
+        if (ASxxxx_VERSION == 3) {
+          /*
+           * Create version 4 area flags.
+           */
+          i &= (A3_OVR | A3_ABS | A3_PAG);
+          i = ((i << 8) | i);
+        }
+        taxp = ap->a_axp;
+        if (taxp->a_axp) {
+          aflags = ap->a_flag;
+          iflags = (int)(i & A4_OVR);
+          if (iflags) {
+            if (aflags & A4_OVR) {
+              if (iflags != (aflags & A4_OVR)) {
+                fprintf(stderr, "Conflicting CON/OVR flags in area %s\n", id);
+                lkerr++;
+              }
+            } else {
+              ap->a_flag |= iflags;
+            }
+          }
+          iflags = (int)(i & A4_ABS);
+          if (iflags) {
+            if (aflags & A4_ABS) {
+              if (iflags != (aflags & A4_ABS)) {
+                fprintf(stderr, "Conflicting REL/ABS flags in area %s\n", id);
+                lkerr++;
+              }
+            } else {
+              ap->a_flag |= iflags;
+            }
+          }
+          iflags = (int)(i & A4_PAG);
+          if (iflags) {
+            if (aflags & A4_PAG) {
+              if (iflags != (aflags & A4_PAG)) {
+                fprintf(stderr, "Conflicting NOPAG/PAG flags in area %s\n", id);
+                lkerr++;
+              }
+            } else {
+              ap->a_flag |= iflags;
+            }
+          }
+          if (i & A4_DSEG) {
+            iflags = (int)(i & (A4_DSEG | A4_WLMSK));
+            if (aflags & A4_DSEG) {
+              if (iflags != (aflags & (A4_DSEG | A4_WLMSK))) {
+                fprintf(stderr, "Conflicting CSEG/DSEG flags in area %s\n", id);
+                lkerr++;
+              }
+            } else {
+              ap->a_flag |= iflags;
+            }
+          }
+          /*
+           * Merge Output Code Flag
+           */
+          ap->a_flag |= (int)(i & A4_OUT);
+        } else {
+          ap->a_flag = (int)i;
+        }
+      } else
+        /*
+         * Evaluate bank
+         */
+        if (symeq("bank", opt, 1)) {
+          hblp = hp->b_list;
+          if (hblp == NULL) {
+            fprintf(stderr, "No banks defined\n");
+            lkexit(ER_FATAL);
+          }
+          if (i >= (unsigned)hp->h_nbank) {
+            fprintf(stderr, "Invalid bank number\n");
+            lkexit(ER_FATAL);
+          }
+          if (hblp[(int)i] == NULL) {
+            fprintf(stderr, "Bank not defined\n");
+            lkexit(ER_FATAL);
+          }
+          if (ap->a_bp != NULL) {
+            if (ap->a_bp != hblp[(int)i]) {
+              fprintf(stderr,
+                      "Multiple Bank assignments for area %s ( %s / %s )\n", id,
+                      ap->a_bp->b_id, hblp[(int)i]->b_id);
+              lkerr++;
+            }
+          } else {
+            ap->a_bp = hblp[(int)i];
+          }
+        } else
+          /*
+           * Evaluate Area Boundary
+           */
+          if (symeq("bndry", opt, 1)) {
+            axp->a_bndry = i;
+          }
+  }
 
-	/*
-	 * Place pointer in header area list
-	 */
-	taxp = ap->a_axp;
-	while (taxp->a_axp) {
-		taxp = taxp->a_axp;
-	}
-	narea = hp->h_narea;
-	halp = hp->a_list;
-	for (k=0; k < narea ;++k) {
-		if (halp[k] == NULL) {
-			halp[k] = taxp;
-			return;
-		}
-	}
-	fprintf(stderr, "Header area list overflow\n");
-	lkexit(ER_FATAL);
+  /*
+   * Place pointer in header area list
+   */
+  taxp = ap->a_axp;
+  while (taxp->a_axp) {
+    taxp = taxp->a_axp;
+  }
+  narea = hp->h_narea;
+  halp = hp->a_list;
+  for (k = 0; k < narea; ++k) {
+    if (halp[k] == NULL) {
+      halp[k] = taxp;
+      return;
+    }
+  }
+  fprintf(stderr, "Header area list overflow\n");
+  lkexit(ER_FATAL);
 }
 
 /*)Function	VOID	lkparea(id)
@@ -298,40 +297,39 @@ newarea()
  *		will terminate the linker.
  */
 
-VOID
-lkparea(id)
+VOID lkparea(id)
 char *id;
 {
-	struct area *tap;
-	struct areax *taxp;
+  struct area *tap;
+  struct areax *taxp;
 
-	ap = areap;
-	axp = (struct areax *) new (sizeof(struct areax));
-	while (ap) {
-		if (symeq(id, ap->a_id, 1)) {
-			taxp = ap->a_axp;
-			while (taxp->a_axp)
-				taxp = taxp->a_axp;
-			taxp->a_axp = axp;
-			axp->a_bap = ap;
-			axp->a_bhp = hp;
-			return;
-		}
-		ap = ap->a_ap;
-	}
-	ap = (struct area *) new (sizeof(struct area));
-	if (areap == NULL) {
-		areap = ap;
-	} else {
-		tap = areap;
-		while (tap->a_ap)
-			tap = tap->a_ap;
-		tap->a_ap = ap;
-	}
-	ap->a_axp = axp;
-	axp->a_bap = ap;
-	axp->a_bhp = hp;
-	ap->a_id = strsto(id);
+  ap = areap;
+  axp = (struct areax *)new (sizeof(struct areax));
+  while (ap) {
+    if (symeq(id, ap->a_id, 1)) {
+      taxp = ap->a_axp;
+      while (taxp->a_axp)
+        taxp = taxp->a_axp;
+      taxp->a_axp = axp;
+      axp->a_bap = ap;
+      axp->a_bhp = hp;
+      return;
+    }
+    ap = ap->a_ap;
+  }
+  ap = (struct area *)new (sizeof(struct area));
+  if (areap == NULL) {
+    areap = ap;
+  } else {
+    tap = areap;
+    while (tap->a_ap)
+      tap = tap->a_ap;
+    tap->a_ap = ap;
+  }
+  ap->a_axp = axp;
+  axp->a_bap = ap;
+  axp->a_bhp = hp;
+  ap->a_id = strsto(id);
 }
 
 /*)Function	VOID	lnkarea()
@@ -420,60 +418,58 @@ char *id;
 /*
  * Resolve all bank/area addresses.
  */
-VOID
-lnkarea()
-{
-	a_uint rloc;
-	int bytes;
-	char temp[NCPS+2];
-	struct sym *sp;
+VOID lnkarea() {
+  a_uint rloc;
+  int bytes;
+  char temp[NCPS + 2];
+  struct sym *sp;
 
-	for (bp = bankp; bp != NULL; bp = bp->b_bp) {
-	
-	    rloc = 0;
-	    for (ap = areap; ap != NULL; ap = ap->a_ap) {
-		if (ap->a_bp != bp)
-			continue;
+  for (bp = bankp; bp != NULL; bp = bp->b_bp) {
 
-		if ((ap->a_flag & A4_ABS) == A4_ABS) {
-			/*
-			 * Absolute sections
-			 */
-			lnksect(ap);
-		} else {
-			/*
-			 * Relocatable sections
-			 */
-			bytes = 1 + (ap->a_flag & A4_WLMSK);
-			if (ap->a_bset == 0)
-				ap->a_addr = (rloc/bytes) + ((rloc % bytes) ? 1 : 0);
-			lnksect(ap);
-			rloc = (ap->a_addr + ap->a_size) * bytes;
-		}
+    rloc = 0;
+    for (ap = areap; ap != NULL; ap = ap->a_ap) {
+      if (ap->a_bp != bp)
+        continue;
 
-		/*
-		 * Create symbols called:
-		 *	a_<areaname>	the start address of the [a]rea
-		 *	l_<areaname>	the [l]ength of the area
-		 */
+      if ((ap->a_flag & A4_ABS) == A4_ABS) {
+        /*
+         * Absolute sections
+         */
+        lnksect(ap);
+      } else {
+        /*
+         * Relocatable sections
+         */
+        bytes = 1 + (ap->a_flag & A4_WLMSK);
+        if (ap->a_bset == 0)
+          ap->a_addr = (rloc / bytes) + ((rloc % bytes) ? 1 : 0);
+        lnksect(ap);
+        rloc = (ap->a_addr + ap->a_size) * bytes;
+      }
 
-		if (! symeq(ap->a_id, _abs_, 1)) {
-                        sprintf(temp, "a_%s", ap->a_id);
-			sp = lkpsym(temp, 1);
-			sp->s_addr = ap->a_addr;
-			sp->s_axp = NULL;
-			sp->s_type |= S_DEF;
-			sp->s_flag = m1flag ? 0 : 1;
+      /*
+       * Create symbols called:
+       *	a_<areaname>	the start address of the [a]rea
+       *	l_<areaname>	the [l]ength of the area
+       */
 
-			sprintf(temp, "l_%s", ap->a_id);
-			sp = lkpsym(temp, 1);
-			sp->s_addr = ap->a_size;
-			sp->s_axp = NULL;
-			sp->s_type |= S_DEF;
-			sp->s_flag = m1flag ? 0 : 1;
-		}
-	    }
-	}
+      if (!symeq(ap->a_id, _abs_, 1)) {
+        sprintf(temp, "a_%s", ap->a_id);
+        sp = lkpsym(temp, 1);
+        sp->s_addr = ap->a_addr;
+        sp->s_axp = NULL;
+        sp->s_type |= S_DEF;
+        sp->s_flag = m1flag ? 0 : 1;
+
+        sprintf(temp, "l_%s", ap->a_id);
+        sp = lkpsym(temp, 1);
+        sp->s_addr = ap->a_size;
+        sp->s_axp = NULL;
+        sp->s_type |= S_DEF;
+        sp->s_flag = m1flag ? 0 : 1;
+      }
+    }
+  }
 }
 
 /*)Function	VOID	lnksect(tap)
@@ -511,79 +507,75 @@ lnkarea()
  *		A symbol is created fro each areax entry.
  */
 
-VOID
-lnksect(tap)
+VOID lnksect(tap)
 struct area *tap;
 {
-	a_uint size, addr;
-	struct areax *taxp;
-	a_uint bofst, i;
-	char temp[NCPS+2];
-	struct sym *sp;
+  a_uint size, addr;
+  struct areax *taxp;
+  a_uint bofst, i;
+  char temp[NCPS + 2];
+  struct sym *sp;
 
-	size = 0;
-	addr = tap->a_addr;
-	if (((tap->a_flag & A4_PAG) == A4_PAG) && (addr & 0xFF)) {
-	    fprintf(stderr,
-		"\n?ASlink-Warning-Paged Area %s Boundary Error\n",
-		tap->a_id);
-	    lkerr++;
-	}
-	for (taxp = tap->a_axp, i=1; taxp != NULL; taxp = taxp->a_axp, i++) {
-		if (taxp->a_bndry != 0) {
-			bofst = addr % taxp->a_bndry;
-			if (bofst != 0) {
- 	        		bofst = taxp->a_bndry - bofst;
-			}
-		} else {
-			bofst = 0;
-		}
-		taxp->a_size += bofst;
-		taxp->a_addr  = addr + bofst;
-		if ((tap->a_flag & A4_OVR) == A4_OVR) {
-			/*
-			 * Overlayed sections
-			 */
-			if (taxp->a_size > size) {
-				size = taxp->a_size;
-			}
-		} else {
-			/*
-			 * Concatenated sections
-			 */
-			addr += taxp->a_size;
-			size += taxp->a_size;
-		}
-		/*
-		 * Create symbols called:
-		 *	m_<areaname>_n	the boundary [m]odulus of the areax segment n
-                 *      s_<areaname>_n  the base address of the areax [s]egment n
-		 */
-		if (! symeq(tap->a_id, _abs_, 1)) {
-			sprintf(temp, "m_%s_%u", tap->a_id, i);
-			sp = lkpsym(temp, 1);
-			sp->s_addr = taxp->a_bndry;
-			sp->s_axp = NULL;
-			sp->s_type |= S_DEF;
-			sp->s_flag = m1flag ? 0 : 1;
+  size = 0;
+  addr = tap->a_addr;
+  if (((tap->a_flag & A4_PAG) == A4_PAG) && (addr & 0xFF)) {
+    fprintf(stderr, "\n?ASlink-Warning-Paged Area %s Boundary Error\n",
+            tap->a_id);
+    lkerr++;
+  }
+  for (taxp = tap->a_axp, i = 1; taxp != NULL; taxp = taxp->a_axp, i++) {
+    if (taxp->a_bndry != 0) {
+      bofst = addr % taxp->a_bndry;
+      if (bofst != 0) {
+        bofst = taxp->a_bndry - bofst;
+      }
+    } else {
+      bofst = 0;
+    }
+    taxp->a_size += bofst;
+    taxp->a_addr = addr + bofst;
+    if ((tap->a_flag & A4_OVR) == A4_OVR) {
+      /*
+       * Overlayed sections
+       */
+      if (taxp->a_size > size) {
+        size = taxp->a_size;
+      }
+    } else {
+      /*
+       * Concatenated sections
+       */
+      addr += taxp->a_size;
+      size += taxp->a_size;
+    }
+    /*
+     * Create symbols called:
+     *	m_<areaname>_n	the boundary [m]odulus of the areax segment n
+     *      s_<areaname>_n  the base address of the areax [s]egment n
+     */
+    if (!symeq(tap->a_id, _abs_, 1)) {
+      sprintf(temp, "m_%s_%u", tap->a_id, i);
+      sp = lkpsym(temp, 1);
+      sp->s_addr = taxp->a_bndry;
+      sp->s_axp = NULL;
+      sp->s_type |= S_DEF;
+      sp->s_flag = m1flag ? 0 : 1;
 
-                        sprintf(temp, "s_%s_%u", tap->a_id, i);
-			sp = lkpsym(temp, 1);
-			sp->s_addr = taxp->a_addr;
-			sp->s_axp = NULL;
-			sp->s_type |= S_DEF;
-			sp->s_flag = m1flag ? 0 : 1;
-		}
-	}
-	tap->a_size = size;
-	if (((tap->a_flag & A4_PAG) == A4_PAG) && (size > 256)) {
-	    fprintf(stderr,
-		"\n?ASlink-Warning-Paged Area %s Length Error\n",
-		tap->a_id);
-	    lkerr++;
-	}
+      sprintf(temp, "s_%s_%u", tap->a_id, i);
+      sp = lkpsym(temp, 1);
+      sp->s_addr = taxp->a_addr;
+      sp->s_axp = NULL;
+      sp->s_type |= S_DEF;
+      sp->s_flag = m1flag ? 0 : 1;
+    }
+  }
+  tap->a_size = size;
+  if (((tap->a_flag & A4_PAG) == A4_PAG) && (size > 256)) {
+    fprintf(stderr, "\n?ASlink-Warning-Paged Area %s Length Error\n",
+            tap->a_id);
+    lkerr++;
+  }
 }
-
 
 /*)Function	VOID	setarea()
  *
@@ -619,37 +611,31 @@ struct area *tap;
  *		The base address of an area is set.
  */
 
-VOID
-setarea()
-{
-	a_uint v;
-	char id[NCPS];
+VOID setarea() {
+  a_uint v;
+  char id[NCPS];
 
-	bsp = basep;
-	while (bsp) {
-		ip = bsp->b_strp;
-		getid(id, -1);
-		if (getnb() == '=') {
-			v = expr(0);
-			for (ap = areap; ap != NULL; ap = ap->a_ap) {
-				if (symeq(id, ap->a_id, 1))
-					break;
-			}
-			if (ap == NULL) {
-				fprintf(stderr,
-				"No definition of area %s\n", id);
-				lkerr++;
-			} else {
-				ap->a_addr = v;
-				ap->a_bset = 1;
-			}
-		} else {
-			fprintf(stderr, "No '=' in base expression");
-			lkerr++;
-		}
-		bsp = bsp->b_base;
-	}
+  bsp = basep;
+  while (bsp) {
+    ip = bsp->b_strp;
+    getid(id, -1);
+    if (getnb() == '=') {
+      v = expr(0);
+      for (ap = areap; ap != NULL; ap = ap->a_ap) {
+        if (symeq(id, ap->a_id, 1))
+          break;
+      }
+      if (ap == NULL) {
+        fprintf(stderr, "No definition of area %s\n", id);
+        lkerr++;
+      } else {
+        ap->a_addr = v;
+        ap->a_bset = 1;
+      }
+    } else {
+      fprintf(stderr, "No '=' in base expression");
+      lkerr++;
+    }
+    bsp = bsp->b_base;
+  }
 }
-
-
-

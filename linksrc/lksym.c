@@ -71,14 +71,12 @@
  *		(1)	The symbol hash tables are cleared
  */
 
-VOID
-syminit()
-{
-	struct sym **spp;
+VOID syminit() {
+  struct sym **spp;
 
-	spp = &symhash[0];
-	while (spp < &symhash[NHASH])
-		*spp++ = NULL;
+  spp = &symhash[0];
+  while (spp < &symhash[NHASH])
+    *spp++ = NULL;
 }
 
 /*)Function	sym *	newsym()
@@ -138,66 +136,64 @@ syminit()
  *   `------------ sp->s_id
  *
  */
-struct sym *
-newsym()
-{
-	a_uint ev;
-	int c, i, nsym;
-	struct sym *tsp;
-	struct sym **s;
-	char id[NCPS];
+struct sym *newsym() {
+  a_uint ev;
+  int c, i, nsym;
+  struct sym *tsp;
+  struct sym **s;
+  char id[NCPS];
 
-	if (headp == NULL) {
-		fprintf(stderr, "No header defined\n");
-		lkexit(ER_FATAL);
-	}
-	/*
-	 * Create symbol entry
-	 */
-	getid(id, -1);
-	tsp = lkpsym(id, 1);
-	c = getnb();get();get();
-	if (c == 'R') {
-		tsp->s_type |= S_REF;
-		if (eval()) {
-			fprintf(stderr, "Non zero S_REF\n");
-			lkerr++;
-		}
-	} else
-	if (c == 'D') {
-		ev = eval();
-		if (tsp->s_type & S_DEF) {
-			if (tsp->s_addr != ev) {
-				fprintf(stderr,
-					"Multiple definition of %s\n", id);
-				lkerr++;
-			}
-		}
-		/*
-		 * Set value and area extension link.
-		 */
-		tsp->s_addr = ev;
-		tsp->s_axp = axp;
-		tsp->s_type |= S_DEF;
-		tsp->m_id = hp->m_id;
-	} else {
-		fprintf(stderr, "Invalid symbol type %c for %s\n", c, id);
-		lkexit(ER_FATAL);
-	}
-	/*
-	 * Place pointer in header symbol list
-	 */
-	nsym = hp->h_nsym;
-	s = hp->s_list;
-	for (i=0; i < nsym ;++i) {
-		if (s[i] == NULL) {
-			s[i] = tsp;
-			return(tsp);
-		}
-	}
-	fprintf(stderr, "Header symbol list overflow\n");
-	lkexit(ER_FATAL);
-	return(NULL);
+  if (headp == NULL) {
+    fprintf(stderr, "No header defined\n");
+    lkexit(ER_FATAL);
+  }
+  /*
+   * Create symbol entry
+   */
+  getid(id, -1);
+  tsp = lkpsym(id, 1);
+  c = getnb();
+  get();
+  get();
+  if (c == 'R') {
+    tsp->s_type |= S_REF;
+    if (eval()) {
+      fprintf(stderr, "Non zero S_REF\n");
+      lkerr++;
+    }
+  } else if (c == 'D') {
+    ev = eval();
+    if (tsp->s_type & S_DEF) {
+      if (tsp->s_addr != ev) {
+        fprintf(stderr, "Multiple definition of %s\n", id);
+        lkerr++;
+      }
+    }
+    /*
+     * Set value and area extension link.
+     */
+    tsp->s_addr = ev;
+    tsp->s_axp = axp;
+    tsp->s_type |= S_DEF;
+    tsp->m_id = hp->m_id;
+  } else {
+    fprintf(stderr, "Invalid symbol type %c for %s\n", c, id);
+    lkexit(ER_FATAL);
+  }
+  /*
+   * Place pointer in header symbol list
+   */
+  nsym = hp->h_nsym;
+  s = hp->s_list;
+  for (i = 0; i < nsym; ++i) {
+    if (s[i] == NULL) {
+      s[i] = tsp;
+      return (tsp);
+    }
+  }
+  fprintf(stderr, "Header symbol list overflow\n");
+  lkexit(ER_FATAL);
+  return (NULL);
 }
 
 /*)Function	sym *	lkpsym(id,f)
@@ -231,28 +227,27 @@ newsym()
  *		for the new sym structure the linker terminates.
  */
 
-struct sym *
-lkpsym(id, f)
+struct sym *lkpsym(id, f)
 char *id;
 int f;
 {
-	struct sym *sp;
-	int h;
+  struct sym *sp;
+  int h;
 
-	h = hash(id, zflag);
-	sp = symhash[h];
-	while (sp != NULL) {
-		if (symeq(id, sp->s_id, zflag))
-			return (sp);
-		sp = sp->s_sp;
-	}
-	if (f == 0)
-		return (NULL);
-	sp = (struct sym *) new (sizeof(struct sym));
-	sp->s_sp = symhash[h];
-	symhash[h] = sp;
-	sp->s_id = strsto(id);		/* JLH */
-	return (sp);
+  h = hash(id, zflag);
+  sp = symhash[h];
+  while (sp != NULL) {
+    if (symeq(id, sp->s_id, zflag))
+      return (sp);
+    sp = sp->s_sp;
+  }
+  if (f == 0)
+    return (NULL);
+  sp = (struct sym *)new (sizeof(struct sym));
+  sp->s_sp = symhash[h];
+  symhash[h] = sp;
+  sp->s_id = strsto(id); /* JLH */
+  return (sp);
 }
 
 /*)Function	a_uint	symval(tsp)
@@ -276,17 +271,16 @@ int f;
  *		none
  */
 
-a_uint
-symval(tsp)
+a_uint symval(tsp)
 struct sym *tsp;
 {
-	a_uint val;
+  a_uint val;
 
-	val = tsp->s_addr;
-	if (tsp->s_axp) {
-		val += tsp->s_axp->a_addr;
-	}
-	return(val);
+  val = tsp->s_addr;
+  if (tsp->s_axp) {
+    val += tsp->s_axp->a_addr;
+  }
+  return (val);
 }
 
 /*)Function	VOID	symdef(fp)
@@ -316,23 +310,22 @@ struct sym *tsp;
  *		Undefined variables have their areas set to "_CODE".
  */
 
-VOID
-symdef(fp)
+VOID symdef(fp)
 FILE *fp;
 {
-	struct sym *sp;
-	int i;
+  struct sym *sp;
+  int i;
 
-	for (i=0; i<NHASH; ++i) {
-		sp = symhash[i];
-		while (sp) {
-			if (sp->s_axp == NULL)
-				sp->s_axp = areap->a_axp;
-			if ((sp->s_type & S_DEF) == 0)
-				symmod(fp, sp);
-			sp = sp->s_sp;
-		}
-	}
+  for (i = 0; i < NHASH; ++i) {
+    sp = symhash[i];
+    while (sp) {
+      if (sp->s_axp == NULL)
+        sp->s_axp = areap->a_axp;
+      if ((sp->s_type & S_DEF) == 0)
+        symmod(fp, sp);
+      sp = sp->s_sp;
+    }
+  }
 }
 
 /*)Function	VOID	symmod(fp,tsp)
@@ -365,31 +358,26 @@ FILE *fp;
  *		Error output generated.
  */
 
-VOID
-symmod(fp, tsp)
+VOID symmod(fp, tsp)
 FILE *fp;
 struct sym *tsp;
 {
-	int i;
-	struct sym **p;
+  int i;
+  struct sym **p;
 
-	if ((hp = headp) != NULL) {
-	    while(hp) {
-		p = hp->s_list;
-		for (i=0; i<hp->h_nsym; ++i) {
-		    if (p[i] == tsp) {
-			fprintf(fp,
-				"\n?ASlink-Warning-Undefined Global %s ",
-				tsp->s_id);
-			fprintf(fp,
-				"referenced by module %s\n",
-				hp->m_id);
-			lkerr++;
-		    }
-		}
-	    hp = hp->h_hp;
-	    }
-	}
+  if ((hp = headp) != NULL) {
+    while (hp) {
+      p = hp->s_list;
+      for (i = 0; i < hp->h_nsym; ++i) {
+        if (p[i] == tsp) {
+          fprintf(fp, "\n?ASlink-Warning-Undefined Global %s ", tsp->s_id);
+          fprintf(fp, "referenced by module %s\n", hp->m_id);
+          lkerr++;
+        }
+      }
+      hp = hp->h_hp;
+    }
+  }
 }
 
 /*)Function	int	symeq(p1, p2, cflag)
@@ -419,32 +407,31 @@ struct sym *tsp;
  *
  */
 
-int
-symeq(p1, p2, cflag)
+int symeq(p1, p2, cflag)
 char *p1, *p2;
 int cflag;
 {
-	int n;
+  int n;
 
-	n = strlen(p1) + 1;
-	if(cflag) {
-		/*
-		 * Case Insensitive Compare
-		 */
-		do {
-			if (ccase[*p1++ & 0x007F] != ccase[*p2++ & 0x007F])
-				return (0);
-		} while (--n);
-	} else {
-		/*
-		 * Case Sensitive Compare
-		 */
-		do {
-			if (*p1++ != *p2++)
-				return (0);
-		} while (--n);
-	}
-	return (1);
+  n = strlen(p1) + 1;
+  if (cflag) {
+    /*
+     * Case Insensitive Compare
+     */
+    do {
+      if (ccase[*p1++ & 0x007F] != ccase[*p2++ & 0x007F])
+        return (0);
+    } while (--n);
+  } else {
+    /*
+     * Case Sensitive Compare
+     */
+    do {
+      if (*p1++ != *p2++)
+        return (0);
+    } while (--n);
+  }
+  return (1);
 }
 
 /*)Function	int	hash(p, cflag)
@@ -472,31 +459,30 @@ int cflag;
  *		none
  */
 
-int
-hash(p, cflag)
+int hash(p, cflag)
 char *p;
 int cflag;
 {
-	int h;
+  int h;
 
-	h = 0;
-	while (*p) {
-		if(cflag) {
-			/*
-			 * Case Insensitive Hash
-			 */
-			h += ccase[*p++ & 0x007F];
-		} else {
-			/*
-			 * Case Sensitive Hash
-			 */
-			h += *p++;
-		}
-	}
-	return (h&HMASK);
+  h = 0;
+  while (*p) {
+    if (cflag) {
+      /*
+       * Case Insensitive Hash
+       */
+      h += ccase[*p++ & 0x007F];
+    } else {
+      /*
+       * Case Sensitive Hash
+       */
+      h += *p++;
+    }
+  }
+  return (h & HMASK);
 }
 
-#if	decus
+#if decus
 
 /*)Function	char *	strsto(str)
  *
@@ -525,24 +511,23 @@ int cflag;
  *		to space.  Out of Space terminates linker.
  */
 
-char *
-strsto(str)
+char *strsto(str)
 char *str;
 {
-	int  l;
-	char *p;
+  int l;
+  char *p;
 
-	/*
-	 * What we need, including a null.
-	 */
-	l = strlen(str) + 1;
-	p = (char *) new (l);
+  /*
+   * What we need, including a null.
+   */
+  l = strlen(str) + 1;
+  p = (char *)new (l);
 
-	/*
-	 * Copy the name and terminating null.
-	 */
-	strncpy(p, str, l);
-	return(p);
+  /*
+   * Copy the name and terminating null.
+   */
+  strncpy(p, str, l);
+  return (p);
 }
 
 /*
@@ -599,56 +584,54 @@ char *str;
  * These static variables remember our hunk.
  */
 
-#define	STR_SPC	1024
-#define	STR_MIN	16
-static	char *	pnext = NULL;
-static	int	bytes = 0;
+#define STR_SPC 1024
+#define STR_MIN 16
+static char *pnext = NULL;
+static int bytes = 0;
 
-char *
-new(n)
-unsigned int n;
+char *new(n) unsigned int n;
 {
-	char *p,*q;
-	unsigned int i;
+  char *p, *q;
+  unsigned int i;
 
-	/*
-	 * Always an even byte count
-	 */
-	n = (n+1) & 0xFFFE;
+  /*
+   * Always an even byte count
+   */
+  n = (n + 1) & 0xFFFE;
 
-	if (n > STR_MIN) {
-		/*
-		 * For allocations larger than
-		 * most structures and short strings
-		 * allocate the space directly.
-		 */
-		p = (char *) malloc(n);
-	} else {
-		/*
-		 * For smaller structures and
-		 * strings allocate from the hunk.
-		 */
-		if (n > bytes) {
-			/*
-			 * No space.  Allocate a new hunk.
-			 * We lose the pointer to any old hunk.
-			 * We don't care, as the pieces are never deleted.
-			*/
-			pnext = (char *) malloc (STR_SPC);
-			bytes = STR_SPC;
-		}
-		p = pnext;
-		pnext += n;
-		bytes -= n;
-	}
-	if (p == NULL) {
-		fprintf(stderr, "Out of space!\n");
-		lkexit(ER_FATAL);
-	}
-	for (i=0,q=p; i<n; i++) {
-		*q++ = 0;
-	}
-	return (p);
+  if (n > STR_MIN) {
+    /*
+     * For allocations larger than
+     * most structures and short strings
+     * allocate the space directly.
+     */
+    p = (char *)malloc(n);
+  } else {
+    /*
+     * For smaller structures and
+     * strings allocate from the hunk.
+     */
+    if (n > bytes) {
+      /*
+       * No space.  Allocate a new hunk.
+       * We lose the pointer to any old hunk.
+       * We don't care, as the pieces are never deleted.
+       */
+      pnext = (char *)malloc(STR_SPC);
+      bytes = STR_SPC;
+    }
+    p = pnext;
+    pnext += n;
+    bytes -= n;
+  }
+  if (p == NULL) {
+    fprintf(stderr, "Out of space!\n");
+    lkexit(ER_FATAL);
+  }
+  for (i = 0, q = p; i < n; i++) {
+    *q++ = 0;
+  }
+  return (p);
 }
 
 #else
@@ -688,42 +671,41 @@ unsigned int n;
  * These static variables remember our hunk
  */
 
-#define	STR_SPC	1024
-static	char *	pnext = NULL;
-static	int	bytes = 0;
+#define STR_SPC 1024
+static char *pnext = NULL;
+static int bytes = 0;
 
-char *
-strsto(str)
+char *strsto(str)
 char *str;
 {
-	int  l;
-	char *p;
+  int l;
+  char *p;
 
-	/*
-	 * What we need, including a null.
-	 */
-	l = strlen(str) + 1;
+  /*
+   * What we need, including a null.
+   */
+  l = strlen(str) + 1;
 
-	if (l > bytes) {
-		/*
-		 * No space.  Allocate a new hunk.
-		 * We lose the pointer to any old hunk.
-		 * We don't care, as the strings are never deleted.
-		*/
-		pnext = (char *) new (STR_SPC);
-		bytes = STR_SPC;
-	}
+  if (l > bytes) {
+    /*
+     * No space.  Allocate a new hunk.
+     * We lose the pointer to any old hunk.
+     * We don't care, as the strings are never deleted.
+     */
+    pnext = (char *)new (STR_SPC);
+    bytes = STR_SPC;
+  }
 
-	/*
-	 * Copy the name and terminating null.
-	 */
-	p = pnext;
-	strncpy(p, str, l);
+  /*
+   * Copy the name and terminating null.
+   */
+  p = pnext;
+  strncpy(p, str, l);
 
-	pnext += l;
-	bytes -= l;
+  pnext += l;
+  bytes -= l;
 
-	return(p);
+  return (p);
 }
 
 /*)Function	char *	new(n)
@@ -750,21 +732,19 @@ char *str;
  *		the linker is terminated.
  */
 
-char *
-new(n)
-unsigned int n;
+char *new(n) unsigned int n;
 {
-	char *p,*q;
-	unsigned int i;
+  char *p, *q;
+  unsigned int i;
 
-	if ((p = (char *) malloc(n)) == NULL) {
-		fprintf(stderr, "Out of space!\n");
-		lkexit(ER_FATAL);
-	}
-	for (i=0,q=p; i<n; i++) {
-		*q++ = 0;
-	}
-	return (p);
+  if ((p = (char *)malloc(n)) == NULL) {
+    fprintf(stderr, "Out of space!\n");
+    lkexit(ER_FATAL);
+  }
+  for (i = 0, q = p; i < n; i++) {
+    *q++ = 0;
+  }
+  return (p);
 }
 
 #endif

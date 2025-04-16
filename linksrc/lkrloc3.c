@@ -79,36 +79,33 @@
  *
  */
 
-VOID
-reloc3(c)
+VOID reloc3(c)
 int c;
 {
-	switch(c) {
+  switch (c) {
 
-	case 'T':
-		relt3();
-		break;
+  case 'T':
+    relt3();
+    break;
 
-	case 'R':
-		relr3();
-		break;
+  case 'R':
+    relr3();
+    break;
 
-	case 'P':
-		relp3();
-		break;
+  case 'P':
+    relp3();
+    break;
 
-	case 'E':
-		rele3();
-		break;
+  case 'E':
+    rele3();
+    break;
 
-	default:
-		fprintf(stderr, "Undefined Relocation Operation\n");
-		lkerr++;
-		break;
-
-	}
+  default:
+    fprintf(stderr, "Undefined Relocation Operation\n");
+    lkerr++;
+    break;
+  }
 }
-
 
 /*)Function	VOID	relt3()
  *
@@ -153,18 +150,16 @@ int c;
  *
  */
 
-VOID
-relt3()
-{
-	rtcnt = 0;
-	while (more()) {
-		if (rtcnt < NTXT) {
-			rtval[rtcnt] = eval();
-			rtflg[rtcnt] = 1;
-			rterr[rtcnt] = 0;
-			rtcnt++;
-		}
-	}
+VOID relt3() {
+  rtcnt = 0;
+  while (more()) {
+    if (rtcnt < NTXT) {
+      rtval[rtcnt] = eval();
+      rtflg[rtcnt] = 1;
+      rterr[rtcnt] = 0;
+      rtcnt++;
+    }
+  }
 }
 
 /*)Function	VOID	relr3()
@@ -264,331 +259,327 @@ relt3()
  *
  */
 
-VOID
-relr3()
-{
-	int mode;
-	a_uint reli, relv;
-	int aindex, rindex, rtp, error, i;
-	a_uint rtbase, rtofst, rtpofst, paga, pags;
-	a_uint m, v;
-	struct areax **a;
-	struct sym **s;
+VOID relr3() {
+  int mode;
+  a_uint reli, relv;
+  int aindex, rindex, rtp, error, i;
+  a_uint rtbase, rtofst, rtpofst, paga, pags;
+  a_uint m, v;
+  struct areax **a;
+  struct sym **s;
 
-	/*
-	 * Get area and symbol lists
-	 */
-	a = hp->a_list;
-	s = hp->s_list;
+  /*
+   * Get area and symbol lists
+   */
+  a = hp->a_list;
+  s = hp->s_list;
 
-	/*
-	 * Verify Area Mode
-	 */
-	if (eval() != R3_AREA || eval()) {
-		fprintf(stderr, "R input error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Verify Area Mode
+   */
+  if (eval() != R3_AREA || eval()) {
+    fprintf(stderr, "R input error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Get area pointer
-	 */
-	aindex = (int) evword();
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "R area error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Get area pointer
+   */
+  aindex = (int)evword();
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "R area error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Select Output File
-	 */
-	if (oflag != 0) {
-		ap = a[aindex]->a_bap;
-		if (ofp != NULL) {
-			rtabnk->b_rtaflg = rtaflg;
-			if (ofp != ap->a_ofp) {
-				lkflush();
-			}
-		}
-		ofp = ap->a_ofp;
-		rtabnk = ap->a_bp;
-		rtaflg = rtabnk->b_rtaflg;
-	}
+  /*
+   * Select Output File
+   */
+  if (oflag != 0) {
+    ap = a[aindex]->a_bap;
+    if (ofp != NULL) {
+      rtabnk->b_rtaflg = rtaflg;
+      if (ofp != ap->a_ofp) {
+        lkflush();
+      }
+    }
+    ofp = ap->a_ofp;
+    rtabnk = ap->a_bp;
+    rtaflg = rtabnk->b_rtaflg;
+  }
 
-	/*
-	 * Base values
-	 */
-	rtbase = adb_xb(0, 0);
-	rtofst = a_bytes;
+  /*
+   * Base values
+   */
+  rtbase = adb_xb(0, 0);
+  rtofst = a_bytes;
 
-	/*
-	 * Relocate address
-	 */
-	pc  = adb_xb(a[aindex]->a_addr, 0);
+  /*
+   * Relocate address
+   */
+  pc = adb_xb(a[aindex]->a_addr, 0);
 
-	/*
-	 * Number of 'bytes' per PC address
-	 */
-	pcb = 1;
+  /*
+   * Number of 'bytes' per PC address
+   */
+  pcb = 1;
 
-	/*
-	 * Do remaining relocations
-	 */
-	while (more()) {
-		error = 0;
-		relv = 0;
-		rtpofst = rtofst;
-		mode = (int) eval();
-		rtp = (int) eval();
-		rindex = (int) evword();
+  /*
+   * Do remaining relocations
+   */
+  while (more()) {
+    error = 0;
+    relv = 0;
+    rtpofst = rtofst;
+    mode = (int)eval();
+    rtp = (int)eval();
+    rindex = (int)evword();
 
-		/*
-		 * R3_SYM or R3_AREA references
-		 */
-		if (mode & R3_SYM) {
-			if (rindex >= hp->h_nsym) {
-				fprintf(stderr, "R symbol error\n");
-				lkerr++;
-				return;
-			}
-			reli = symval(s[rindex]);
-		} else {
-			if (rindex >= hp->h_narea) {
-				fprintf(stderr, "R area error\n");
-				lkerr++;
-				return;
-			}
-			reli = a[rindex]->a_addr;
-		}
+    /*
+     * R3_SYM or R3_AREA references
+     */
+    if (mode & R3_SYM) {
+      if (rindex >= hp->h_nsym) {
+        fprintf(stderr, "R symbol error\n");
+        lkerr++;
+        return;
+      }
+      reli = symval(s[rindex]);
+    } else {
+      if (rindex >= hp->h_narea) {
+        fprintf(stderr, "R area error\n");
+        lkerr++;
+        return;
+      }
+      reli = a[rindex]->a_addr;
+    }
 
-		/*
-		 * R3_PCR addressing
-		 */
-		if (mode & R3_PCR) {
-			if (mode & R3_BYTE) {
-				reli -= (pc + (rtp-rtofst) + 1);
-			} else {
-				reli -= (pc + (rtp-rtofst) + 2);
-			}
-		}
+    /*
+     * R3_PCR addressing
+     */
+    if (mode & R3_PCR) {
+      if (mode & R3_BYTE) {
+        reli -= (pc + (rtp - rtofst) + 1);
+      } else {
+        reli -= (pc + (rtp - rtofst) + 2);
+      }
+    }
 
-		/*
-		 * Standard Modes
-		 */
-		if ((mode & R3_ECHEK) != R3_EXTND) {
-			paga = 0;
-			pags = 0;
-			/*
-			 * R3_PAG0 or R3_PAG addressing
-			 */
-			if (mode & (R3_PAG0|R3_PAG)) {
-				paga  = sdp.s_area->a_addr;
-				pags  = sdp.s_addr;
-				reli -= paga + pags;
-			}
+    /*
+     * Standard Modes
+     */
+    if ((mode & R3_ECHEK) != R3_EXTND) {
+      paga = 0;
+      pags = 0;
+      /*
+       * R3_PAG0 or R3_PAG addressing
+       */
+      if (mode & (R3_PAG0 | R3_PAG)) {
+        paga = sdp.s_area->a_addr;
+        pags = sdp.s_addr;
+        reli -= paga + pags;
+      }
 
-			/*
-			 * R3_BYTE or R3_WORD operation
-			 */
-			if (mode & R3_BYTE) {
-				if (mode & R3_BYTX) {
-					if (mode & R3_MSB) {
-						relv = adb_hi(reli, rtp);
-					} else {
-						relv = adb_lo(reli, rtp);
-					}
-					rtofst += (a_bytes - 1);
-				} else {
-					relv = adb_1b(reli, rtp);
-				}
-			} else {
-				relv = adw_xb(2, reli, rtp);
-				rtofst += (a_bytes - 2);
-			}
+      /*
+       * R3_BYTE or R3_WORD operation
+       */
+      if (mode & R3_BYTE) {
+        if (mode & R3_BYTX) {
+          if (mode & R3_MSB) {
+            relv = adb_hi(reli, rtp);
+          } else {
+            relv = adb_lo(reli, rtp);
+          }
+          rtofst += (a_bytes - 1);
+        } else {
+          relv = adb_1b(reli, rtp);
+        }
+      } else {
+        relv = adw_xb(2, reli, rtp);
+        rtofst += (a_bytes - 2);
+      }
 
-			/*
-			 * Page Relocation Error Checking
-			 */
-			if (mode & R3_PAG0 && (relv & ~((a_uint) 0x000000FF) || paga || pags))
-				error = 4;
-			if (mode & R3_PAG  && (relv & ~((a_uint) 0x000000FF)))
-				error = 5;
-		/*
-		 * Extended Modes
-		 */
-		} else {
-			switch(mode & R3_EMASK) {
-			case R3_J11:
-				if ((hilo == 0) || (a_bytes < 2)) {
-					error = 8;
-				}
-				/*
-				 * JLH: 11 bit jump destination for 8051.
-				 * Forms two byte instruction with
-				 * op-code bits in the MIDDLE!
-				 * rtp points at 3 byte locus:
-				 * first two will get the address,
-				 * third one has raw op-code
-				 */
-				relv = adw_xb(2, reli, rtp);
+      /*
+       * Page Relocation Error Checking
+       */
+      if (mode & R3_PAG0 && (relv & ~((a_uint)0x000000FF) || paga || pags))
+        error = 4;
+      if (mode & R3_PAG && (relv & ~((a_uint)0x000000FF)))
+        error = 5;
+      /*
+       * Extended Modes
+       */
+    } else {
+      switch (mode & R3_EMASK) {
+      case R3_J11:
+        if ((hilo == 0) || (a_bytes < 2)) {
+          error = 8;
+        }
+        /*
+         * JLH: 11 bit jump destination for 8051.
+         * Forms two byte instruction with
+         * op-code bits in the MIDDLE!
+         * rtp points at 3 byte locus:
+         * first two will get the address,
+         * third one has raw op-code
+         */
+        relv = adw_xb(2, reli, rtp);
 
-				/*
-				 * Calculate absolute destination
-				 * relv must be on same 2K page as pc
-				 */
-				if ((relv & ~((a_uint) 0x000007FF)) !=
-				   ((pc + rtp - rtofst) & ~((a_uint) 0x000007FF))) {
-					error = 6;
-				}
+        /*
+         * Calculate absolute destination
+         * relv must be on same 2K page as pc
+         */
+        if ((relv & ~((a_uint)0x000007FF)) !=
+            ((pc + rtp - rtofst) & ~((a_uint)0x000007FF))) {
+          error = 6;
+        }
 
-				rtofst += (a_bytes - 2);
+        rtofst += (a_bytes - 2);
 
-				/*
-				 * Merge MSB with op-code,
-				 * ignoring top 5 bits of address.
-				 * Then hide the op-code.
-				 */
- 				rtval[rtp + (a_bytes - 2)] =
-					rtval[rtp + a_bytes] |
-					((rtval[rtp + (a_bytes - 2)] & ((a_uint) 0x00000007))<<5);
-				rtflg[rtp + a_bytes] = 0;
-				rtofst += 1;
-				break;
+        /*
+         * Merge MSB with op-code,
+         * ignoring top 5 bits of address.
+         * Then hide the op-code.
+         */
+        rtval[rtp + (a_bytes - 2)] =
+            rtval[rtp + a_bytes] |
+            ((rtval[rtp + (a_bytes - 2)] & ((a_uint)0x00000007)) << 5);
+        rtflg[rtp + a_bytes] = 0;
+        rtofst += 1;
+        break;
 
-			case R3_J19:
-				if ((hilo == 0) || (a_bytes < 3)) {
-					error = 8;
-				}
-				/*
-				 * BK: 19 bit jump destination for DS80C390.
-				 * Forms four byte instruction with
-				 * op-code bits in the MIDDLE!
-				 * rtp points at 4 byte locus:
-				 * first three will get the address,
-				 * fourth one has raw op-code
-				 */
-				relv = adw_xb(3, reli, rtp);
+      case R3_J19:
+        if ((hilo == 0) || (a_bytes < 3)) {
+          error = 8;
+        }
+        /*
+         * BK: 19 bit jump destination for DS80C390.
+         * Forms four byte instruction with
+         * op-code bits in the MIDDLE!
+         * rtp points at 4 byte locus:
+         * first three will get the address,
+         * fourth one has raw op-code
+         */
+        relv = adw_xb(3, reli, rtp);
 
-				/*
-				 * Calculate absolute destination
-				 * relv must be on same 512K page as pc
-				 */
-#ifdef	LONGINT
-				if ((relv & ~((a_uint) 0x0007FFFFl)) !=
-				   ((pc + rtp - rtofst) & ~((a_uint) 0x0007FFFFl))) {
-					error = 7;
-				}
+        /*
+         * Calculate absolute destination
+         * relv must be on same 512K page as pc
+         */
+#ifdef LONGINT
+        if ((relv & ~((a_uint)0x0007FFFFl)) !=
+            ((pc + rtp - rtofst) & ~((a_uint)0x0007FFFFl))) {
+          error = 7;
+        }
 #else
-				if ((relv & ~((a_uint) 0x0007FFFF)) !=
-				   ((pc + rtp - rtofst) & ~((a_uint) 0x0007FFFF))) {
-					error = 7;
-				}
+        if ((relv & ~((a_uint)0x0007FFFF)) !=
+            ((pc + rtp - rtofst) & ~((a_uint)0x0007FFFF))) {
+          error = 7;
+        }
 #endif
 
-				rtofst += (a_bytes - 3);
+        rtofst += (a_bytes - 3);
 
-				/*
-				 * Merge MSB with op-code,
-				 * ignoring top 5 bits of address.
-				 * Then hide the op-code.
-				 */
-				rtval[rtp + (a_bytes - 3)] =
-					rtval[rtp + a_bytes] |
-					((rtval[rtp + (a_bytes - 3)] & ((a_uint) 0x00000007))<<5);
-				rtflg[rtp + a_bytes] = 0;
-				rtofst += 1;
-				break;
+        /*
+         * Merge MSB with op-code,
+         * ignoring top 5 bits of address.
+         * Then hide the op-code.
+         */
+        rtval[rtp + (a_bytes - 3)] =
+            rtval[rtp + a_bytes] |
+            ((rtval[rtp + (a_bytes - 3)] & ((a_uint)0x00000007)) << 5);
+        rtflg[rtp + a_bytes] = 0;
+        rtofst += 1;
+        break;
 
-			case R3_3BYTE:
-				/*
-				 * 24 bit destination
-				 */
-				relv = adb_3b(reli, rtp);
-				break;
+      case R3_3BYTE:
+        /*
+         * 24 bit destination
+         */
+        relv = adb_3b(reli, rtp);
+        break;
 
-			case R3_4BYTE:
-				/*
-				 * 32 bit destination
-				 */
-				relv = adb_4b(reli, rtp);
-				break;
+      case R3_4BYTE:
+        /*
+         * 32 bit destination
+         */
+        relv = adb_4b(reli, rtp);
+        break;
 
-			default:
-				error = 8;
-				break;
-			}
-		}
+      default:
+        error = 8;
+        break;
+      }
+    }
 
-		/*
-		 * Unsigned Byte Checking
-		 */
-		if (mode & R3_USGN && mode & R3_BYTE && relv & ~((a_uint) 0x000000FF))
-			error = 1;
+    /*
+     * Unsigned Byte Checking
+     */
+    if (mode & R3_USGN && mode & R3_BYTE && relv & ~((a_uint)0x000000FF))
+      error = 1;
 
-		/*
-		 * PCR Relocation Error Checking
-		 */
-		if (mode & R3_PCR) {
-			v = relv - reli;
-			if ((mode & R3_BYTE) && (mode & R3_BYTX)) {
-				m = ~((a_uint) 0x0000007F);
-				if (((v & m) != m) && ((v & m) != 0)) {
-					error = 2;
-				}
-			} else {
-				m = ~((a_uint) 0x00007FFF);
-				if (((v & m) != m) && ((v & m) != 0)) {
-					error = 3;
-				}
-			}
-		}
+    /*
+     * PCR Relocation Error Checking
+     */
+    if (mode & R3_PCR) {
+      v = relv - reli;
+      if ((mode & R3_BYTE) && (mode & R3_BYTX)) {
+        m = ~((a_uint)0x0000007F);
+        if (((v & m) != m) && ((v & m) != 0)) {
+          error = 2;
+        }
+      } else {
+        m = ~((a_uint)0x00007FFF);
+        if (((v & m) != m) && ((v & m) != 0)) {
+          error = 3;
+        }
+      }
+    }
 
-		/*
-		 * Error Processing
-		 */
-		if (error) {
-			rerr.aindex = aindex;
-			rerr.mode = mode;
-			rerr.rtbase = rtbase + rtp - rtpofst;
-			rerr.rindex = rindex;
-			rerr.rval = relv - reli;
-			relerr3(errmsg3[error]);
+    /*
+     * Error Processing
+     */
+    if (error) {
+      rerr.aindex = aindex;
+      rerr.mode = mode;
+      rerr.rtbase = rtbase + rtp - rtpofst;
+      rerr.rindex = rindex;
+      rerr.rval = relv - reli;
+      relerr3(errmsg3[error]);
 
-			for (i=rtp; i<rtp+a_bytes; i++) {
-				if (rtflg[i]) {
-					rterr[i] = error;
-					break;
-				}
-			}
-		}
-		/*
-		 * Bank Has Output
-		 */
-		if ((oflag != 0) && (obj_flag == 0)) {
-			rtabnk->b_oflag = 1;
-		}
-	}
-	if (uflag != 0) {
-		lkulist(1);
-	}
-	if (oflag != 0) {
-		lkout(1);
-	}
+      for (i = rtp; i < rtp + a_bytes; i++) {
+        if (rtflg[i]) {
+          rterr[i] = error;
+          break;
+        }
+      }
+    }
+    /*
+     * Bank Has Output
+     */
+    if ((oflag != 0) && (obj_flag == 0)) {
+      rtabnk->b_oflag = 1;
+    }
+  }
+  if (uflag != 0) {
+    lkulist(1);
+  }
+  if (oflag != 0) {
+    lkout(1);
+  }
 }
 
 char *errmsg3[] = {
-/* 0 */	"LKRLOC3 Error List",
-/* 1 */	"Unsigned Byte error",
-/* 2 */	"Byte PCR relocation error",
-/* 3 */	"Word PCR relocation error",
-/* 4 */	"Page0 relocation error",
-/* 5 */	"Page Mode relocation error",
-/* 6 */	"2K Page relocation error",
-/* 7 */	"512K Page relocation error",
-/* 8 */	"Undefined Extended Mode error"
-};
-
+    /* 0 */ "LKRLOC3 Error List",
+    /* 1 */ "Unsigned Byte error",
+    /* 2 */ "Byte PCR relocation error",
+    /* 3 */ "Word PCR relocation error",
+    /* 4 */ "Page0 relocation error",
+    /* 5 */ "Page Mode relocation error",
+    /* 6 */ "2K Page relocation error",
+    /* 7 */ "512K Page relocation error",
+    /* 8 */ "Undefined Extended Mode error"};
 
 /*)Function	VOID	relp3()
  *
@@ -644,82 +635,80 @@ char *errmsg3[] = {
  *
  */
 
-VOID
-relp3()
-{
-	int aindex, rindex;
-	int mode, rtp;
-	a_uint relv;
-	struct areax **a;
-	struct sym **s;
+VOID relp3() {
+  int aindex, rindex;
+  int mode, rtp;
+  a_uint relv;
+  struct areax **a;
+  struct sym **s;
 
-	/*
-	 * Get area and symbol lists
-	 */
-	a = hp->a_list;
-	s = hp->s_list;
+  /*
+   * Get area and symbol lists
+   */
+  a = hp->a_list;
+  s = hp->s_list;
 
-	/*
-	 * Verify Area Mode
-	 */
-	if (eval() != R3_AREA || eval()) {
-		fprintf(stderr, "P input error\n");
-		lkerr++;
-	}
+  /*
+   * Verify Area Mode
+   */
+  if (eval() != R3_AREA || eval()) {
+    fprintf(stderr, "P input error\n");
+    lkerr++;
+  }
 
-	/*
-	 * Get area pointer
-	 */
-	aindex = (int) evword();
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "P area error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Get area pointer
+   */
+  aindex = (int)evword();
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "P area error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Do remaining relocations
-	 */
-	while (more()) {
-		mode = (int) eval();
-		rtp = (int) eval();
-		rindex = (int) evword();
+  /*
+   * Do remaining relocations
+   */
+  while (more()) {
+    mode = (int)eval();
+    rtp = (int)eval();
+    rindex = (int)evword();
 
-		/*
-		 * R3_SYM or R3_AREA references
-		 */
-		if (mode & R3_SYM) {
-			if (rindex >= hp->h_nsym) {
-				fprintf(stderr, "P symbol error\n");
-				lkerr++;
-				return;
-			}
-			relv = symval(s[rindex]);
-		} else {
-			if (rindex >= hp->h_narea) {
-				fprintf(stderr, "P area error\n");
-				lkerr++;
-				return;
-			}
-			relv = a[rindex]->a_addr;
-		}
-		adb_xb(relv, rtp);
-	}
+    /*
+     * R3_SYM or R3_AREA references
+     */
+    if (mode & R3_SYM) {
+      if (rindex >= hp->h_nsym) {
+        fprintf(stderr, "P symbol error\n");
+        lkerr++;
+        return;
+      }
+      relv = symval(s[rindex]);
+    } else {
+      if (rindex >= hp->h_narea) {
+        fprintf(stderr, "P area error\n");
+        lkerr++;
+        return;
+      }
+      relv = a[rindex]->a_addr;
+    }
+    adb_xb(relv, rtp);
+  }
 
-	/*
-	 * Paged values
-	 */
-	aindex = (int) adb_xb(0, a_bytes);
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "P area error\n");
-		lkerr++;
-		return;
-	}
-	sdp.s_areax = a[aindex];
-	sdp.s_area = sdp.s_areax->a_bap;
-	sdp.s_addr = adb_xb(0,a_bytes*2);
-	if (sdp.s_area->a_addr & 0xFF || sdp.s_addr & 0xFF)
-		relerp3("Page Definition Boundary Error");
+  /*
+   * Paged values
+   */
+  aindex = (int)adb_xb(0, a_bytes);
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "P area error\n");
+    lkerr++;
+    return;
+  }
+  sdp.s_areax = a[aindex];
+  sdp.s_area = sdp.s_areax->a_bap;
+  sdp.s_addr = adb_xb(0, a_bytes * 2);
+  if (sdp.s_area->a_addr & 0xFF || sdp.s_addr & 0xFF)
+    relerp3("Page Definition Boundary Error");
 }
 
 /*)Function	VOID	rele3()
@@ -744,16 +733,14 @@ relp3()
  *
  */
 
-VOID
-rele3()
-{
-	if (uflag != 0) {
-		lkulist(0);
-	}
-	if (oflag != 0) {
-		lkflush();
-		lkfclose();
-	}
+VOID rele3() {
+  if (uflag != 0) {
+    lkulist(0);
+  }
+  if (oflag != 0) {
+    lkflush();
+    lkfclose();
+  }
 }
 
 /*)Function	VOID	relerr3(str)
@@ -777,13 +764,12 @@ rele3()
  *
  */
 
-VOID
-relerr3(str)
+VOID relerr3(str)
 char *str;
 {
-	errdmp3(stderr, str);
-	if (mfp)
-		errdmp3(mfp, str);
+  errdmp3(stderr, str);
+  if (mfp)
+    errdmp3(mfp, str);
 }
 
 /*)Function	VOID	errdmp3(fptr, str)
@@ -817,75 +803,68 @@ char *str;
  *
  */
 
-VOID
-errdmp3(fptr, str)
+VOID errdmp3(fptr, str)
 FILE *fptr;
 char *str;
 {
-	int mode, aindex, rindex;
-	struct sym **s;
-	struct areax **a;
-	struct areax *raxp;
+  int mode, aindex, rindex;
+  struct sym **s;
+  struct areax **a;
+  struct areax *raxp;
 
-	a = hp->a_list;
-	s = hp->s_list;
+  a = hp->a_list;
+  s = hp->s_list;
 
-	mode = rerr.mode;
-	aindex = rerr.aindex;
-	rindex = rerr.rindex;
+  mode = rerr.mode;
+  aindex = rerr.aindex;
+  rindex = rerr.rindex;
 
-	/*
-	 * Print Error
-	 */
-	fprintf(fptr, "\n?ASlink-Warning-%s", str);
-	lkerr++;
+  /*
+   * Print Error
+   */
+  fprintf(fptr, "\n?ASlink-Warning-%s", str);
+  lkerr++;
 
-	/*
-	 * Print symbol if symbol based
-	 */
-	if (mode & R3_SYM) {
-		fprintf(fptr, " for symbol  %s\n",
-			&s[rindex]->s_id[0]);
-	} else {
-		fprintf(fptr, "\n");
-	}
+  /*
+   * Print symbol if symbol based
+   */
+  if (mode & R3_SYM) {
+    fprintf(fptr, " for symbol  %s\n", &s[rindex]->s_id[0]);
+  } else {
+    fprintf(fptr, "\n");
+  }
 
-	/*
-	 * Print Ref Info
-	 */
-/*         11111111112222222222333333333344444444445555555555666666666677777*/
-/*12345678901234567890123456789012345678901234567890123456789012345678901234*/
-/*        |                 |                 |                 |           */
-	fprintf(fptr,
-"         file              module            area                   offset\n");
-	fprintf(fptr,
-"  Refby  %-14.14s    %-14.14s    %-14.14s    ",
-			hp->h_lfile->f_idp,
-			&hp->m_id[0],
-			&a[aindex]->a_bap->a_id[0]);
-	prntval(fptr, rerr.rtbase);
+  /*
+   * Print Ref Info
+   */
+  /*         11111111112222222222333333333344444444445555555555666666666677777*/
+  /*12345678901234567890123456789012345678901234567890123456789012345678901234*/
+  /*        |                 |                 |                 |           */
+  fprintf(fptr, "         file              module            area             "
+                "      offset\n");
+  fprintf(fptr, "  Refby  %-14.14s    %-14.14s    %-14.14s    ",
+          hp->h_lfile->f_idp, &hp->m_id[0], &a[aindex]->a_bap->a_id[0]);
+  prntval(fptr, rerr.rtbase);
 
-	/*
-	 * Print Def Info
-	 */
-	if (mode & R3_SYM) {
-		raxp = s[rindex]->s_axp;
-	} else {
-		raxp = a[rindex];
-	}
-/*         11111111112222222222333333333344444444445555555555666666666677777*/
-/*12345678901234567890123456789012345678901234567890123456789012345678901234*/
-/*        |                 |                 |                 |           */
-	fprintf(fptr,
-"  Defin  %-14.14s    %-14.14s    %-14.14s    ",
-			raxp->a_bhp->h_lfile->f_idp,
-			&raxp->a_bhp->m_id[0],
-			&raxp->a_bap->a_id[0]);
-	if (mode & R3_SYM) {
-		prntval(fptr, s[rindex]->s_addr);
-	} else {
-		prntval(fptr, rerr.rval);
-	}
+  /*
+   * Print Def Info
+   */
+  if (mode & R3_SYM) {
+    raxp = s[rindex]->s_axp;
+  } else {
+    raxp = a[rindex];
+  }
+  /*         11111111112222222222333333333344444444445555555555666666666677777*/
+  /*12345678901234567890123456789012345678901234567890123456789012345678901234*/
+  /*        |                 |                 |                 |           */
+  fprintf(fptr, "  Defin  %-14.14s    %-14.14s    %-14.14s    ",
+          raxp->a_bhp->h_lfile->f_idp, &raxp->a_bhp->m_id[0],
+          &raxp->a_bap->a_id[0]);
+  if (mode & R3_SYM) {
+    prntval(fptr, s[rindex]->s_addr);
+  } else {
+    prntval(fptr, rerr.rval);
+  }
 }
 
 /*)Function	VOID	relerp3(str)
@@ -909,13 +888,12 @@ char *str;
  *
  */
 
-VOID
-relerp3(str)
+VOID relerp3(str)
 char *str;
 {
-	erpdmp3(stderr, str);
-	if (mfp)
-		erpdmp3(mfp, str);
+  erpdmp3(stderr, str);
+  if (mfp)
+    erpdmp3(mfp, str);
 }
 
 /*)Function	VOID	erpdmp3(fptr, str)
@@ -942,34 +920,30 @@ char *str;
  *
  */
 
-VOID
-erpdmp3(fptr, str)
+VOID erpdmp3(fptr, str)
 FILE *fptr;
 char *str;
 {
-	struct head *thp;
+  struct head *thp;
 
-	thp = sdp.s_areax->a_bhp;
+  thp = sdp.s_areax->a_bhp;
 
-	/*
-	 * Print Error
-	 */
-	fprintf(fptr, "\n?ASlink-Warning-%s\n", str);
-	lkerr++;
+  /*
+   * Print Error
+   */
+  fprintf(fptr, "\n?ASlink-Warning-%s\n", str);
+  lkerr++;
 
-	/*
-	 * Print PgDef Info
-	 */
-/*         111111111122222222223333333333444444444455555555556666666666777*/
-/*123456789012345678901234567890123456789012345678901234567890123456789012*/
-	fprintf(fptr,
-"         file              module            pgarea            pgoffset\n");
-	fprintf(fptr,
-"  PgDef  %-14.14s    %-14.14s    %-14.14s    ",
-			thp->h_lfile->f_idp,
-			&thp->m_id[0],
-			&sdp.s_area->a_id[0]);
-	prntval(fptr, sdp.s_area->a_addr + sdp.s_addr);
+  /*
+   * Print PgDef Info
+   */
+  /*         111111111122222222223333333333444444444455555555556666666666777*/
+  /*123456789012345678901234567890123456789012345678901234567890123456789012*/
+  fprintf(fptr, "         file              module            pgarea           "
+                " pgoffset\n");
+  fprintf(fptr, "  PgDef  %-14.14s    %-14.14s    %-14.14s    ",
+          thp->h_lfile->f_idp, &thp->m_id[0], &sdp.s_area->a_id[0]);
+  prntval(fptr, sdp.s_area->a_addr + sdp.s_addr);
 }
 
 /*)Function	a_uint 	adb_lo(v, i)
@@ -1000,23 +974,23 @@ char *str;
  *
  */
 
-a_uint
-adb_lo(v, i)
-a_uint	v;
-int	i;
+a_uint adb_lo(v, i)
+a_uint v;
+int i;
 {
-	a_uint j;
-	int m, n;
+  a_uint j;
+  int m, n;
 
-	j = adb_xb(v, i);
-	/*
-	 * LSB is lowest order byte of data
-	 */
-	m = (hilo ? a_bytes-1 : 0);
-	for (n=0; n<a_bytes; n++) {
-		if(n != m) rtflg[i+n] = 0;
-	}
-	return (j);
+  j = adb_xb(v, i);
+  /*
+   * LSB is lowest order byte of data
+   */
+  m = (hilo ? a_bytes - 1 : 0);
+  for (n = 0; n < a_bytes; n++) {
+    if (n != m)
+      rtflg[i + n] = 0;
+  }
+  return (j);
 }
 
 /*)Function	a_uint 	adb_hi(v, i)
@@ -1046,23 +1020,21 @@ int	i;
  *
  */
 
-a_uint
-adb_hi(v, i)
-a_uint	v;
-int	i;
+a_uint adb_hi(v, i)
+a_uint v;
+int i;
 {
-	a_uint j;
-	int m, n;
+  a_uint j;
+  int m, n;
 
-	j = adb_xb(v, i);
-	/*
-	 * MSB is next lowest order byte of data
-	 */
-	m = (hilo ? a_bytes-2 : 1);
-	for (n=0; n<a_bytes; n++) {
-		if(n != m) rtflg[i+n] = 0;
-	}
-	return (j);
+  j = adb_xb(v, i);
+  /*
+   * MSB is next lowest order byte of data
+   */
+  m = (hilo ? a_bytes - 2 : 1);
+  for (n = 0; n < a_bytes; n++) {
+    if (n != m)
+      rtflg[i + n] = 0;
+  }
+  return (j);
 }
-
-

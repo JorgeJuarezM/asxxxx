@@ -93,36 +93,33 @@
  *
  */
 
-VOID
-reloc4(c)
+VOID reloc4(c)
 int c;
 {
-	switch(c) {
+  switch (c) {
 
-	case 'T':
-		relt4();
-		break;
+  case 'T':
+    relt4();
+    break;
 
-	case 'R':
-		relr4();
-		break;
+  case 'R':
+    relr4();
+    break;
 
-	case 'P':
-		relp4();
-		break;
+  case 'P':
+    relp4();
+    break;
 
-	case 'E':
-		rele4();
-		break;
+  case 'E':
+    rele4();
+    break;
 
-	default:
-		fprintf(stderr, "Undefined Relocation Operation\n");
-		lkerr++;
-		break;
-
-	}
+  default:
+    fprintf(stderr, "Undefined Relocation Operation\n");
+    lkerr++;
+    break;
+  }
 }
-
 
 /*)Function	VOID	relt4()
  *
@@ -167,18 +164,16 @@ int c;
  *
  */
 
-VOID
-relt4()
-{
-	rtcnt = 0;
-	while (more()) {
-		if (rtcnt < NTXT) {
-			rtval[rtcnt] = eval();
-			rtflg[rtcnt] = 1;
-			rterr[rtcnt] = 0;
-			rtcnt++;
-		}
-	}
+VOID relt4() {
+  rtcnt = 0;
+  while (more()) {
+    if (rtcnt < NTXT) {
+      rtval[rtcnt] = eval();
+      rtflg[rtcnt] = 1;
+      rterr[rtcnt] = 0;
+      rtcnt++;
+    }
+  }
 }
 
 /*)Function	VOID	relr4()
@@ -197,17 +192,17 @@ relt4()
  * 	The R line provides the relocation information to the linker.
  *	The nn nn value is the current area index, i.e.  which area  the
  *	current  values  were  assembled.  Relocation information is en-
- *	coded in groups of 4 bytes:  
+ *	coded in groups of 4 bytes:
  *
- *	1.  n1 is the relocation mode and object format 
- *	 	1.  bits <1:0> specify the number of bytes to output) 
- *	 	2.  bit 2 signed(0x00)/unsigned(0x04) byte data 
+ *	1.  n1 is the relocation mode and object format
+ *	 	1.  bits <1:0> specify the number of bytes to output)
+ *	 	2.  bit 2 signed(0x00)/unsigned(0x04) byte data
  *		3.  bit 3 normal(0x00)/MSB(0x08) of value (2nd byte)
- *	 	4.  bit 4 normal(0x00)/page '0'(0x10) reference 
+ *	 	4.  bit 4 normal(0x00)/page '0'(0x10) reference
  *	 	5.  bit 5 normal(0x00)/page 'nnn'(0x20) reference
  *			PAGX mode if both bits are set
- *	 	6.  bit 6 normal(0x00)/PC relative(0x40) relocation 
- *	 	7.  bit 7 relocatable area(0x00)/symbol(0x80) 
+ *	 	6.  bit 6 normal(0x00)/PC relative(0x40) relocation
+ *	 	7.  bit 7 relocatable area(0x00)/symbol(0x80)
  *
  *	2.  n2 is a byte index and merge mode index
  *		1.  bits <3:0> are a byte index into the corresponding
@@ -219,11 +214,11 @@ relt4()
  *
  *	3.  xx xx  is the area/symbol index for the area/symbol be-
  *	 	ing referenced.  the corresponding area/symbol is found
- *		in the header area/symbol lists.  
+ *		in the header area/symbol lists.
  *
  *
  *	The groups of 4 bytes are repeated for each item requiring relo-
- *	cation in the preceeding T line.  
+ *	cation in the preceeding T line.
  *
  *
  *	local variable:
@@ -289,512 +284,530 @@ relt4()
  *
  */
 
-VOID
-relr4()
-{
-	a_uint reli, relv;
-	int mode;
-	a_uint rtbase, rtofst, rtpofst;
-	a_uint paga, pags, pagx, pcrv;
-	a_uint m, n, v;
-	int aindex, argb, argm, rindex, rtp, rxm, error, i;
-	struct areax **a;
-	struct sym **s;
+VOID relr4() {
+  a_uint reli, relv;
+  int mode;
+  a_uint rtbase, rtofst, rtpofst;
+  a_uint paga, pags, pagx, pcrv;
+  a_uint m, n, v;
+  int aindex, argb, argm, rindex, rtp, rxm, error, i;
+  struct areax **a;
+  struct sym **s;
 
-	/*
-	 * Get area and symbol lists
-	 */
-	a = hp->a_list;
-	s = hp->s_list;
+  /*
+   * Get area and symbol lists
+   */
+  a = hp->a_list;
+  s = hp->s_list;
 
-	/*
-	 * Verify Area Mode
-	 */
-	if (eval() != R4_AREA || eval()) {
-		fprintf(stderr, "R input error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Verify Area Mode
+   */
+  if (eval() != R4_AREA || eval()) {
+    fprintf(stderr, "R input error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Get area pointer
-	 */
-	aindex = (int) evword();
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "R area error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Get area pointer
+   */
+  aindex = (int)evword();
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "R area error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Select Output File
-	 */
-	if (oflag != 0) {
-		ap = a[aindex]->a_bap;
-		if (ofp != NULL) {
-			rtabnk->b_rtaflg = rtaflg;
-			if (ofp != ap->a_ofp) {
-				lkflush();
-			}
-		}
-		ofp = ap->a_ofp;
-		rtabnk = ap->a_bp;
-		rtaflg = rtabnk->b_rtaflg;
-	}
+  /*
+   * Select Output File
+   */
+  if (oflag != 0) {
+    ap = a[aindex]->a_bap;
+    if (ofp != NULL) {
+      rtabnk->b_rtaflg = rtaflg;
+      if (ofp != ap->a_ofp) {
+        lkflush();
+      }
+    }
+    ofp = ap->a_ofp;
+    rtabnk = ap->a_bp;
+    rtaflg = rtabnk->b_rtaflg;
+  }
 
-	/*
-	 * Base values:
-	 *	rtbase is the base address from the T line
-	 *	rtofst is the number of T line data bytes
-	 *		discarded during processing
-	 *	
-	 */
-	rtbase = adb_xb(0, 0);
-	rtofst = a_bytes;
+  /*
+   * Base values:
+   *	rtbase is the base address from the T line
+   *	rtofst is the number of T line data bytes
+   *		discarded during processing
+   *
+   */
+  rtbase = adb_xb(0, 0);
+  rtofst = a_bytes;
 
-	/*
-	 * Relocate address
-	 */
-	pc  = adb_xb(a[aindex]->a_addr, 0);
+  /*
+   * Relocate address
+   */
+  pc = adb_xb(a[aindex]->a_addr, 0);
 
-	/*
-	 * Number of 'bytes' per PC address
-	 */
-	pcb = 1 + (A4_WLMSK & a[aindex]->a_bap->a_flag);
+  /*
+   * Number of 'bytes' per PC address
+   */
+  pcb = 1 + (A4_WLMSK & a[aindex]->a_bap->a_flag);
 
-	/*
-	 * Do remaining relocations
-	 */
-	while (more()) {
-		error = 0;
-		relv = 0;
-		rtpofst = rtofst;
-		mode = (int) eval();
-		rtp = (int) eval();
-		rindex = (int) evword();
+  /*
+   * Do remaining relocations
+   */
+  while (more()) {
+    error = 0;
+    relv = 0;
+    rtpofst = rtofst;
+    mode = (int)eval();
+    rtp = (int)eval();
+    rindex = (int)evword();
 
-		/*
-		 * Argument Mode
-		 */
-		argm = (mode & R4_BYTES);
-		/*
-		 * Bytes in Argument
-		 */
-		argb = 1 + argm;
+    /*
+     * Argument Mode
+     */
+    argm = (mode & R4_BYTES);
+    /*
+     * Bytes in Argument
+     */
+    argb = 1 + argm;
 
-		/*
-		 * Merge Mode Value
-		 */
-		rxm = (rtp >> 4) & 0x0F;
-		/*
-		 * Index to Data
-		 */
-		rtp &= 0x0F;
+    /*
+     * Merge Mode Value
+     */
+    rxm = (rtp >> 4) & 0x0F;
+    /*
+     * Index to Data
+     */
+    rtp &= 0x0F;
 
-		/*
-		 * R4_SYM or R4_AREA references
-		 */
-		if (mode & R4_SYM) {
-			if (rindex >= hp->h_nsym) {
-				fprintf(stderr, "R symbol error\n");
-				lkerr++;
-				return;
-			}
-			reli = symval(s[rindex]);
-#ifdef	DEBUG
-fprintf(stdout, "relr4-sym:  reli = %4X, rindex = %d\n", reli, rindex);
+    /*
+     * R4_SYM or R4_AREA references
+     */
+    if (mode & R4_SYM) {
+      if (rindex >= hp->h_nsym) {
+        fprintf(stderr, "R symbol error\n");
+        lkerr++;
+        return;
+      }
+      reli = symval(s[rindex]);
+#ifdef DEBUG
+      fprintf(stdout, "relr4-sym:  reli = %4X, rindex = %d\n", reli, rindex);
 #endif
-		} else {
-			if (rindex >= hp->h_narea) {
-				fprintf(stderr, "R area error\n");
-				lkerr++;
-				return;
-			}
-			reli = a[rindex]->a_addr;
-#ifdef	DEBUG
-fprintf(stdout, "relr4-area: reli = %4X, rindex = %d\n", reli, rindex);
+    } else {
+      if (rindex >= hp->h_narea) {
+        fprintf(stderr, "R area error\n");
+        lkerr++;
+        return;
+      }
+      reli = a[rindex]->a_addr;
+#ifdef DEBUG
+      fprintf(stdout, "relr4-area: reli = %4X, rindex = %d\n", reli, rindex);
 #endif
-		}
+    }
 
-		/*
-		 * Standard Modes
-		 */
-		if (rxm == 0) {
-			/*
-			 * PAGE addressing and
-			 * PCR  addressing
-			 */
-			paga = 0;
-			pags = 0;
+    /*
+     * Standard Modes
+     */
+    if (rxm == 0) {
+      /*
+       * PAGE addressing and
+       * PCR  addressing
+       */
+      paga = 0;
+      pags = 0;
 
-			pcrv  = rtp - rtofst;
+      pcrv = rtp - rtofst;
 
-			switch(mode & (R4_PCR | R4_PBITS)) {
-			/*
-			 * Default PCR mode assumes the PC Value
-			 * used for relocation follows the opcode
-			 * and offset argument.
-			 */
-			case R4_PCR:
-			case R4_PCRN:
-				pcrv  = (pcrv + argb) / pcb;
-				reli -= (pc + pcrv);
-				break;
-			/*
-			 * Specific PCR mode offsets for the
-			 * PC value from the offset location.
-			 */
-			case R4_PCR4:
-			case R4_PCR4N:	pcrv += 1;
-			case R4_PCR3:
-			case R4_PCR3N:	pcrv += 1;
-			case R4_PCR2:
-			case R4_PCR2N:	pcrv += 1;
-			case R4_PCR1:
-			case R4_PCR1N:	pcrv += 1;
-			case R4_PCR0:
-			case R4_PCR0N:
-				pcrv /=  pcb;
-				reli -= (pc + pcrv);
-				break;
-			case R4_PAG0:
-			case R4_PAGN:
-				paga  = sdp.s_area->a_addr;
-				pags  = sdp.s_addr;
-				reli -= paga + pags;
-				break;
-			case R4_PAGX0:
-			case R4_PAGX1:
-			case R4_PAGX2:
-			case R4_PAGX3:
-			default:
-				break;
-			}
+      switch (mode & (R4_PCR | R4_PBITS)) {
+      /*
+       * Default PCR mode assumes the PC Value
+       * used for relocation follows the opcode
+       * and offset argument.
+       */
+      case R4_PCR:
+      case R4_PCRN:
+        pcrv = (pcrv + argb) / pcb;
+        reli -= (pc + pcrv);
+        break;
+      /*
+       * Specific PCR mode offsets for the
+       * PC value from the offset location.
+       */
+      case R4_PCR4:
+      case R4_PCR4N:
+        pcrv += 1;
+      case R4_PCR3:
+      case R4_PCR3N:
+        pcrv += 1;
+      case R4_PCR2:
+      case R4_PCR2N:
+        pcrv += 1;
+      case R4_PCR1:
+      case R4_PCR1N:
+        pcrv += 1;
+      case R4_PCR0:
+      case R4_PCR0N:
+        pcrv /= pcb;
+        reli -= (pc + pcrv);
+        break;
+      case R4_PAG0:
+      case R4_PAGN:
+        paga = sdp.s_area->a_addr;
+        pags = sdp.s_addr;
+        reli -= paga + pags;
+        break;
+      case R4_PAGX0:
+      case R4_PAGX1:
+      case R4_PAGX2:
+      case R4_PAGX3:
+      default:
+        break;
+      }
 
-			/*
-			 * R4_BYTE, R4_WORD, R4_3BYTE, and R4_4BYTE operations
-			 */
-			if ((mode & (R4_MSB | R4_PAGX | R4_PCR)) == R4_MSB) {
-				relv = adb_byte(argm, reli, rtp);
-				/*
-				 * R4_MSB uses only 1 byte of data
-				 * from a_bytes of data in the T line.
-				 */
-				rtofst += (a_bytes - 1);
-			} else {
-				relv = adw_xb(argb, reli, rtp);
-				/*
-				 * Normal modes use argb bytes of data
-				 * from a_bytes of data in the T line.
-				 */
-				rtofst += (a_bytes - argb);
-			}
+      /*
+       * R4_BYTE, R4_WORD, R4_3BYTE, and R4_4BYTE operations
+       */
+      if ((mode & (R4_MSB | R4_PAGX | R4_PCR)) == R4_MSB) {
+        relv = adb_byte(argm, reli, rtp);
+        /*
+         * R4_MSB uses only 1 byte of data
+         * from a_bytes of data in the T line.
+         */
+        rtofst += (a_bytes - 1);
+      } else {
+        relv = adw_xb(argb, reli, rtp);
+        /*
+         * Normal modes use argb bytes of data
+         * from a_bytes of data in the T line.
+         */
+        rtofst += (a_bytes - argb);
+      }
 
-			/*
-			 * Mask Value Selection
-			 */
-#ifdef	LONGINT
-			switch(argm) {
-			default:
-			case R4_1BYTE:	/* 1 byte  */
-				m = ~((a_uint) 0x0000007Fl);	n = ~((a_uint) 0x000000FFl);
-				break;
-			case R4_2BYTE:	/* 2 bytes */
-				m = ~((a_uint) 0x00007FFFl);	n = ~((a_uint) 0x0000FFFFl);
-				break;
-			case R4_3BYTE:	/* 3 bytes */
-				m = ~((a_uint) 0x007FFFFFl);	n = ~((a_uint) 0x00FFFFFFl);
-				break;
-			case R4_4BYTE:	/* 4 bytes */
-				m = ~((a_uint) 0x7FFFFFFFl);	n = ~((a_uint) 0xFFFFFFFFl);
-				break;
-			}
+      /*
+       * Mask Value Selection
+       */
+#ifdef LONGINT
+      switch (argm) {
+      default:
+      case R4_1BYTE: /* 1 byte  */
+        m = ~((a_uint)0x0000007Fl);
+        n = ~((a_uint)0x000000FFl);
+        break;
+      case R4_2BYTE: /* 2 bytes */
+        m = ~((a_uint)0x00007FFFl);
+        n = ~((a_uint)0x0000FFFFl);
+        break;
+      case R4_3BYTE: /* 3 bytes */
+        m = ~((a_uint)0x007FFFFFl);
+        n = ~((a_uint)0x00FFFFFFl);
+        break;
+      case R4_4BYTE: /* 4 bytes */
+        m = ~((a_uint)0x7FFFFFFFl);
+        n = ~((a_uint)0xFFFFFFFFl);
+        break;
+      }
 #else
-			switch(argm) {
-			default:
-			case R4_1BYTE:	/* 1 byte  */
-				m = ~((a_uint) 0x0000007F);	n = ~((a_uint) 0x000000FF);
-				break;
-			case R4_2BYTE:	/* 2 bytes */
-				m = ~((a_uint) 0x00007FFF);	n = ~((a_uint) 0x0000FFFF);
-				break;
-			case R4_3BYTE:	/* 3 bytes */
-				m = ~((a_uint) 0x007FFFFF);	n = ~((a_uint) 0x00FFFFFF);
-				break;
-			case R4_4BYTE:	/* 4 bytes */
-				m = ~((a_uint) 0x7FFFFFFF);	n = ~((a_uint) 0xFFFFFFFF);
-				break;
-			}
+      switch (argm) {
+      default:
+      case R4_1BYTE: /* 1 byte  */
+        m = ~((a_uint)0x0000007F);
+        n = ~((a_uint)0x000000FF);
+        break;
+      case R4_2BYTE: /* 2 bytes */
+        m = ~((a_uint)0x00007FFF);
+        n = ~((a_uint)0x0000FFFF);
+        break;
+      case R4_3BYTE: /* 3 bytes */
+        m = ~((a_uint)0x007FFFFF);
+        n = ~((a_uint)0x00FFFFFF);
+        break;
+      case R4_4BYTE: /* 4 bytes */
+        m = ~((a_uint)0x7FFFFFFF);
+        n = ~((a_uint)0xFFFFFFFF);
+        break;
+      }
 #endif
 
-			/*
-			 * Signed Value Checking
-			 */
-			if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_SGND) &&
-			   ((relv & m) != m) && ((relv & m) != 0))
-				error = 1;
+      /*
+       * Signed Value Checking
+       */
+      if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_SGND) &&
+          ((relv & m) != m) && ((relv & m) != 0))
+        error = 1;
 
-			/*
-			 * Unsigned Value Checking
-			 */
-			if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_USGN) &&
-			   ((relv & n) != 0))
-				error = 2;
+      /*
+       * Unsigned Value Checking
+       */
+      if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_USGN) &&
+          ((relv & n) != 0))
+        error = 2;
 
-			/*
-			 * PCR  Relocation Error Checking
-			 */
-			switch(mode & (R4_PCR | R4_PBITS)) {
-			case R4_PCR4:
-			case R4_PCR3:
-			case R4_PCR2:
-			case R4_PCR1:
-			case R4_PCR0:
-			case R4_PCR:
-				if (((relv & m) != m) && ((relv & m) != 0)) {
-					error = 3 + argm;
-				}
-				break;
-			case R4_PAG0:
-				if (relv & ~((a_uint) 0x000000FF) || paga || pags)
-					error = 7;
-				break;
-			case R4_PAGN:
-				if (relv & ~((a_uint) 0x000000FF))
-					error = 8;
-				break;
-			case R4_PAGX0:	/* Paged from pc + 0 */
-			case R4_PAGX1:	/* Paged from pc + 1 */
-			case R4_PAGX2:	/* Paged from pc + 2 */
-			case R4_PAGX3:	/* Paged from pc + 3 */
-				pcrv = pc + ((rtp - rtofst) / pcb);
-				switch(mode & (R4_PCR | R4_PBITS)) {
-				case R4_PAGX3:	pcrv += 1;	/* Paged from pc + 3 */
-				case R4_PAGX2:	pcrv += 1;	/* Paged from pc + 2 */
-				case R4_PAGX1:	pcrv += 1;	/* Paged from pc + 1 */
-				case R4_PAGX0:			/* Paged from pc + 0 */
-				default:
-					break;
-				}
-				pagx = pcrv & ~((a_uint) 0x000000FF);
-				/*
-				 * Paging Error if:
-				 *     Destination Page != Current Page
-				 */
-				if ((relv & ~((a_uint) 0x000000FF)) != pagx)
-					error = 9;
-				break;
-			default:
-				break;
-			}
-		/*
-		 * Merge Mode Processing
-		 */
-		} else {
-			/*
-			 * PAGE addressing and
-			 * PCR  addressing
-			 */
-			paga = 0;
-			pags = 0;
+      /*
+       * PCR  Relocation Error Checking
+       */
+      switch (mode & (R4_PCR | R4_PBITS)) {
+      case R4_PCR4:
+      case R4_PCR3:
+      case R4_PCR2:
+      case R4_PCR1:
+      case R4_PCR0:
+      case R4_PCR:
+        if (((relv & m) != m) && ((relv & m) != 0)) {
+          error = 3 + argm;
+        }
+        break;
+      case R4_PAG0:
+        if (relv & ~((a_uint)0x000000FF) || paga || pags)
+          error = 7;
+        break;
+      case R4_PAGN:
+        if (relv & ~((a_uint)0x000000FF))
+          error = 8;
+        break;
+      case R4_PAGX0: /* Paged from pc + 0 */
+      case R4_PAGX1: /* Paged from pc + 1 */
+      case R4_PAGX2: /* Paged from pc + 2 */
+      case R4_PAGX3: /* Paged from pc + 3 */
+        pcrv = pc + ((rtp - rtofst) / pcb);
+        switch (mode & (R4_PCR | R4_PBITS)) {
+        case R4_PAGX3:
+          pcrv += 1; /* Paged from pc + 3 */
+        case R4_PAGX2:
+          pcrv += 1; /* Paged from pc + 2 */
+        case R4_PAGX1:
+          pcrv += 1;   /* Paged from pc + 1 */
+        case R4_PAGX0: /* Paged from pc + 0 */
+        default:
+          break;
+        }
+        pagx = pcrv & ~((a_uint)0x000000FF);
+        /*
+         * Paging Error if:
+         *     Destination Page != Current Page
+         */
+        if ((relv & ~((a_uint)0x000000FF)) != pagx)
+          error = 9;
+        break;
+      default:
+        break;
+      }
+      /*
+       * Merge Mode Processing
+       */
+    } else {
+      /*
+       * PAGE addressing and
+       * PCR  addressing
+       */
+      paga = 0;
+      pags = 0;
 
-			pcrv  = rtp - rtofst;
+      pcrv = rtp - rtofst;
 
-			switch(mode & (R4_PCR | R4_PBITS)) {
-			/*
-			 * Default PCR mode assumes the PC Value
-			 * used for relocation follows the opcode
-			 * and offset argument.
-			 */
-			case R4_PCR:
-			case R4_PCRN:
-				pcrv  = (pcrv + argb) / pcb;
-				reli -= (pc + pcrv);
-				break;
-			/*
-			 * Specific PCR mode offsets for the
-			 * PC value from the offset location.
-			 */
-			case R4_PCR4:
-			case R4_PCR4N:	pcrv += 1;
-			case R4_PCR3:
-			case R4_PCR3N:	pcrv += 1;
-			case R4_PCR2:
-			case R4_PCR2N:	pcrv += 1;
-			case R4_PCR1:
-			case R4_PCR1N:	pcrv += 1;
-			case R4_PCR0:
-			case R4_PCR0N:
-				pcrv /=  pcb;
-				reli -= (pc + pcrv);
-				break;
-			case R4_PAG0:
-			case R4_PAGN:
-				paga  = sdp.s_area->a_addr;
-				pags  = sdp.s_addr;
-				reli -= paga + pags;
-				break;
-			case R4_PAGX0:
-			case R4_PAGX1:
-			case R4_PAGX2:
-			case R4_PAGX3:
-			default:
-				break;
-			}
+      switch (mode & (R4_PCR | R4_PBITS)) {
+      /*
+       * Default PCR mode assumes the PC Value
+       * used for relocation follows the opcode
+       * and offset argument.
+       */
+      case R4_PCR:
+      case R4_PCRN:
+        pcrv = (pcrv + argb) / pcb;
+        reli -= (pc + pcrv);
+        break;
+      /*
+       * Specific PCR mode offsets for the
+       * PC value from the offset location.
+       */
+      case R4_PCR4:
+      case R4_PCR4N:
+        pcrv += 1;
+      case R4_PCR3:
+      case R4_PCR3N:
+        pcrv += 1;
+      case R4_PCR2:
+      case R4_PCR2N:
+        pcrv += 1;
+      case R4_PCR1:
+      case R4_PCR1N:
+        pcrv += 1;
+      case R4_PCR0:
+      case R4_PCR0N:
+        pcrv /= pcb;
+        reli -= (pc + pcrv);
+        break;
+      case R4_PAG0:
+      case R4_PAGN:
+        paga = sdp.s_area->a_addr;
+        pags = sdp.s_addr;
+        reli -= paga + pags;
+        break;
+      case R4_PAGX0:
+      case R4_PAGX1:
+      case R4_PAGX2:
+      case R4_PAGX3:
+      default:
+        break;
+      }
 
-			/*
-			 * R4_BYTE, R4_WORD, R4_3BYTE, and R4_4BYTE operations
-			 */
-			if ((mode & (R4_MSB | R4_PAGX | R4_PCR)) == R4_MSB) {
-				relv = adb_byte(argm, reli, rtp);
-			} else {
-				relv = adw_xb(argb, reli, rtp);
-			}
-#ifdef	DEBUG
-fprintf(stdout, "relr4-merge: relv = %4X\n", relv);
+      /*
+       * R4_BYTE, R4_WORD, R4_3BYTE, and R4_4BYTE operations
+       */
+      if ((mode & (R4_MSB | R4_PAGX | R4_PCR)) == R4_MSB) {
+        relv = adb_byte(argm, reli, rtp);
+      } else {
+        relv = adw_xb(argb, reli, rtp);
+      }
+#ifdef DEBUG
+      fprintf(stdout, "relr4-merge: relv = %4X\n", relv);
 #endif
 
-			/*
-			 * The Merge Mode inserts a_bytes into
-			 * the T line data which is discarded.
-			 */
-			for (i=0; i<a_bytes; i++) {
-				rtflg[rtp + i] = 0;
-			}
-			rtofst += a_bytes;
-			/*
-			 * Fixup the index to the next data.
-			 */
-			rtp += a_bytes;
-			rtpofst += a_bytes;
+      /*
+       * The Merge Mode inserts a_bytes into
+       * the T line data which is discarded.
+       */
+      for (i = 0; i < a_bytes; i++) {
+        rtflg[rtp + i] = 0;
+      }
+      rtofst += a_bytes;
+      /*
+       * Fixup the index to the next data.
+       */
+      rtp += a_bytes;
+      rtpofst += a_bytes;
 
-			v = gtb_xb(rtp);
-			v = lkmerge(relv, rxm, v);
-			ptb_xb(0 , rtp);
-			adw_xb(argb, v, rtp);
-#ifdef	DEBUG
-fprintf(stdout, "relr4-merge: v = %4X\n", v);
+      v = gtb_xb(rtp);
+      v = lkmerge(relv, rxm, v);
+      ptb_xb(0, rtp);
+      adw_xb(argb, v, rtp);
+#ifdef DEBUG
+      fprintf(stdout, "relr4-merge: v = %4X\n", v);
 #endif
 
-			/*
-			 * Source Bit Masks
-			 */
-			n = hp->m_list[rxm]->m_sbits;
-			m = ~(n >> 1);
-			n = ~(n >> 0);
+      /*
+       * Source Bit Masks
+       */
+      n = hp->m_list[rxm]->m_sbits;
+      m = ~(n >> 1);
+      n = ~(n >> 0);
 
-			/*
-			 * Signed Merge Bit Range Checking
-			 */
-			if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_SGND) &&
-			   ((relv & m) != m) && ((relv & m) != 0))
-				error = 10;
+      /*
+       * Signed Merge Bit Range Checking
+       */
+      if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_SGND) &&
+          ((relv & m) != m) && ((relv & m) != 0))
+        error = 10;
 
-			/*
-			 * Unsigned Merge Bit Range Checking
-			 * Overflow Merge Bit Range Checking
-			 */
-			if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_USGN) &&
-			   (relv & n))
-				error = 11;
+      /*
+       * Unsigned Merge Bit Range Checking
+       * Overflow Merge Bit Range Checking
+       */
+      if (((mode & (R4_SGND | R4_USGN | R4_PAGX | R4_PCR)) == R4_USGN) &&
+          (relv & n))
+        error = 11;
 
-			/*
-			 * PCR  Relocation Error Checking
-			 */
-			switch(mode & (R4_PCR | R4_PBITS)) {
-			case R4_PCR4:
-			case R4_PCR3:
-			case R4_PCR2:
-			case R4_PCR1:
-			case R4_PCR0:
-			case R4_PCR:
-				if (((relv & m) != m) && ((relv & m) != 0)) {
-					error = 3 + argm;
-				}
-				break;
-			case R4_PAG0:
-				if (relv & n || paga || pags)
-					error = 7;
-				break;
-			case R4_PAGN:
-				if (relv & n)
-					error = 8;
-				break;
-			case R4_PAGX3:	/* Paged from pc + 3 */
-			case R4_PAGX2:	/* Paged from pc + 2 */
-			case R4_PAGX1:	/* Paged from pc + 1 */
-			case R4_PAGX0:	/* Paged from pc + 0 */
-				pcrv = pc + (pcrv / pcb);
-				switch(mode & (R4_PCR | R4_PBITS)) {
-				case R4_PAGX3:	pcrv += 1;	/* Paged from pc + 3 */
-				case R4_PAGX2:	pcrv += 1;	/* Paged from pc + 2 */
-				case R4_PAGX1:	pcrv += 1;	/* Paged from pc + 1 */
-				case R4_PAGX0:			/* Paged from pc + 0 */
-				default:
-					break;
-				}
-				pagx = pcrv & n;
-				/*
-				 * Paging Error if:
-				 *     Destination Page != Current Page
-				 */
-				if ((relv & n) != pagx)
-					error = 9;
-				break;
-			default:
-				break;
-			}
-		}
+      /*
+       * PCR  Relocation Error Checking
+       */
+      switch (mode & (R4_PCR | R4_PBITS)) {
+      case R4_PCR4:
+      case R4_PCR3:
+      case R4_PCR2:
+      case R4_PCR1:
+      case R4_PCR0:
+      case R4_PCR:
+        if (((relv & m) != m) && ((relv & m) != 0)) {
+          error = 3 + argm;
+        }
+        break;
+      case R4_PAG0:
+        if (relv & n || paga || pags)
+          error = 7;
+        break;
+      case R4_PAGN:
+        if (relv & n)
+          error = 8;
+        break;
+      case R4_PAGX3: /* Paged from pc + 3 */
+      case R4_PAGX2: /* Paged from pc + 2 */
+      case R4_PAGX1: /* Paged from pc + 1 */
+      case R4_PAGX0: /* Paged from pc + 0 */
+        pcrv = pc + (pcrv / pcb);
+        switch (mode & (R4_PCR | R4_PBITS)) {
+        case R4_PAGX3:
+          pcrv += 1; /* Paged from pc + 3 */
+        case R4_PAGX2:
+          pcrv += 1; /* Paged from pc + 2 */
+        case R4_PAGX1:
+          pcrv += 1;   /* Paged from pc + 1 */
+        case R4_PAGX0: /* Paged from pc + 0 */
+        default:
+          break;
+        }
+        pagx = pcrv & n;
+        /*
+         * Paging Error if:
+         *     Destination Page != Current Page
+         */
+        if ((relv & n) != pagx)
+          error = 9;
+        break;
+      default:
+        break;
+      }
+    }
 
-		/*
-		 * Error Processing
-		 */
-		if (error) {
-			rerr.aindex = aindex;
-			rerr.mode = mode;
-			rerr.rtbase = rtbase + ((rtp - rtpofst) / pcb);
-			rerr.rindex = rindex;
-			rerr.rval = relv - reli;
-			relerr4(errmsg4[error]);
+    /*
+     * Error Processing
+     */
+    if (error) {
+      rerr.aindex = aindex;
+      rerr.mode = mode;
+      rerr.rtbase = rtbase + ((rtp - rtpofst) / pcb);
+      rerr.rindex = rindex;
+      rerr.rval = relv - reli;
+      relerr4(errmsg4[error]);
 
-			for (i=rtp; i<rtp+a_bytes; i++) {
-				if (rtflg[i]) {
-					rterr[i] = error;
-					break;
-				}
-			}
-		}
-		/*
-		 * Bank Has Output
-		 */
-		if ((oflag != 0) && (obj_flag == 0)) {
-			rtabnk->b_oflag = 1;
-		}
-	}
-	if (uflag != 0) {
-		lkulist(1);
-	}
-	if (oflag != 0) {
-		lkout(1);
-	}
+      for (i = rtp; i < rtp + a_bytes; i++) {
+        if (rtflg[i]) {
+          rterr[i] = error;
+          break;
+        }
+      }
+    }
+    /*
+     * Bank Has Output
+     */
+    if ((oflag != 0) && (obj_flag == 0)) {
+      rtabnk->b_oflag = 1;
+    }
+  }
+  if (uflag != 0) {
+    lkulist(1);
+  }
+  if (oflag != 0) {
+    lkout(1);
+  }
 }
 
 char *errmsg4[] = {
-/* 0 */	"LKRLOC4 Error List",
-/* 1 */	"Signed value error",
-/* 2 */	"Unsigned value error",
-/* 3 */	"Byte PCR relocation error",
-/* 4 */	"Word PCR relocation error",
-/* 5 */	"3-Byte PCR relocation error",
-/* 6 */	"4-Byte PCR relocation error",
-/* 7 */	"Page0 relocation error",
-/* 8 */	"PageN relocation error",
-/* 9 */	"PageX relocation error",
-/*10 */	"Signed Merge Bit Range error",
-/*11 */	"Unsigned/Overflow Merge Bit Range error",
-/*12 */	"Undefined Extended Mode error"
-};
-
+    /* 0 */ "LKRLOC4 Error List",
+    /* 1 */ "Signed value error",
+    /* 2 */ "Unsigned value error",
+    /* 3 */ "Byte PCR relocation error",
+    /* 4 */ "Word PCR relocation error",
+    /* 5 */ "3-Byte PCR relocation error",
+    /* 6 */ "4-Byte PCR relocation error",
+    /* 7 */ "Page0 relocation error",
+    /* 8 */ "PageN relocation error",
+    /* 9 */ "PageX relocation error",
+    /*10 */ "Signed Merge Bit Range error",
+    /*11 */ "Unsigned/Overflow Merge Bit Range error",
+    /*12 */ "Undefined Extended Mode error"};
 
 /*)Function	VOID	relp4()
  *
@@ -850,85 +863,83 @@ char *errmsg4[] = {
  *
  */
 
-VOID
-relp4()
-{
-	int aindex, rindex;
-	int mode, rtp;
-	a_uint relv;
-	struct areax **a;
-	struct sym **s;
+VOID relp4() {
+  int aindex, rindex;
+  int mode, rtp;
+  a_uint relv;
+  struct areax **a;
+  struct sym **s;
 
-	/*
-	 * Get area and symbol lists
-	 */
-	a = hp->a_list;
-	s = hp->s_list;
+  /*
+   * Get area and symbol lists
+   */
+  a = hp->a_list;
+  s = hp->s_list;
 
-	/*
-	 * Verify Area Mode
-	 */
-	if ((eval() != R4_AREA) || eval()) {
-		fprintf(stderr, "P input error\n");
-		lkerr++;
-	}
+  /*
+   * Verify Area Mode
+   */
+  if ((eval() != R4_AREA) || eval()) {
+    fprintf(stderr, "P input error\n");
+    lkerr++;
+  }
 
-	/*
-	 * Get area pointer
-	 */
-	aindex = (int) evword();
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "P area error\n");
-		lkerr++;
-		return;
-	}
+  /*
+   * Get area pointer
+   */
+  aindex = (int)evword();
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "P area error\n");
+    lkerr++;
+    return;
+  }
 
-	/*
-	 * Do remaining relocations
-	 */
-	while (more()) {
-		mode = (int) eval();
-		rtp = (int) eval();
-		rindex = (int) evword();
+  /*
+   * Do remaining relocations
+   */
+  while (more()) {
+    mode = (int)eval();
+    rtp = (int)eval();
+    rindex = (int)evword();
 
-		/*
-		 * R4_SYM or R4_AREA references
-		 */
-		if (mode & R4_SYM) {
-			if (rindex >= hp->h_nsym) {
-				fprintf(stderr, "P symbol error\n");
-				lkerr++;
-				return;
-			}
-			relv = symval(s[rindex]);
-		} else {
-			if (rindex >= hp->h_narea) {
-				fprintf(stderr, "P area error\n");
-				lkerr++;
-				return;
-			}
-			relv = a[rindex]->a_addr;
-		}
-		adb_xb(relv, rtp);
-	}
+    /*
+     * R4_SYM or R4_AREA references
+     */
+    if (mode & R4_SYM) {
+      if (rindex >= hp->h_nsym) {
+        fprintf(stderr, "P symbol error\n");
+        lkerr++;
+        return;
+      }
+      relv = symval(s[rindex]);
+    } else {
+      if (rindex >= hp->h_narea) {
+        fprintf(stderr, "P area error\n");
+        lkerr++;
+        return;
+      }
+      relv = a[rindex]->a_addr;
+    }
+    adb_xb(relv, rtp);
+  }
 
-	/*
-	 * Paged values
-	 */
-	aindex = (int) adb_xb(0,a_bytes);
-	if (aindex >= hp->h_narea) {
-		fprintf(stderr, "P area error\n");
-		lkerr++;
-		return;
-	}
-	sdp.s_areax = a[aindex];
-	sdp.s_area = sdp.s_areax->a_bap;
-	sdp.s_addr = adb_xb(0,a_bytes*2);
-	if (rtcnt > a_bytes*3) {
-		p_mask = adb_xb(0,a_bytes*3);
-	}
-	if (sdp.s_area->a_addr & p_mask || sdp.s_addr & p_mask)
-		relerp4("Page Definition Boundary Error");
+  /*
+   * Paged values
+   */
+  aindex = (int)adb_xb(0, a_bytes);
+  if (aindex >= hp->h_narea) {
+    fprintf(stderr, "P area error\n");
+    lkerr++;
+    return;
+  }
+  sdp.s_areax = a[aindex];
+  sdp.s_area = sdp.s_areax->a_bap;
+  sdp.s_addr = adb_xb(0, a_bytes * 2);
+  if (rtcnt > a_bytes * 3) {
+    p_mask = adb_xb(0, a_bytes * 3);
+  }
+  if (sdp.s_area->a_addr & p_mask || sdp.s_addr & p_mask)
+    relerp4("Page Definition Boundary Error");
 }
 
 /*)Function	VOID	rele4()
@@ -953,16 +964,14 @@ relp4()
  *
  */
 
-VOID
-rele4()
-{
-	if (uflag != 0) {
-		lkulist(0);
-	}
-	if (oflag != 0) {
-		lkflush();
-		lkfclose();
-	}
+VOID rele4() {
+  if (uflag != 0) {
+    lkulist(0);
+  }
+  if (oflag != 0) {
+    lkflush();
+    lkfclose();
+  }
 }
 
 /*)Function	VOID	relerr4(str)
@@ -986,13 +995,12 @@ rele4()
  *
  */
 
-VOID
-relerr4(str)
+VOID relerr4(str)
 char *str;
 {
-	errdmp4(stderr, str);
-	if (mfp)
-		errdmp4(mfp, str);
+  errdmp4(stderr, str);
+  if (mfp)
+    errdmp4(mfp, str);
 }
 
 /*)Function	VOID	errdmp4(fptr, str)
@@ -1026,75 +1034,68 @@ char *str;
  *
  */
 
-VOID
-errdmp4(fptr, str)
+VOID errdmp4(fptr, str)
 FILE *fptr;
 char *str;
 {
-	int mode, aindex, rindex;
-	struct sym **s;
-	struct areax **a;
-	struct areax *raxp;
+  int mode, aindex, rindex;
+  struct sym **s;
+  struct areax **a;
+  struct areax *raxp;
 
-	a = hp->a_list;
-	s = hp->s_list;
+  a = hp->a_list;
+  s = hp->s_list;
 
-	mode = rerr.mode;
-	aindex = rerr.aindex;
-	rindex = rerr.rindex;
+  mode = rerr.mode;
+  aindex = rerr.aindex;
+  rindex = rerr.rindex;
 
-	/*
-	 * Print Error
-	 */
-	fprintf(fptr, "\n?ASlink-Warning-%s", str);
-	lkerr++;
+  /*
+   * Print Error
+   */
+  fprintf(fptr, "\n?ASlink-Warning-%s", str);
+  lkerr++;
 
-	/*
-	 * Print symbol if symbol based
-	 */
-	if (mode & R4_SYM) {
-		fprintf(fptr, " for symbol  %s\n",
-			&s[rindex]->s_id[0]);
-	} else {
-		fprintf(fptr, "\n");
-	}
+  /*
+   * Print symbol if symbol based
+   */
+  if (mode & R4_SYM) {
+    fprintf(fptr, " for symbol  %s\n", &s[rindex]->s_id[0]);
+  } else {
+    fprintf(fptr, "\n");
+  }
 
-	/*
-	 * Print Ref Info
-	 */
-/*         11111111112222222222333333333344444444445555555555666666666677777*/
-/*12345678901234567890123456789012345678901234567890123456789012345678901234*/
-/*        |                 |                 |                 |           */
-	fprintf(fptr,
-"         file              module            area                   offset\n");
-	fprintf(fptr,
-"  Refby  %-14.14s    %-14.14s    %-14.14s    ",
-			hp->h_lfile->f_idp,
-			&hp->m_id[0],
-			&a[aindex]->a_bap->a_id[0]);
-	prntval(fptr, rerr.rtbase);
+  /*
+   * Print Ref Info
+   */
+  /*         11111111112222222222333333333344444444445555555555666666666677777*/
+  /*12345678901234567890123456789012345678901234567890123456789012345678901234*/
+  /*        |                 |                 |                 |           */
+  fprintf(fptr, "         file              module            area             "
+                "      offset\n");
+  fprintf(fptr, "  Refby  %-14.14s    %-14.14s    %-14.14s    ",
+          hp->h_lfile->f_idp, &hp->m_id[0], &a[aindex]->a_bap->a_id[0]);
+  prntval(fptr, rerr.rtbase);
 
-	/*
-	 * Print Def Info
-	 */
-	if (mode & R4_SYM) {
-		raxp = s[rindex]->s_axp;
-	} else {
-		raxp = a[rindex];
-	}
-/*         11111111112222222222333333333344444444445555555555666666666677777*/
-/*12345678901234567890123456789012345678901234567890123456789012345678901234*/
-/*        |                 |                 |                 |           */
-	fprintf(fptr,
-"  Defin  %-14.14s    %-14.14s    %-14.14s    ",
-			raxp->a_bhp->h_lfile->f_idp,
-			&raxp->a_bhp->m_id[0],
-			&raxp->a_bap->a_id[0]);
-	if (mode & R4_SYM) {
-		prntval(fptr, s[rindex]->s_addr);
-	} else {
-		prntval(fptr, rerr.rval);
-	}
+  /*
+   * Print Def Info
+   */
+  if (mode & R4_SYM) {
+    raxp = s[rindex]->s_axp;
+  } else {
+    raxp = a[rindex];
+  }
+  /*         11111111112222222222333333333344444444445555555555666666666677777*/
+  /*12345678901234567890123456789012345678901234567890123456789012345678901234*/
+  /*        |                 |                 |                 |           */
+  fprintf(fptr, "  Defin  %-14.14s    %-14.14s    %-14.14s    ",
+          raxp->a_bhp->h_lfile->f_idp, &raxp->a_bhp->m_id[0],
+          &raxp->a_bap->a_id[0]);
+  if (mode & R4_SYM) {
+    prntval(fptr, s[rindex]->s_addr);
+  } else {
+    prntval(fptr, rerr.rval);
+  }
 }
 
 /*)Function	VOID	relerp4(str)
@@ -1118,13 +1119,12 @@ char *str;
  *
  */
 
-VOID
-relerp4(str)
+VOID relerp4(str)
 char *str;
 {
-	erpdmp4(stderr, str);
-	if (mfp)
-		erpdmp4(mfp, str);
+  erpdmp4(stderr, str);
+  if (mfp)
+    erpdmp4(mfp, str);
 }
 
 /*)Function	VOID	erpdmp4(fptr, str)
@@ -1151,34 +1151,30 @@ char *str;
  *
  */
 
-VOID
-erpdmp4(fptr, str)
+VOID erpdmp4(fptr, str)
 FILE *fptr;
 char *str;
 {
-	struct head *thp;
+  struct head *thp;
 
-	thp = sdp.s_areax->a_bhp;
+  thp = sdp.s_areax->a_bhp;
 
-	/*
-	 * Print Error
-	 */
-	fprintf(fptr, "\n?ASlink-Warning-%s\n", str);
-	lkerr++;
+  /*
+   * Print Error
+   */
+  fprintf(fptr, "\n?ASlink-Warning-%s\n", str);
+  lkerr++;
 
-	/*
-	 * Print PgDef Info
-	 */
-/*         111111111122222222223333333333444444444455555555556666666666777*/
-/*123456789012345678901234567890123456789012345678901234567890123456789012*/
-	fprintf(fptr,
-"         file              module            pgarea               pgoffset\n");
-	fprintf(fptr,
-"  PgDef  %-14.14s    %-14.14s    %-14.14s    ",
-			thp->h_lfile->f_idp,
-			&thp->m_id[0],
-			&sdp.s_area->a_id[0]);
-	prntval(fptr, sdp.s_area->a_addr + sdp.s_addr);
+  /*
+   * Print PgDef Info
+   */
+  /*         111111111122222222223333333333444444444455555555556666666666777*/
+  /*123456789012345678901234567890123456789012345678901234567890123456789012*/
+  fprintf(fptr, "         file              module            pgarea           "
+                "    pgoffset\n");
+  fprintf(fptr, "  PgDef  %-14.14s    %-14.14s    %-14.14s    ",
+          thp->h_lfile->f_idp, &thp->m_id[0], &sdp.s_area->a_id[0]);
+  prntval(fptr, sdp.s_area->a_addr + sdp.s_addr);
 }
 
 /*)Function	VOID	lkmerge(val, r, base)
@@ -1191,11 +1187,10 @@ char *str;
  *	specification coded in r, into the base value val.
  *
  *	local variables:
- *		struct	mode *mp	pointer to a merge specification structure
- *		char *	vp		pointer to the merge specification string
- *		int	i		loop counter
- *		int	j		temporary
- *		int	m		bit shuffled value
+ *		struct	mode *mp	pointer to a merge specification
+ *structure char *	vp		pointer to the merge specification
+ *string int	i		loop counter int	j temporary int	m
+ *bit shuffled value
  *
  *	global variables:
  *		struct head hp		pointer to a head structure
@@ -1213,28 +1208,28 @@ a_uint val;
 int r;
 a_uint base;
 {
-	struct mode *mp;
-	char *vp;
-	int i, j;
-	a_uint m;
+  struct mode *mp;
+  char *vp;
+  int i, j;
+  a_uint m;
 
-	if ((mp = hp->m_list[r]) == NULL) {
-		fprintf(stderr, "undefined G mode\n");
-		lkexit(ER_FATAL);
-	}
+  if ((mp = hp->m_list[r]) == NULL) {
+    fprintf(stderr, "undefined G mode\n");
+    lkexit(ER_FATAL);
+  }
 
-	if (mp->m_flag) {
-		m  = 0;
-		vp = mp->m_def;
-		for (i=0; i<32; i++) {
-			if ((j = (int) *vp++) & 0x80) {
-				m |= (val & (((a_uint) 1) << i)) ? (((a_uint) 1) << (j & 0x1F)) : 0;
-			}
-		}
-	} else {
-		m = val & mp->m_dbits;
-	}
-	return((base & ~mp->m_dbits) | m);
+  if (mp->m_flag) {
+    m = 0;
+    vp = mp->m_def;
+    for (i = 0; i < 32; i++) {
+      if ((j = (int)*vp++) & 0x80) {
+        m |= (val & (((a_uint)1) << i)) ? (((a_uint)1) << (j & 0x1F)) : 0;
+      }
+    }
+  } else {
+    m = val & mp->m_dbits;
+  }
+  return ((base & ~mp->m_dbits) | m);
 }
 
 /*)Function	a_uint 	adb_byte(p, v, i)
@@ -1270,24 +1265,24 @@ a_uint base;
  *
  */
 
-a_uint
-adb_byte(p, v, i)
-int 	p;
-a_uint	v;
-int	i;
+a_uint adb_byte(p, v, i)
+int p;
+a_uint v;
+int i;
 {
-	a_uint j;
-	int m, n;
+  a_uint j;
+  int m, n;
 
-	j = adb_xb(v, i);
-	/*
-	 * Select byte of data
-	 */
-	m = (hilo ? a_bytes-1-p : p);
-	for (n=0; n<a_bytes; n++) {
-		if(n != m) rtflg[i+n] = 0;
-	}
-	return ((j >> (8 * p)) & ((a_uint) 0x000000FF));
+  j = adb_xb(v, i);
+  /*
+   * Select byte of data
+   */
+  m = (hilo ? a_bytes - 1 - p : p);
+  for (n = 0; n < a_bytes; n++) {
+    if (n != m)
+      rtflg[i + n] = 0;
+  }
+  return ((j >> (8 * p)) & ((a_uint)0x000000FF));
 }
 
 /*)Function	a_uint 	gtb_1b(i)
@@ -1311,11 +1306,10 @@ int	i;
  *
  */
 
-a_uint
-gtb_1b(i)
+a_uint gtb_1b(i)
 int i;
 {
-	return(rtval[i]);
+  return (rtval[i]);
 }
 
 /*)Function	a_uint 	ptb_1b(v, i)
@@ -1341,12 +1335,11 @@ int i;
  *
  */
 
-a_uint
-ptb_1b(v, i)
+a_uint ptb_1b(v, i)
 a_uint v;
 int i;
 {
-	return(rtval[i] = v & ((a_uint) 0x000000FF));
+  return (rtval[i] = v & ((a_uint)0x000000FF));
 }
 
 /*)Function	a_uint 	gtb_2b(i)
@@ -1372,20 +1365,17 @@ int i;
  *
  */
 
-a_uint
-gtb_2b(i)
+a_uint gtb_2b(i)
 int i;
 {
-	a_uint v;
+  a_uint v;
 
-	if (hilo) {
-		v = (rtval[i+0] << 8) +
-		    (rtval[i+1] << 0);
-	} else {
-		v = (rtval[i+0] << 0) +
-		    (rtval[i+1] << 8);
-	}
-	return(v);
+  if (hilo) {
+    v = (rtval[i + 0] << 8) + (rtval[i + 1] << 0);
+  } else {
+    v = (rtval[i + 0] << 0) + (rtval[i + 1] << 8);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	ptb_2b(v, i)
@@ -1412,19 +1402,18 @@ int i;
  *
  */
 
-a_uint
-ptb_2b(v, i)
+a_uint ptb_2b(v, i)
 a_uint v;
 int i;
 {
-	if (hilo) {
-		rtval[i+0] = (v >> 8) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >> 0) & ((a_uint) 0x000000FF);
-	} else {
-		rtval[i+0] = (v >> 0) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >> 8) & ((a_uint) 0x000000FF);
-	}
-	return(v);
+  if (hilo) {
+    rtval[i + 0] = (v >> 8) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 0) & ((a_uint)0x000000FF);
+  } else {
+    rtval[i + 0] = (v >> 0) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 8) & ((a_uint)0x000000FF);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	gtb_3b(i)
@@ -1450,22 +1439,17 @@ int i;
  *
  */
 
-a_uint
-gtb_3b(i)
+a_uint gtb_3b(i)
 int i;
 {
-	a_uint v;
+  a_uint v;
 
-	if (hilo) {
-		v = (rtval[i+0] << 16) +
-		    (rtval[i+1] << 8 ) +
-		    (rtval[i+2] << 0 );
-	} else {
-		v = (rtval[i+0] << 0 ) +
-		    (rtval[i+1] << 8 ) +
-		    (rtval[i+2] << 16);
-	}
-	return(v);
+  if (hilo) {
+    v = (rtval[i + 0] << 16) + (rtval[i + 1] << 8) + (rtval[i + 2] << 0);
+  } else {
+    v = (rtval[i + 0] << 0) + (rtval[i + 1] << 8) + (rtval[i + 2] << 16);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	ptb_3b(v, i)
@@ -1492,21 +1476,20 @@ int i;
  *
  */
 
-a_uint
-ptb_3b(v, i)
+a_uint ptb_3b(v, i)
 a_uint v;
 int i;
 {
-	if (hilo) {
-		rtval[i+0] = (v >> 16) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >>  8) & ((a_uint) 0x000000FF);
-		rtval[i+2] = (v >>  0) & ((a_uint) 0x000000FF);
-	} else {
-		rtval[i+0] = (v >>  0) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >>  8) & ((a_uint) 0x000000FF);
-		rtval[i+2] = (v >> 16) & ((a_uint) 0x000000FF);
-	}
-	return(v);
+  if (hilo) {
+    rtval[i + 0] = (v >> 16) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 8) & ((a_uint)0x000000FF);
+    rtval[i + 2] = (v >> 0) & ((a_uint)0x000000FF);
+  } else {
+    rtval[i + 0] = (v >> 0) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 8) & ((a_uint)0x000000FF);
+    rtval[i + 2] = (v >> 16) & ((a_uint)0x000000FF);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	gtb_4b(i)
@@ -1532,24 +1515,19 @@ int i;
  *
  */
 
-a_uint
-gtb_4b(i)
+a_uint gtb_4b(i)
 int i;
 {
-	a_uint v;
+  a_uint v;
 
-	if (hilo) {
-		v = (rtval[i+0] << 24) +
-		    (rtval[i+1] << 16) +
-		    (rtval[i+2] <<  8) +
-		    (rtval[i+3] <<  0);
-	} else {
-		v = (rtval[i+0] <<  0) +
-		    (rtval[i+1] <<  8) +
-		    (rtval[i+2] << 16) +
-		    (rtval[i+3] << 24);
-	}
-	return(v);
+  if (hilo) {
+    v = (rtval[i + 0] << 24) + (rtval[i + 1] << 16) + (rtval[i + 2] << 8) +
+        (rtval[i + 3] << 0);
+  } else {
+    v = (rtval[i + 0] << 0) + (rtval[i + 1] << 8) + (rtval[i + 2] << 16) +
+        (rtval[i + 3] << 24);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	ptb_4b(v, i)
@@ -1576,23 +1554,22 @@ int i;
  *
  */
 
-a_uint
-ptb_4b(v, i)
+a_uint ptb_4b(v, i)
 a_uint v;
 int i;
 {
-	if (hilo) {
-		rtval[i+0] = (v >> 24) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >> 16) & ((a_uint) 0x000000FF);
-		rtval[i+2] = (v >>  8) & ((a_uint) 0x000000FF);
-		rtval[i+3] = (v >>  0) & ((a_uint) 0x000000FF);
-	} else {
-		rtval[i+0] = (v >>  0) & ((a_uint) 0x000000FF);
-		rtval[i+1] = (v >>  8) & ((a_uint) 0x000000FF);
-		rtval[i+2] = (v >> 16) & ((a_uint) 0x000000FF);
-		rtval[i+3] = (v >> 24) & ((a_uint) 0x000000FF);
-	}
-	return(v);
+  if (hilo) {
+    rtval[i + 0] = (v >> 24) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 16) & ((a_uint)0x000000FF);
+    rtval[i + 2] = (v >> 8) & ((a_uint)0x000000FF);
+    rtval[i + 3] = (v >> 0) & ((a_uint)0x000000FF);
+  } else {
+    rtval[i + 0] = (v >> 0) & ((a_uint)0x000000FF);
+    rtval[i + 1] = (v >> 8) & ((a_uint)0x000000FF);
+    rtval[i + 2] = (v >> 16) & ((a_uint)0x000000FF);
+    rtval[i + 3] = (v >> 24) & ((a_uint)0x000000FF);
+  }
+  return (v);
 }
 
 /*)Function	a_uint 	gtb_xb(i)
@@ -1619,58 +1596,65 @@ int i;
  *
  */
 
-a_uint
-gtb_xb(i)
+a_uint gtb_xb(i)
 int i;
 {
-	a_uint v;
+  a_uint v;
 
-#ifdef	LONGINT
-	switch(a_bytes){
-	case 1:
-		v = gtb_1b(i);
-		v = (v & ((a_uint) 0x00000080l) ? v | ~((a_uint) 0x0000007Fl) : v & ((a_uint) 0x0000007Fl));
-		break;
-	case 2:
-		v = gtb_2b(i);
-		v = (v & ((a_uint) 0x00008000l) ? v | ~((a_uint) 0x00007FFFl) : v & ((a_uint) 0x00007FFFl));
-		break;
-	case 3:
-		v = gtb_3b(i);
-		v = (v & ((a_uint) 0x00800000l) ? v | ~((a_uint) 0x007FFFFFl) : v & ((a_uint) 0x007FFFFFl));
-		break;
-	case 4:
-		v = gtb_4b(i);
-		v = (v & ((a_uint) 0x80000000l) ? v | ~((a_uint) 0x7FFFFFFFl) : v & ((a_uint) 0x7FFFFFFFl));
-		break;
-	default:
-		v = 0;
-		break;
-	}
+#ifdef LONGINT
+  switch (a_bytes) {
+  case 1:
+    v = gtb_1b(i);
+    v = (v & ((a_uint)0x00000080l) ? v | ~((a_uint)0x0000007Fl)
+                                   : v & ((a_uint)0x0000007Fl));
+    break;
+  case 2:
+    v = gtb_2b(i);
+    v = (v & ((a_uint)0x00008000l) ? v | ~((a_uint)0x00007FFFl)
+                                   : v & ((a_uint)0x00007FFFl));
+    break;
+  case 3:
+    v = gtb_3b(i);
+    v = (v & ((a_uint)0x00800000l) ? v | ~((a_uint)0x007FFFFFl)
+                                   : v & ((a_uint)0x007FFFFFl));
+    break;
+  case 4:
+    v = gtb_4b(i);
+    v = (v & ((a_uint)0x80000000l) ? v | ~((a_uint)0x7FFFFFFFl)
+                                   : v & ((a_uint)0x7FFFFFFFl));
+    break;
+  default:
+    v = 0;
+    break;
+  }
 #else
-	switch(a_bytes){
-	case 1:
-		v = gtb_1b(i);
-		v = (v & ((a_uint) 0x00000080) ? v | ~((a_uint) 0x0000007F) : v & ((a_uint) 0x0000007F));
-		break;
-	case 2:
-		v = gtb_2b(i);
-		v = (v & ((a_uint) 0x00008000) ? v | ~((a_uint) 0x00007FFF) : v & ((a_uint) 0x00007FFF));
-		break;
-	case 3:
-		v = gtb_3b(i);
-		v = (v & ((a_uint) 0x00800000) ? v | ~((a_uint) 0x007FFFFF) : v & ((a_uint) 0x007FFFFF));
-		break;
-	case 4:
-		v = gtb_4b(i);
-		v = (v & ((a_uint) 0x80000000) ? v | ~((a_uint) 0x7FFFFFFF) : v & ((a_uint) 0x7FFFFFFF));
-		break;
-	default:
-		v = 0;
-		break;
-	}
+  switch (a_bytes) {
+  case 1:
+    v = gtb_1b(i);
+    v = (v & ((a_uint)0x00000080) ? v | ~((a_uint)0x0000007F)
+                                  : v & ((a_uint)0x0000007F));
+    break;
+  case 2:
+    v = gtb_2b(i);
+    v = (v & ((a_uint)0x00008000) ? v | ~((a_uint)0x00007FFF)
+                                  : v & ((a_uint)0x00007FFF));
+    break;
+  case 3:
+    v = gtb_3b(i);
+    v = (v & ((a_uint)0x00800000) ? v | ~((a_uint)0x007FFFFF)
+                                  : v & ((a_uint)0x007FFFFF));
+    break;
+  case 4:
+    v = gtb_4b(i);
+    v = (v & ((a_uint)0x80000000) ? v | ~((a_uint)0x7FFFFFFF)
+                                  : v & ((a_uint)0x7FFFFFFF));
+    break;
+  default:
+    v = 0;
+    break;
+  }
 #endif
-	return(v);
+  return (v);
 }
 
 /*)Function	a_uint 	ptb_xb(v, i)
@@ -1699,58 +1683,64 @@ int i;
  *
  */
 
-a_uint
-ptb_xb(v, i)
+a_uint ptb_xb(v, i)
 a_uint v;
 int i;
 {
-	a_uint j;
+  a_uint j;
 
-#ifdef	LONGINT
-	switch(a_bytes){
-	case 1:
-		j = ptb_1b(v, i);
-		j = (j & ((a_uint) 0x00000080l) ? j | ~((a_uint) 0x0000007Fl) : j & ((a_uint) 0x0000007Fl));
-		break;
-	case 2:
-		j = ptb_2b(v, i);
-		j = (j & ((a_uint) 0x00008000l) ? j | ~((a_uint) 0x00007FFFl) : j & ((a_uint) 0x00007FFFl));
-		break;
-	case 3:
-		j = ptb_3b(v, i);
-		j = (j & ((a_uint) 0x00800000l) ? j | ~((a_uint) 0x007FFFFFl) : j & ((a_uint) 0x007FFFFFl));
-		break;
-	case 4:
-		j = ptb_4b(v, i);
-		j = (j & ((a_uint) 0x80000000l) ? j | ~((a_uint) 0x7FFFFFFFl) : j & ((a_uint) 0x7FFFFFFFl));
-		break;
-	default:
-		j = 0;
-		break;
-	}
+#ifdef LONGINT
+  switch (a_bytes) {
+  case 1:
+    j = ptb_1b(v, i);
+    j = (j & ((a_uint)0x00000080l) ? j | ~((a_uint)0x0000007Fl)
+                                   : j & ((a_uint)0x0000007Fl));
+    break;
+  case 2:
+    j = ptb_2b(v, i);
+    j = (j & ((a_uint)0x00008000l) ? j | ~((a_uint)0x00007FFFl)
+                                   : j & ((a_uint)0x00007FFFl));
+    break;
+  case 3:
+    j = ptb_3b(v, i);
+    j = (j & ((a_uint)0x00800000l) ? j | ~((a_uint)0x007FFFFFl)
+                                   : j & ((a_uint)0x007FFFFFl));
+    break;
+  case 4:
+    j = ptb_4b(v, i);
+    j = (j & ((a_uint)0x80000000l) ? j | ~((a_uint)0x7FFFFFFFl)
+                                   : j & ((a_uint)0x7FFFFFFFl));
+    break;
+  default:
+    j = 0;
+    break;
+  }
 #else
-	switch(a_bytes){
-	case 1:
-		j = ptb_1b(v, i);
-		j = (j & ((a_uint) 0x00000080) ? j | ~((a_uint) 0x0000007F) : j & ((a_uint) 0x0000007F));
-		break;
-	case 2:
-		j = ptb_2b(v, i);
-		j = (j & ((a_uint) 0x00008000) ? j | ~((a_uint) 0x00007FFF) : j & ((a_uint) 0x00007FFF));
-		break;
-	case 3:
-		j = ptb_3b(v, i);
-		j = (j & ((a_uint) 0x00800000) ? j | ~((a_uint) 0x007FFFFF) : j & ((a_uint) 0x007FFFFF));
-		break;
-	case 4:
-		j = ptb_4b(v, i);
-		j = (j & ((a_uint) 0x80000000) ? j | ~((a_uint) 0x7FFFFFFF) : j & ((a_uint) 0x7FFFFFFF));
-		break;
-	default:
-		j = 0;
-		break;
-	}
+  switch (a_bytes) {
+  case 1:
+    j = ptb_1b(v, i);
+    j = (j & ((a_uint)0x00000080) ? j | ~((a_uint)0x0000007F)
+                                  : j & ((a_uint)0x0000007F));
+    break;
+  case 2:
+    j = ptb_2b(v, i);
+    j = (j & ((a_uint)0x00008000) ? j | ~((a_uint)0x00007FFF)
+                                  : j & ((a_uint)0x00007FFF));
+    break;
+  case 3:
+    j = ptb_3b(v, i);
+    j = (j & ((a_uint)0x00800000) ? j | ~((a_uint)0x007FFFFF)
+                                  : j & ((a_uint)0x007FFFFF));
+    break;
+  case 4:
+    j = ptb_4b(v, i);
+    j = (j & ((a_uint)0x80000000) ? j | ~((a_uint)0x7FFFFFFF)
+                                  : j & ((a_uint)0x7FFFFFFF));
+    break;
+  default:
+    j = 0;
+    break;
+  }
 #endif
-	return(j);
+  return (j);
 }
-

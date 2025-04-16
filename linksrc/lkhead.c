@@ -93,74 +93,71 @@
  *   `-------------------------------------- hp->h_narea
  *
  */
-VOID
-newhead()
-{
-	int i;
-	char id[NCPS];
-	struct head *thp;
+VOID newhead() {
+  int i;
+  char id[NCPS];
+  struct head *thp;
 
-	hp = (struct head *) new (sizeof(struct head));
-	if (headp == NULL) {
-		headp = hp;
-	} else {
-		thp = headp;
-		while (thp->h_hp)
-			thp = thp->h_hp;
-		thp->h_hp = hp;
-	}
-	/*
-	 * Initialize the header
-	 */
-	hp->h_lfile = cfp;		/* Set file pointer */
-	hp->m_id = "";			/* No Module */
-	/*
-	 * Scan for Parameters	 
-	 */
-	while (more()) {
-		i = (int) eval();
-		getid(id, -1);
-		/*
-		 * Area pointer list
-		 */
-		if (symeq("areas", id, 1)) {
-			hp->h_narea = i;
-			if (i)
-				hp->a_list = (struct areax **) new (i*sizeof(struct areax *));
-		} else
-		/*
-		 * Symbol pointer list
-		 */
-		if (symeq("global", id, 1)) {
-			hp->h_nsym = i;
-			if (i)
-				hp->s_list = (struct sym **) new (i*sizeof(struct sym *));
-			skip(-1);
-		} else
-		/*
-		 * Bank pointer list
-		 */
-		if (symeq("banks", id, 1)) {
-			hp->h_nbank = i;
-			if (i)
-				hp->b_list = (struct bank **) new (i*sizeof(struct bank *));
-		} else
-		/*
-		 * Mode pointer list
-		 */
-		if (symeq("modes", id, 1)) {
-			hp->h_nmode = i;
-			if (i)
-				hp->m_list = (struct mode **) new (i*sizeof(struct mode *));
-		}
-	}
-	/*
-	 * Setup Absolute DEF linkage.
-	 */
-	lkparea(_abs_);
-	ap->a_flag = A4_ABS|A4_OVR;
+  hp = (struct head *)new (sizeof(struct head));
+  if (headp == NULL) {
+    headp = hp;
+  } else {
+    thp = headp;
+    while (thp->h_hp)
+      thp = thp->h_hp;
+    thp->h_hp = hp;
+  }
+  /*
+   * Initialize the header
+   */
+  hp->h_lfile = cfp; /* Set file pointer */
+  hp->m_id = "";     /* No Module */
+  /*
+   * Scan for Parameters
+   */
+  while (more()) {
+    i = (int)eval();
+    getid(id, -1);
+    /*
+     * Area pointer list
+     */
+    if (symeq("areas", id, 1)) {
+      hp->h_narea = i;
+      if (i)
+        hp->a_list = (struct areax **)new (i * sizeof(struct areax *));
+    } else
+      /*
+       * Symbol pointer list
+       */
+      if (symeq("global", id, 1)) {
+        hp->h_nsym = i;
+        if (i)
+          hp->s_list = (struct sym **)new (i * sizeof(struct sym *));
+        skip(-1);
+      } else
+        /*
+         * Bank pointer list
+         */
+        if (symeq("banks", id, 1)) {
+          hp->h_nbank = i;
+          if (i)
+            hp->b_list = (struct bank **)new (i * sizeof(struct bank *));
+        } else
+          /*
+           * Mode pointer list
+           */
+          if (symeq("modes", id, 1)) {
+            hp->h_nmode = i;
+            if (i)
+              hp->m_list = (struct mode **)new (i * sizeof(struct mode *));
+          }
+  }
+  /*
+   * Setup Absolute DEF linkage.
+   */
+  lkparea(_abs_);
+  ap->a_flag = A4_ABS | A4_OVR;
 }
-
 
 /*)Function	VOID	newmode()
  *
@@ -208,69 +205,66 @@ newhead()
  *		the definition values.
  */
 
-VOID
-newmode()
-{
-	int index, n;
-	a_uint v;
-	struct mode *mp;
+VOID newmode() {
+  int index, n;
+  a_uint v;
+  struct mode *mp;
 
-	if (headp == NULL) {
-		fprintf(stderr, "No header defined\n");
-		lkexit(ER_FATAL);
-	}
-	/*
-	 * Mode number
-	 */
-	n = (int) eval();
-	if (n >= hp->h_nmode) {
-		fprintf(stderr, "Header mode list overflow\n");
-		lkexit(ER_FATAL);
-	}
-	/*
-	 * Bit index
-	 */
-	index = (int) eval();
-	if (index == 0) {
-		mp = (struct mode *) new (sizeof(struct mode));
-		hp->m_list[n] = mp;
-		/*
-		 * Initialize Mode
-		 */
-		for (n=0; n<32; n++) {
-			mp->m_def[n] = n;
-		}
-	} else {
-		mp = hp->m_list[n];
-	}
-	/*
-	 * Load Bits
-	 */
-	while (more() && (index < 32)) {
-		n = (int) eval();
-		if (mp->m_def[index] != (n & 0x1F)) {
-			mp->m_flag |= 1;
-		}
-		mp->m_def[index] = n;
-		if (n & 0x80) {
-			mp->m_dbits |= (((a_uint) 1) << (n & 0x1F));
-			mp->m_sbits |= (((a_uint) 1) << index);
-		}
-		index += 1;
-	}
-	/*
-	 * Set Missing Low Order Bits
-	 */
-	for (n=0; n<32; n++) {
-		v = 1 << n;
-		if (mp->m_sbits & v) {
-			break;
-		} else {
-			mp->m_sbits |= v;
-		}
-	}
+  if (headp == NULL) {
+    fprintf(stderr, "No header defined\n");
+    lkexit(ER_FATAL);
+  }
+  /*
+   * Mode number
+   */
+  n = (int)eval();
+  if (n >= hp->h_nmode) {
+    fprintf(stderr, "Header mode list overflow\n");
+    lkexit(ER_FATAL);
+  }
+  /*
+   * Bit index
+   */
+  index = (int)eval();
+  if (index == 0) {
+    mp = (struct mode *)new (sizeof(struct mode));
+    hp->m_list[n] = mp;
+    /*
+     * Initialize Mode
+     */
+    for (n = 0; n < 32; n++) {
+      mp->m_def[n] = n;
+    }
+  } else {
+    mp = hp->m_list[n];
+  }
+  /*
+   * Load Bits
+   */
+  while (more() && (index < 32)) {
+    n = (int)eval();
+    if (mp->m_def[index] != (n & 0x1F)) {
+      mp->m_flag |= 1;
+    }
+    mp->m_def[index] = n;
+    if (n & 0x80) {
+      mp->m_dbits |= (((a_uint)1) << (n & 0x1F));
+      mp->m_sbits |= (((a_uint)1) << index);
+    }
+    index += 1;
+  }
+  /*
+   * Set Missing Low Order Bits
+   */
+  for (n = 0; n < 32; n++) {
+    v = 1 << n;
+    if (mp->m_sbits & v) {
+      break;
+    } else {
+      mp->m_sbits |= v;
+    }
+  }
 }
-
 
 /*)Function	VOID	module()
  *
@@ -297,16 +291,14 @@ newmode()
  *		The module name is copied into the head structure.
  */
 
-VOID
-module()
-{
-	char id[NCPS];
+VOID module() {
+  char id[NCPS];
 
-	if (headp) {
-		getid(id, -1);
-		hp->m_id = strsto(id);
-	} else {
-		fprintf(stderr, "No header defined\n");
-		lkerr++;
-	}
+  if (headp) {
+    getid(id, -1);
+    hp->m_id = strsto(id);
+  } else {
+    fprintf(stderr, "No header defined\n");
+    lkerr++;
+  }
 }

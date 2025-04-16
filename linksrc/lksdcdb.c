@@ -38,7 +38,7 @@
  */
 
 /*)Function	VOID	SDCDBfopen()
- * 
+ *
  *	The function SDCDBfopen() opens the SDCDB output file
  *	and sets the map flag, mflag, to create a map file.
  *	SDCDB processing is performed during map generation.
@@ -62,20 +62,18 @@
  *		terminate the linker.
  */
 
-VOID SDCDBfopen(void)
-{
-	if (yflag) {
-		yfp = afile(linkp->f_idp, "cdb", 1);
-		if (yfp == NULL) {
-			lkexit(1);
-		}
-		mflag = 1;
-	}
+VOID SDCDBfopen(void) {
+  if (yflag) {
+    yfp = afile(linkp->f_idp, "cdb", 1);
+    if (yfp == NULL) {
+      lkexit(1);
+    }
+    mflag = 1;
+  }
 }
 
-
 /*)Function	VOID	SDCDBcopy()
- * 
+ *
  *		char *	str		pointer to the file spec
  *
  *	The function SDCDBcopy() copies an existing cdb file
@@ -103,28 +101,27 @@ VOID SDCDBfopen(void)
  */
 
 VOID SDCDBcopy(str)
-char * str;
+char *str;
 {
-	FILE * xfp;
-	char line[NINPUT];
+  FILE *xfp;
+  char line[NINPUT];
 
-	/*
-	 * Copy cdb file if present and requested.
-	 */
-	if (yflag && yfp) {
-		xfp = afile(str,"cdb",0);
-		if (xfp) {
-			while (fgets(line, sizeof(line), xfp) != NULL) {
-				fprintf(yfp, "%s", line);
-			}
-			fclose(xfp);
-		}
-	}
+  /*
+   * Copy cdb file if present and requested.
+   */
+  if (yflag && yfp) {
+    xfp = afile(str, "cdb", 0);
+    if (xfp) {
+      while (fgets(line, sizeof(line), xfp) != NULL) {
+        fprintf(yfp, "%s", line);
+      }
+      fclose(xfp);
+    }
+  }
 }
 
-
 /*)Function	VOID	DefineSDCDB()
- * 
+ *
  *		char *	name		pointer to the symbol string
  *		a_uint	value		value of symbol
  *
@@ -154,30 +151,29 @@ VOID DefineSDCDB(name, value)
 char *name;
 a_uint value;
 {
-	int  j;
-	char *p1;
+  int j;
+  char *p1;
 
-	/* no output if file is not open */
-	if (yfp == NULL) return;
+  /* no output if file is not open */
+  if (yfp == NULL)
+    return;
 
-	/*
-	 * SDC symbols have 3 or more $ characters
-	 */
-	j = 0;
-	p1 = name;
-	while ((p1 = strchr(p1, '$')) != NULL) {
-		j += 1;
-	}
+  /*
+   * SDC symbols have 3 or more $ characters
+   */
+  j = 0;
+  p1 = name;
+  while ((p1 = strchr(p1, '$')) != NULL) {
+    j += 1;
+  }
 
-	if (j > 2) {
-#ifdef	LONGINT
-		fprintf(yfp, "L:%s:%lX\n", name ,value);
+  if (j > 2) {
+#ifdef LONGINT
+    fprintf(yfp, "L:%s:%lX\n", name, value);
 #else
-		fprintf(yfp, "L:%s:%X\n", name ,value);
+    fprintf(yfp, "L:%s:%X\n", name, value);
 #endif
-	}
-
+  }
 }
 
 #endif
-

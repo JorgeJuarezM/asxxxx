@@ -38,133 +38,132 @@
 /*
  * Internal ASxxxx Version Variable
  */
-int	ASxxxx_VERSION;
-
+int ASxxxx_VERSION;
 
 /*
  *	Definitions for all Global Variables
  */
 
-char	*_abs_	= { ".  .ABS." };
+char *_abs_ = {".  .ABS."};
 
-char	afspec[FILSPC];	/*	The filespec created by afile()
-			 */
-int	lkerr;		/*	Linker error flag
-			 */
-char	*ip;		/*	Pointer into the REL file text line in ib[]
-			 */
-char	ib[NINPUT];	/*	REL file text line
-			 */
-char	*rp;		/*	pointer into the LST file
-			 *	text line in rb[]
-			 */
-char	rb[NINPUT];	/*	LST file text line being
-			 *	address relocated
-			 */
-int	oflag;		/*	Output file type flag
-			 */
-int	o1flag;		/*	Legacy Intel Hex flag
-			 *	Start address record type set to 1 
-			 */
-int	objflg;		/*	Linked file/library object output flag
-			 */
+char afspec[FILSPC]; /*	The filespec created by afile()
+                      */
+int lkerr;           /*	Linker error flag
+                      */
+char *ip;            /*	Pointer into the REL file text line in ib[]
+                      */
+char ib[NINPUT];     /*	REL file text line
+                      */
+char *rp;            /*	pointer into the LST file
+                      *	text line in rb[]
+                      */
+char rb[NINPUT];     /*	LST file text line being
+                      *	address relocated
+                      */
+int oflag;           /*	Output file type flag
+                      */
+int o1flag;          /*	Legacy Intel Hex flag
+                      *	Start address record type set to 1
+                      */
+int objflg;          /*	Linked file/library object output flag
+                      */
 
 #if NOICE
-int	jflag;		/*	NoICE output flag
-			 */
+int jflag; /*	NoICE output flag
+            */
 #endif
 
 #if SDCDB
-int	yflag;		/*	SDCDB output flag
-			 */
+int yflag; /*	SDCDB output flag
+            */
 #endif
 
-int	mflag;		/*	Map output flag
-			 */
-int	m1flag;		/*	Include linker generated
-			 *	symbols in map file
-			 */
-int	xflag;		/*	Map file radix type flag
-			 */
-int	pflag;		/*	print linker command file flag
-			 */
-int	uflag;		/*	Listing relocation flag
-			 */
-int	wflag;		/*	Enable wide format listing
-			 */
-int	zflag;		/*	Enable symbol case sensitivity
-			 */
-int	radix;		/*	current number conversion radix:
-			 *	2 (binary), 8 (octal), 10 (decimal),
-			 *	16 (hexadecimal)
-			 */
-int	line;		/*	current line number
-			 */
-int	page;		/*	current page number
-			 */
-int	lop;		/*	current line number on page
-			 */
-time_t	curtim;		/*	pointer to the current time string
-			 */
-int	pass;		/*	linker pass number
-			 */
-a_uint	pc;		/*	current relocation address
-			 */
-int	pcb;		/*	current bytes per pc word
-			 */
-int	rtcnt;		/*	count of elements in the
-			 *	rtval[] and rtflg[] arrays
-			 */
-a_uint	rtval[NTXT];	/*	data associated with relocation
-			 */
-int	rtflg[NTXT];	/*	indicates if rtval[] value is
-			 *	to be sent to the output file.
-			 */
-int	rterr[NTXT];	/*	indicates if rtval[] value should
-			 *	be flagged as a relocation error.
-			 */
-char	rtbuf[NMAX];	/*	S19/IHX output buffer
-			 */
-struct	bank * rtabnk;	/*	rtbuf[] processing
-			 */
-int	rtaflg;		/*	rtbuf[] processing
-			 */
-a_uint	rtadr0 = 0;	/*
-			 */
-a_uint	rtadr1 = 0;	/*
-			 */
-a_uint	rtadr2 = 0;	/*
-			 */
-int	obj_flag = 0;	/*	Linked file/library object output flag
-			 */
-int	a_bytes;	/*	REL file T Line address length
-			 */
-int	hilo;		/*	REL file byte ordering
-			 */
-a_uint	a_mask;		/*	Address Mask
-			 */
-a_uint	s_mask;		/*	Sign Mask
-			 */
-a_uint	v_mask;		/*	Value Mask
-			 */
-a_uint	p_mask;		/*	Page Mask
-			 */
-int	gline;		/*	Read a LST line flag
-			 */
-int	gcntr;		/*	Bytes processed in LST line
-			 */
-int	hline;		/*	Read a HLR line flag
-			 */
-int	listing;	/*	Assembled line listing bits
-			 */
-int	lmode;		/*	Assembled line listing mode
-			 */
-int	bytcnt;		/*	Assenbled bytes for this line
-			 */
-int	bgncnt;		/*	Assembled bytes for this line
-			 */
-char	eqt_id[128];	/*	Area name for this ELIST line
-			 */
+int mflag;           /*	Map output flag
+                      */
+int m1flag;          /*	Include linker generated
+                      *	symbols in map file
+                      */
+int xflag;           /*	Map file radix type flag
+                      */
+int pflag;           /*	print linker command file flag
+                      */
+int uflag;           /*	Listing relocation flag
+                      */
+int wflag;           /*	Enable wide format listing
+                      */
+int zflag;           /*	Enable symbol case sensitivity
+                      */
+int radix;           /*	current number conversion radix:
+                      *	2 (binary), 8 (octal), 10 (decimal),
+                      *	16 (hexadecimal)
+                      */
+int line;            /*	current line number
+                      */
+int page;            /*	current page number
+                      */
+int lop;             /*	current line number on page
+                      */
+time_t curtim;       /*	pointer to the current time string
+                      */
+int pass;            /*	linker pass number
+                      */
+a_uint pc;           /*	current relocation address
+                      */
+int pcb;             /*	current bytes per pc word
+                      */
+int rtcnt;           /*	count of elements in the
+                      *	rtval[] and rtflg[] arrays
+                      */
+a_uint rtval[NTXT];  /*	data associated with relocation
+                      */
+int rtflg[NTXT];     /*	indicates if rtval[] value is
+                      *	to be sent to the output file.
+                      */
+int rterr[NTXT];     /*	indicates if rtval[] value should
+                      *	be flagged as a relocation error.
+                      */
+char rtbuf[NMAX];    /*	S19/IHX output buffer
+                      */
+struct bank *rtabnk; /*	rtbuf[] processing
+                      */
+int rtaflg;          /*	rtbuf[] processing
+                      */
+a_uint rtadr0 = 0;   /*
+                      */
+a_uint rtadr1 = 0;   /*
+                      */
+a_uint rtadr2 = 0;   /*
+                      */
+int obj_flag = 0;    /*	Linked file/library object output flag
+                      */
+int a_bytes;         /*	REL file T Line address length
+                      */
+int hilo;            /*	REL file byte ordering
+                      */
+a_uint a_mask;       /*	Address Mask
+                      */
+a_uint s_mask;       /*	Sign Mask
+                      */
+a_uint v_mask;       /*	Value Mask
+                      */
+a_uint p_mask;       /*	Page Mask
+                      */
+int gline;           /*	Read a LST line flag
+                      */
+int gcntr;           /*	Bytes processed in LST line
+                      */
+int hline;           /*	Read a HLR line flag
+                      */
+int listing;         /*	Assembled line listing bits
+                      */
+int lmode;           /*	Assembled line listing mode
+                      */
+int bytcnt;          /*	Assenbled bytes for this line
+                      */
+int bgncnt;          /*	Assembled bytes for this line
+                      */
+char eqt_id[128];    /*	Area name for this ELIST line
+                      */
 
 /*
  *	The structure lfile contains a pointer to a
@@ -182,62 +181,62 @@ char	eqt_id[128];	/*	Area name for this ELIST line
  *		int	f_obj;			Object output flag
  *	};
  */
-struct	lfile	*filep;	/*	The pointers (lfile *) filep,
-			 *	(lfile *) cfp, and (FILE *) sfp
-			 *	are used in conjunction with
-			 *	the routine nxtline() to read
-			 *	asmlnk commands from
-			 *	(1) the standard input or
-			 *	(2) or a command file
-			 *	and to read the REL files
-			 *	sequentially as defined by the
-			 *	asmlnk input commands.
-			 *
-			 *	The pointer *filep points to the
-			 *	beginning of a linked list of
-			 *	lfile structures.
-			 */
-struct	lfile	*cfp;	/*	The pointer *cfp points to the
-			 *	current lfile structure
-			 */
-struct	lfile	*startp;/*	aslink startup file structure
-			 */
-struct	lfile	*linkp;	/*	pointer to first lfile structure
-			 *	containing an input REL file
-			 *	specification
-			 */
-struct	lfile	*lfp;	/*	pointer to current lfile structure
-			 *	being processed by parse()
-			 */
-FILE	*ofp = NULL;	/*	Output file handle
-			 *	for word formats
-			 */
+struct lfile *filep;  /*	The pointers (lfile *) filep,
+                       *	(lfile *) cfp, and (FILE *) sfp
+                       *	are used in conjunction with
+                       *	the routine nxtline() to read
+                       *	asmlnk commands from
+                       *	(1) the standard input or
+                       *	(2) or a command file
+                       *	and to read the REL files
+                       *	sequentially as defined by the
+                       *	asmlnk input commands.
+                       *
+                       *	The pointer *filep points to the
+                       *	beginning of a linked list of
+                       *	lfile structures.
+                       */
+struct lfile *cfp;    /*	The pointer *cfp points to the
+                       *	current lfile structure
+                       */
+struct lfile *startp; /*	aslink startup file structure
+                       */
+struct lfile *linkp;  /*	pointer to first lfile structure
+                       *	containing an input REL file
+                       *	specification
+                       */
+struct lfile *lfp;    /*	pointer to current lfile structure
+                       *	being processed by parse()
+                       */
+FILE *ofp = NULL;     /*	Output file handle
+                       *	for word formats
+                       */
 
 #if NOICE
-FILE	*jfp = NULL;	/*	NoICE output file handle
-			 */
+FILE *jfp = NULL; /*	NoICE output file handle
+                   */
 #endif
 
 #if SDCDB
-FILE	*yfp = NULL;	/*	SDCDB output file handle
-			 */
+FILE *yfp = NULL; /*	SDCDB output file handle
+                   */
 #endif
 
-FILE	*mfp = NULL;	/*	Map output file handle
-			 */
-FILE	*rfp = NULL;	/*	File handle for output
-			 *	address relocated ASxxxx
-			 *	listing file
-			 */
-FILE	*sfp = NULL;	/*	The file handle sfp points to the
-			 *	currently open file
-			 */
-FILE	*tfp = NULL;	/*	File handle for input
-			 *	ASxxxx listing file
-			 */
-FILE	*hfp = NULL;	/*	File handle for input ASxxxx
-			 *	.lst to .rst hint file
-			 */
+FILE *mfp = NULL; /*	Map output file handle
+                   */
+FILE *rfp = NULL; /*	File handle for output
+                   *	address relocated ASxxxx
+                   *	listing file
+                   */
+FILE *sfp = NULL; /*	The file handle sfp points to the
+                   *	currently open file
+                   */
+FILE *tfp = NULL; /*	File handle for input
+                   *	ASxxxx listing file
+                   */
+FILE *hfp = NULL; /*	File handle for input ASxxxx
+                   *	.lst to .rst hint file
+                   */
 
 /*
  *	The structures of head, bank, area, areax, and sym
@@ -275,12 +274,12 @@ FILE	*hfp = NULL;	/*	File handle for input ASxxxx
  *		char *	m_id;			Module name
  *	};
  */
-struct	head	*headp;	/*	The pointer to the first
-			 *	head structure of a linked list
-			 */
-struct	head	*hp;	/*	Pointer to the current
-			 *	head structure
-			 */
+struct head *headp; /*	The pointer to the first
+                     *	head structure of a linked list
+                     */
+struct head *hp;    /*	Pointer to the current
+                     *	head structure
+                     */
 
 /*
  *	The bank structure contains the parameter values for a
@@ -312,17 +311,15 @@ struct	head	*hp;	/*	Pointer to the current
  *		int	b_rtaflg	Bank First Output flag
  *	};
  */
-struct	bank	bank[1] = {
-    {	NULL,	"",	"",	0,	0,	0,	0,	"",	NULL,	0,	1	}
-};
+struct bank bank[1] = {{NULL, "", "", 0, 0, 0, 0, "", NULL, 0, 1}};
 
-struct	bank	*bankp = &bank[0];
-			/*	The pointer to the first
-			 *	bank structure
-			 */
-struct	bank	*bp;	/*	Pointer to the current
-			 *	bank structure
-			 */
+struct bank *bankp = &bank[0];
+/*	The pointer to the first
+ *	bank structure
+ */
+struct bank *bp; /*	Pointer to the current
+                  *	bank structure
+                  */
 
 /*
  *	A structure area is created for each 'unique' data/code
@@ -352,12 +349,12 @@ struct	bank	*bp;	/*	Pointer to the current
  *		char *	a_id;			Name
  *	};
  */
-struct	area	*areap;	/*	The pointer to the first
-			 *	area structure of a linked list
-			 */
-struct	area	*ap;	/*	Pointer to the current
-			 *	area structure
-			 */
+struct area *areap; /*	The pointer to the first
+                     *	area structure of a linked list
+                     */
+struct area *ap;    /*	Pointer to the current
+                     *	area structure
+                     */
 
 /*
  *	An areax structure is created for every A directive found
@@ -383,9 +380,9 @@ struct	area	*ap;	/*	Pointer to the current
  *		a_uint	a_size;			Size of the area in section
  *	};
  */
-struct	areax	*axp;	/*	Pointer to the current
-			 *	areax structure
-			 */
+struct areax *axp; /*	Pointer to the current
+                    *	areax structure
+                    */
 
 /*
  *	A sym structure is created for every unique symbol
@@ -410,9 +407,9 @@ struct	areax	*axp;	/*	Pointer to the current
  *		char	*m_id;			Module
  *	};
  */
-struct	sym *symhash[NHASH]; /*	array of pointers to NHASH
-			      *	linked symbol lists
-			      */
+struct sym *symhash[NHASH]; /*	array of pointers to NHASH
+                             *	linked symbol lists
+                             */
 /*
  *	The struct base contains a pointer to a
  *	base definition string and a link to the next
@@ -424,12 +421,12 @@ struct	sym *symhash[NHASH]; /*	array of pointers to NHASH
  *		char	      *b_strp;		String pointer
  *	};
  */
-struct	base	*basep;	/*	The pointer to the first
-			 *	base structure
-			 */
-struct	base	*bsp;	/*	Pointer to the current
-			 *	base structure
-			 */
+struct base *basep; /*	The pointer to the first
+                     *	base structure
+                     */
+struct base *bsp;   /*	Pointer to the current
+                     *	base structure
+                     */
 
 /*
  *	The struct globl contains a pointer to a
@@ -442,12 +439,12 @@ struct	base	*bsp;	/*	Pointer to the current
  *		char	      *g_strp;		String pointer
  *	};
  */
-struct	globl	*globlp;/*	The pointer to the first
-			 *	globl structure
-			 */
-struct	globl	*gsp;	/*	Pointer to the current
-			 *	globl structure
-			 */
+struct globl *globlp; /*	The pointer to the first
+                       *	globl structure
+                       */
+struct globl *gsp;    /*	Pointer to the current
+                       *	globl structure
+                       */
 
 /*
  *	A structure sdp is created for each 'unique' paged
@@ -463,7 +460,7 @@ struct	globl	*gsp;	/*	Pointer to the current
  *		a_uint	s_addr;		Page address offset
  *	};
  */
-struct	sdp	sdp;	/* Base Page Structure */
+struct sdp sdp; /* Base Page Structure */
 
 /*
  *	The structure rerr is loaded with the information
@@ -484,9 +481,9 @@ struct	sdp	sdp;	/* Base Page Structure */
  *		a_uint	rval;		Area/Symbol offset value
  *	};
  */
-struct	rerr	rerr;	/*	Structure containing the
-			 *	linker error information
-			 */
+struct rerr rerr; /*	Structure containing the
+                   *	linker error information
+                   */
 
 /*
  *	The structure lbpath is created for each library
@@ -499,9 +496,9 @@ struct	rerr	rerr;	/*	Structure containing the
  *		char		*path;
  *	};
  */
-struct	lbpath	*lbphead;	/*	pointer to the first
-				 *	library path structure
-				 */
+struct lbpath *lbphead; /*	pointer to the first
+                         *	library path structure
+                         */
 
 /*
  *	The structure lbname is created for all combinations of the
@@ -531,9 +528,9 @@ struct	lbpath	*lbphead;	/*	pointer to the first
  *		char		f_obj;
  *	};
  */
-struct	lbname	*lbnhead;	/*	pointer to the first
-				 *	library name structure
-				 */
+struct lbname *lbnhead; /*	pointer to the first
+                         *	library name structure
+                         */
 
 /*
  *	The function fndsym() searches through all combinations of the
@@ -573,52 +570,82 @@ struct	lbname	*lbnhead;	/*	pointer to the first
  *		int		f_obj;
  *	};
  */
-struct	lbfile	*lbfhead;	/*	pointer to the first
-				 *	library file structure
-				 */
+struct lbfile *lbfhead; /*	pointer to the first
+                         *	library file structure
+                         */
 
 /*
  *	array of character types, one per
  *	ASCII character
  */
-char	ctype[128] = {
-/*NUL*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*BS*/	ILL,	SPACE,	ILL,	ILL,	SPACE,	ILL,	ILL,	ILL,
-/*DLE*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*CAN*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*SPC*/	SPACE,	ETC,	ETC,	ETC,	LETTER,	BINOP,	BINOP,	ETC,
-/*(*/	ETC,	ETC,	BINOP,	BINOP,	ETC,	BINOP,	LETTER,	BINOP,
-/*0*/	DGT2,	DGT2,	DGT8,	DGT8,	DGT8,	DGT8,	DGT8,	DGT8,
-/*8*/	DGT10,	DGT10,	ETC,	ETC,	BINOP,	ETC,	BINOP,	ETC,
-/*@*/	ETC,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LETTER,
-/*H*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*P*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*X*/	LETTER,	LETTER,	LETTER,	ETC,	ETC,	ETC,	BINOP,	LETTER,
-/*`*/	ETC,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LETTER,
-/*h*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*p*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*x*/	LETTER,	LETTER,	LETTER,	ETC,	BINOP,	ETC,	ETC,	ETC
-};
+char ctype[128] = {
+    /*NUL*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*BS*/ ILL,    SPACE,  ILL,    ILL,
+    SPACE,         ILL,    ILL,    ILL,
+    /*DLE*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*CAN*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*SPC*/ SPACE, ETC,    ETC,    ETC,
+    LETTER,        BINOP,  BINOP,  ETC,
+    /*(*/ ETC,     ETC,    BINOP,  BINOP,
+    ETC,           BINOP,  LETTER, BINOP,
+    /*0*/ DGT2,    DGT2,   DGT8,   DGT8,
+    DGT8,          DGT8,   DGT8,   DGT8,
+    /*8*/ DGT10,   DGT10,  ETC,    ETC,
+    BINOP,         ETC,    BINOP,  ETC,
+    /*@*/ ETC,     LTR16,  LTR16,  LTR16,
+    LTR16,         LTR16,  LTR16,  LETTER,
+    /*H*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*P*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*X*/ LETTER,  LETTER, LETTER, ETC,
+    ETC,           ETC,    BINOP,  LETTER,
+    /*`*/ ETC,     LTR16,  LTR16,  LTR16,
+    LTR16,         LTR16,  LTR16,  LETTER,
+    /*h*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*p*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*x*/ LETTER,  LETTER, LETTER, ETC,
+    BINOP,         ETC,    ETC,    ETC};
 
 /*
  *	an array of characters which
  *	perform the case translation function
  */
-char	ccase[128] = {
-/*NUL*/	'\000',	'\001',	'\002',	'\003',	'\004',	'\005',	'\006',	'\007',
-/*BS*/	'\010',	'\011',	'\012',	'\013',	'\014',	'\015',	'\016',	'\017',
-/*DLE*/	'\020',	'\021',	'\022',	'\023',	'\024',	'\025',	'\026',	'\027',
-/*CAN*/	'\030',	'\031',	'\032',	'\033',	'\034',	'\035',	'\036',	'\037',
-/*SPC*/	'\040',	'\041',	'\042',	'\043',	'\044',	'\045',	'\046',	'\047',
-/*(*/	'\050',	'\051',	'\052',	'\053',	'\054',	'\055',	'\056',	'\057',
-/*0*/	'\060',	'\061',	'\062',	'\063',	'\064',	'\065',	'\066',	'\067',
-/*8*/	'\070',	'\071',	'\072',	'\073',	'\074',	'\075',	'\076',	'\077',
-/*@*/	'\100',	'\141',	'\142',	'\143',	'\144',	'\145',	'\146',	'\147',
-/*H*/	'\150',	'\151',	'\152',	'\153',	'\154',	'\155',	'\156',	'\157',
-/*P*/	'\160',	'\161',	'\162',	'\163',	'\164',	'\165',	'\166',	'\167',
-/*X*/	'\170',	'\171',	'\172',	'\133',	'\134',	'\135',	'\136',	'\137',
-/*`*/	'\140',	'\141',	'\142',	'\143',	'\144',	'\145',	'\146',	'\147',
-/*h*/	'\150',	'\151',	'\152',	'\153',	'\154',	'\155',	'\156',	'\157',
-/*p*/	'\160',	'\161',	'\162',	'\163',	'\164',	'\165',	'\166',	'\167',
-/*x*/	'\170',	'\171',	'\172',	'\173',	'\174',	'\175',	'\176',	'\177'
-};	
+char ccase[128] = {
+    /*NUL*/ '\000', '\001', '\002', '\003',
+    '\004',         '\005', '\006', '\007',
+    /*BS*/ '\010',  '\011', '\012', '\013',
+    '\014',         '\015', '\016', '\017',
+    /*DLE*/ '\020', '\021', '\022', '\023',
+    '\024',         '\025', '\026', '\027',
+    /*CAN*/ '\030', '\031', '\032', '\033',
+    '\034',         '\035', '\036', '\037',
+    /*SPC*/ '\040', '\041', '\042', '\043',
+    '\044',         '\045', '\046', '\047',
+    /*(*/ '\050',   '\051', '\052', '\053',
+    '\054',         '\055', '\056', '\057',
+    /*0*/ '\060',   '\061', '\062', '\063',
+    '\064',         '\065', '\066', '\067',
+    /*8*/ '\070',   '\071', '\072', '\073',
+    '\074',         '\075', '\076', '\077',
+    /*@*/ '\100',   '\141', '\142', '\143',
+    '\144',         '\145', '\146', '\147',
+    /*H*/ '\150',   '\151', '\152', '\153',
+    '\154',         '\155', '\156', '\157',
+    /*P*/ '\160',   '\161', '\162', '\163',
+    '\164',         '\165', '\166', '\167',
+    /*X*/ '\170',   '\171', '\172', '\133',
+    '\134',         '\135', '\136', '\137',
+    /*`*/ '\140',   '\141', '\142', '\143',
+    '\144',         '\145', '\146', '\147',
+    /*h*/ '\150',   '\151', '\152', '\153',
+    '\154',         '\155', '\156', '\157',
+    /*p*/ '\160',   '\161', '\162', '\163',
+    '\164',         '\165', '\166', '\167',
+    /*x*/ '\170',   '\171', '\172', '\173',
+    '\174',         '\175', '\176', '\177'};

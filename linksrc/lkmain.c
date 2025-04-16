@@ -144,206 +144,206 @@
  *		relocated listing files (.rst).
  */
 
-int
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {
-	int c, i, j, k;
+  int c, i, j, k;
 
-	if (intsiz() < 4) {
-		fprintf(stderr, "?ASlink-Error-Size of INT32 is not 32 bits or larger.\n\n");
-		exit(ER_FATAL);
-	}
+  if (intsiz() < 4) {
+    fprintf(stderr,
+            "?ASlink-Error-Size of INT32 is not 32 bits or larger.\n\n");
+    exit(ER_FATAL);
+  }
 
-	fprintf(stdout, "\n");
+  fprintf(stdout, "\n");
 
-	startp = (struct lfile *) new (sizeof (struct lfile));
-	startp->f_idp = "";
+  startp = (struct lfile *)new (sizeof(struct lfile));
+  startp->f_idp = "";
 
-	pflag = 1;
+  pflag = 1;
 
-	for(i=1; i<argc; i++) {
-		ip = ib;
-		if(argv[i][0] == '-') {
-			j = i;
-			k = 1;
-			while((c = argv[j][k]) != '\0') {
-				ip = ib;
-				sprintf(ip, "-%c", c);
-				switch(c) {
+  for (i = 1; i < argc; i++) {
+    ip = ib;
+    if (argv[i][0] == '-') {
+      j = i;
+      k = 1;
+      while ((c = argv[j][k]) != '\0') {
+        ip = ib;
+        sprintf(ip, "-%c", c);
+        switch (c) {
 
-				/*
-				 * Options with arguments
-				 */
-				case 'b':
-				case 'B':
+        /*
+         * Options with arguments
+         */
+        case 'b':
+        case 'B':
 
-				case 'g':
-				case 'G':
+        case 'g':
+        case 'G':
 
-				case 'k':
-				case 'K':
+        case 'k':
+        case 'K':
 
-				case 'l':
-				case 'L':
+        case 'l':
+        case 'L':
 
-				case 'f':
-				case 'F':
-					strcat(ip, " ");
-					strcat(ip, argv[++i]);
-					break;
+        case 'f':
+        case 'F':
+          strcat(ip, " ");
+          strcat(ip, argv[++i]);
+          break;
 
-				/*
-				 * Options with options
-				 */
-				case 'i':
-				case 'I':
-					if (argv[i][++k] == '1') {
-						sprintf(ip+2, "%c", argv[i][k]);
-					} else {
-						--k;
-					}
-					break;
+        /*
+         * Options with options
+         */
+        case 'i':
+        case 'I':
+          if (argv[i][++k] == '1') {
+            sprintf(ip + 2, "%c", argv[i][k]);
+          } else {
+            --k;
+          }
+          break;
 
-				case 'm':
-				case 'M':
-					if (argv[i][++k] == '1') {
-						sprintf(ip+2, "%c", argv[i][k]);
-					} else {
-						--k;
-					}
-					break;
+        case 'm':
+        case 'M':
+          if (argv[i][++k] == '1') {
+            sprintf(ip + 2, "%c", argv[i][k]);
+          } else {
+            --k;
+          }
+          break;
 
-				/*
-				 * Preprocess these commands
-				 */
-				case 'n':
-				case 'N':
-					pflag = 0;
-					break;
+        /*
+         * Preprocess these commands
+         */
+        case 'n':
+        case 'N':
+          pflag = 0;
+          break;
 
-				case 'p':
-				case 'P':
-					pflag = 1;
-					break;
+        case 'p':
+        case 'P':
+          pflag = 1;
+          break;
 
-				/*
-				 * Options without arguments
-				 */
-				default:
-					break;
-				}
-				if(pflag)
-					fprintf(stdout, "ASlink >> %s\n", ip);
-				parse();
-				k++;
-			}
-		} else {
-			strcpy(ip, argv[i]);
-			if(pflag)
-				fprintf(stdout, "ASlink >> %s\n", ip);
-			parse();
-		}
-	}
+        /*
+         * Options without arguments
+         */
+        default:
+          break;
+        }
+        if (pflag)
+          fprintf(stdout, "ASlink >> %s\n", ip);
+        parse();
+        k++;
+      }
+    } else {
+      strcpy(ip, argv[i]);
+      if (pflag)
+        fprintf(stdout, "ASlink >> %s\n", ip);
+      parse();
+    }
+  }
 
-	if (linkp == NULL) {
-		usage();
-		lkexit(ER_FATAL);
-	}
+  if (linkp == NULL) {
+    usage();
+    lkexit(ER_FATAL);
+  }
 
-	/*
-	 * If no input file is specified
-	 * then assume a single file with
-	 * the same name as the output file.
-	 */
-	if (lfp == linkp) {
-		lfp->f_flp = (struct lfile *) new (sizeof (struct lfile));
-		lfp = lfp->f_flp;
-		lfp->f_idp = strsto(linkp->f_idp);
-		lfp->f_idx = fndidx(linkp->f_idp);
-		lfp->f_obj = objflg;
-		lfp->f_type = F_REL;
-	}
+  /*
+   * If no input file is specified
+   * then assume a single file with
+   * the same name as the output file.
+   */
+  if (lfp == linkp) {
+    lfp->f_flp = (struct lfile *)new (sizeof(struct lfile));
+    lfp = lfp->f_flp;
+    lfp->f_idp = strsto(linkp->f_idp);
+    lfp->f_idx = fndidx(linkp->f_idp);
+    lfp->f_obj = objflg;
+    lfp->f_type = F_REL;
+  }
 
-	syminit();
-	curtim = time(NULL);
+  syminit();
+  curtim = time(NULL);
 
 #if SDCDB
-	/*
-	 * Open SDCC Debug output file
-	 */
-	SDCDBfopen();
+  /*
+   * Open SDCC Debug output file
+   */
+  SDCDBfopen();
 #endif
 
-	for (pass=0; pass<2; ++pass) {
-		cfp = NULL;
-		sfp = NULL;
-		filep = linkp->f_flp;
-		hp = NULL;
-		p_mask = DEFAULT_PMASK;
-		radix = 10;
+  for (pass = 0; pass < 2; ++pass) {
+    cfp = NULL;
+    sfp = NULL;
+    filep = linkp->f_flp;
+    hp = NULL;
+    p_mask = DEFAULT_PMASK;
+    radix = 10;
 
-		while (nxtline()) {
-			ip = ib;
-			link();
-		}
-		if (pass == 0) {
-			/*
-			 * Search libraries for global symbols
-			 */
-			search();
-			/*
-			 * Set area base addresses.
-			 */
-			setarea();
-			/*
-			 * Set bank base addresses.
-			 */
-			setbank();
-			/*
-			 * Link all area addresses.
-			 */
-			lnkarea();
-			/*
-			 * Check bank size limits.
-			 */
-			chkbank(stderr);
-			/*
-			 * Process global definitions.
-			 */
-			setgbl();
-			/*
-			 * Check for undefined globals.
-			 */
-			symdef(stderr);
+    while (nxtline()) {
+      ip = ib;
+      link();
+    }
+    if (pass == 0) {
+      /*
+       * Search libraries for global symbols
+       */
+      search();
+      /*
+       * Set area base addresses.
+       */
+      setarea();
+      /*
+       * Set bank base addresses.
+       */
+      setbank();
+      /*
+       * Link all area addresses.
+       */
+      lnkarea();
+      /*
+       * Check bank size limits.
+       */
+      chkbank(stderr);
+      /*
+       * Process global definitions.
+       */
+      setgbl();
+      /*
+       * Check for undefined globals.
+       */
+      symdef(stderr);
 #if NOICE
-			/*
-			 * Open NoICE output file
-			 */
-			NoICEfopen();
+      /*
+       * Open NoICE output file
+       */
+      NoICEfopen();
 #endif
-			/*
-			 * Output Link Map.
-			 */
-			map();
-			/*
-			 * Open output file(s)
-			 */
-			lkfopen();
-		} else {
-			/*
-			 * Link in library files
-			 */
-			library();
-			/*
-			 * Complete Processing
-			 */
-			reloc('E');
-		}
-	}
-	lkexit(lkerr ? ER_ERROR : ER_NONE);
-	return(0);
+      /*
+       * Output Link Map.
+       */
+      map();
+      /*
+       * Open output file(s)
+       */
+      lkfopen();
+    } else {
+      /*
+       * Link in library files
+       */
+      library();
+      /*
+       * Complete Processing
+       */
+      reloc('E');
+    }
+  }
+  lkexit(lkerr ? ER_ERROR : ER_NONE);
+  return (0);
 }
 
 /*)Function	int	intsiz()
@@ -363,11 +363,7 @@ char *argv[];
  *		none
  */
 
-int
-intsiz()
-{
-	return(sizeof(a_uint));
-}
+int intsiz() { return (sizeof(a_uint)); }
 
 /*)Function	VOID	lkexit(i)
  *
@@ -397,23 +393,31 @@ intsiz()
  *		All files closed. Program terminates.
  */
 
-VOID
-lkexit(i)
+VOID lkexit(i)
 int i;
 {
-	lkfclose();
+  lkfclose();
 #if NOICE
-	if (jfp != NULL) fclose(jfp);
+  if (jfp != NULL)
+    fclose(jfp);
 #endif
-	if (mfp != NULL) fclose(mfp);
-	if (rfp != NULL) fclose(rfp);
-	if (sfp != NULL) { if (sfp != stdin) fclose(sfp); }
-	if (tfp != NULL) fclose(tfp);
-	if (hfp != NULL) fclose(hfp);
+  if (mfp != NULL)
+    fclose(mfp);
+  if (rfp != NULL)
+    fclose(rfp);
+  if (sfp != NULL) {
+    if (sfp != stdin)
+      fclose(sfp);
+  }
+  if (tfp != NULL)
+    fclose(tfp);
+  if (hfp != NULL)
+    fclose(hfp);
 #if SDCDB
-	if (yfp != NULL) fclose(yfp);
+  if (yfp != NULL)
+    fclose(yfp);
 #endif
-	exit(i);
+  exit(i);
 }
 
 /*)Function	link()
@@ -457,160 +461,162 @@ int i;
  *		the radix is set as the .rel file(s) are read.
  */
 
-VOID
-link()
-{
-	int c;
+VOID link() {
+  int c;
 
-	c = getnb();
-	switch (c) {
+  c = getnb();
+  switch (c) {
 
-	case 'X':
-	case 'D':
-	case 'Q':
-		ASxxxx_VERSION = 3;
-		if (c == 'X') { radix = 16; } else
-		if (c == 'D') { radix = 10; } else
-		if (c == 'Q') { radix = 8;  }
+  case 'X':
+  case 'D':
+  case 'Q':
+    ASxxxx_VERSION = 3;
+    if (c == 'X') {
+      radix = 16;
+    } else if (c == 'D') {
+      radix = 10;
+    } else if (c == 'Q') {
+      radix = 8;
+    }
 
-		while ((c = get()) != 0) {
-			switch(c) {
-			case 'H':
-				hilo = 1;
-				break;
+    while ((c = get()) != 0) {
+      switch (c) {
+      case 'H':
+        hilo = 1;
+        break;
 
-			case 'L':
-				hilo = 0;
-				break;
+      case 'L':
+        hilo = 0;
+        break;
 
-			case '2':
-				a_bytes = 2;
-				break;
+      case '2':
+        a_bytes = 2;
+        break;
 
-			case '3':
-				a_bytes = 3;
-				break;
+      case '3':
+        a_bytes = 3;
+        break;
 
-			case '4':
-				a_bytes = 4;
-				break;
+      case '4':
+        a_bytes = 4;
+        break;
 
-			default:
-				break;
-			}
-		}
-#ifdef	LONGINT
-		switch(a_bytes) {
-		default:
-			a_bytes = 2;
-		case 2:
-			a_mask = 0x0000FFFFl;
-			s_mask = 0x00008000l;
-			v_mask = 0x00007FFFl;
-			break;
+      default:
+        break;
+      }
+    }
+#ifdef LONGINT
+    switch (a_bytes) {
+    default:
+      a_bytes = 2;
+    case 2:
+      a_mask = 0x0000FFFFl;
+      s_mask = 0x00008000l;
+      v_mask = 0x00007FFFl;
+      break;
 
-		case 3:
-			a_mask = 0x00FFFFFFl;
-			s_mask = 0x00800000l;
-			v_mask = 0x007FFFFFl;
-			break;
+    case 3:
+      a_mask = 0x00FFFFFFl;
+      s_mask = 0x00800000l;
+      v_mask = 0x007FFFFFl;
+      break;
 
-		case 4:
-			a_mask = 0xFFFFFFFFl;
-			s_mask = 0x80000000l;
-			v_mask = 0x7FFFFFFFl;
-			break;
-		}
+    case 4:
+      a_mask = 0xFFFFFFFFl;
+      s_mask = 0x80000000l;
+      v_mask = 0x7FFFFFFFl;
+      break;
+    }
 #else
-		switch(a_bytes) {
-		default:
-			a_bytes = 2;
-		case 2:
-			a_mask = 0x0000FFFF;
-			s_mask = 0x00008000;
-			v_mask = 0x00007FFF;
-			break;
+    switch (a_bytes) {
+    default:
+      a_bytes = 2;
+    case 2:
+      a_mask = 0x0000FFFF;
+      s_mask = 0x00008000;
+      v_mask = 0x00007FFF;
+      break;
 
-		case 3:
-			a_mask = 0x00FFFFFF;
-			s_mask = 0x00800000;
-			v_mask = 0x007FFFFF;
-			break;
+    case 3:
+      a_mask = 0x00FFFFFF;
+      s_mask = 0x00800000;
+      v_mask = 0x007FFFFF;
+      break;
 
-		case 4:
-			a_mask = 0xFFFFFFFF;
-			s_mask = 0x80000000;
-			v_mask = 0x7FFFFFFF;
-			break;
-		}
+    case 4:
+      a_mask = 0xFFFFFFFF;
+      s_mask = 0x80000000;
+      v_mask = 0x7FFFFFFF;
+      break;
+    }
 #endif
-		break;
+    break;
 
-	case 'H':
-		if (pass == 0) {
-			newhead();
-		} else {
-			if (hp == 0) {
-				hp = headp;
-			} else {
-				hp = hp->h_hp;
-			}
-		}
-		sdp.s_area = NULL;
-		sdp.s_areax = NULL;
-		sdp.s_addr = 0;
-		break;
+  case 'H':
+    if (pass == 0) {
+      newhead();
+    } else {
+      if (hp == 0) {
+        hp = headp;
+      } else {
+        hp = hp->h_hp;
+      }
+    }
+    sdp.s_area = NULL;
+    sdp.s_areax = NULL;
+    sdp.s_addr = 0;
+    break;
 
-	case 'G':
-		ASxxxx_VERSION = 4;
-		if (pass == 0)
-			newmode();
-		break;
+  case 'G':
+    ASxxxx_VERSION = 4;
+    if (pass == 0)
+      newmode();
+    break;
 
-	case 'B':
-		ASxxxx_VERSION = 4;
-		if (pass == 0)
-			newbank();
-		break;
+  case 'B':
+    ASxxxx_VERSION = 4;
+    if (pass == 0)
+      newbank();
+    break;
 
-	case 'M':
-		if (pass == 0)
-			module();
-		break;
+  case 'M':
+    if (pass == 0)
+      module();
+    break;
 
-	case 'A':
-		if (pass == 0)
-			newarea();
-		if (sdp.s_area == NULL) {
-			sdp.s_area = areap;
-			sdp.s_areax = areap->a_axp;
-			sdp.s_addr = 0;
-		}
-		break;
+  case 'A':
+    if (pass == 0)
+      newarea();
+    if (sdp.s_area == NULL) {
+      sdp.s_area = areap;
+      sdp.s_areax = areap->a_axp;
+      sdp.s_addr = 0;
+    }
+    break;
 
-	case 'S':
-		if (pass == 0)
-			newsym();
-		break;
+  case 'S':
+    if (pass == 0)
+      newsym();
+    break;
 
-	case 'T':
-	case 'R':
-	case 'P':
-		if (pass == 0)
-			break;
-		reloc(c);
-		break;
+  case 'T':
+  case 'R':
+  case 'P':
+    if (pass == 0)
+      break;
+    reloc(c);
+    break;
 
 #if NOICE
-	case ';':
-		unget(c);
-		NoICEmagic();
-		break;
+  case ';':
+    unget(c);
+    NoICEmagic();
+    break;
 #endif
 
-	default:
-		break;
-	}
+  default:
+    break;
+  }
 }
 
 /*)Function	VOID	map()
@@ -669,97 +675,94 @@ link()
  *		The map file is created.
  */
 
-VOID
-map()
-{
-	int i;
-	struct head *hdp;
-	struct lbfile *lbfh;
+VOID map() {
+  int i;
+  struct head *hdp;
+  struct lbfile *lbfh;
 
-	if (mflag == 0) return;
+  if (mflag == 0)
+    return;
 
-	/*
-	 * Open Map File
-	 */
-	mfp = afile(linkp->f_idp, "map", 1);
-	if (mfp == NULL) {
-		lkexit(ER_FATAL);
-	}
+  /*
+   * Open Map File
+   */
+  mfp = afile(linkp->f_idp, "map", 1);
+  if (mfp == NULL) {
+    lkexit(ER_FATAL);
+  }
 
-	/*
-	 * Output Map Bank/Area Lists
-	 */
-	page = 0;
-	for (bp = bankp; bp != NULL; bp = bp->b_bp) {
-		for (ap = areap; ap != NULL; ap = ap->a_ap) {
-			if (ap->a_bp == bp)
-				lstarea(ap, bp);
-		}
-	}
+  /*
+   * Output Map Bank/Area Lists
+   */
+  page = 0;
+  for (bp = bankp; bp != NULL; bp = bp->b_bp) {
+    for (ap = areap; ap != NULL; ap = ap->a_ap) {
+      if (ap->a_bp == bp)
+        lstarea(ap, bp);
+    }
+  }
 
-	/*
-	 * List Linked Files
-	 */
-	newpag(mfp);
-	fprintf(mfp,
-"\nFiles Linked                              [ module(s) ]\n\n");
-	hdp = headp;
-	filep = linkp->f_flp;
-	while (filep) {
-		fprintf(mfp, "%-40.40s  [ ", filep->f_idp);
-		i = 0;
-		while ((hdp != NULL) && (hdp->h_lfile == filep)) {
-			if (i)
-				fprintf(mfp, ",\n%44s", "");
-			fprintf(mfp, "%-.32s", hdp->m_id);
-			hdp = hdp->h_hp;
-			i++;
-		}
-		if (i)
-			fprintf(mfp, " ]");
-		fprintf(mfp, "\n");
-		filep = filep->f_flp;
-	}
-	fprintf(mfp, "\n");
-	/*
-	 * List Linked Libraries
-	 */
-	if (lbfhead != NULL) {
-		fprintf(mfp,
-"\nLibraries Linked                          [ object file ]\n\n");
-		for (lbfh=lbfhead; lbfh; lbfh=lbfh->next) {
-			fprintf(mfp, "%-40.40s  [ %-.32s ]\n",
-				lbfh->libspc, lbfh->relfil);
-		}
-		fprintf(mfp, "\n");
-	}
-	/*
-	 * List Base Address Definitions
-	 */
-	if (basep) {
-		newpag(mfp);
-		fprintf(mfp, "\nUser Base Address Definitions\n\n");
-		bsp = basep;
-		while (bsp) {
-			fprintf(mfp, "%s\n", bsp->b_strp);
-			bsp = bsp->b_base;
-		}
-	}
-	/*
-	 * List Global Definitions
-	 */
-	if (globlp) {
-		newpag(mfp);
-		fprintf(mfp, "\nUser Global Definitions\n\n");
-		gsp = globlp;
-		while (gsp) {
-			fprintf(mfp, "%s\n", gsp->g_strp);
-			gsp = gsp->g_globl;
-		}
-	}
-	fprintf(mfp, "\n\f");
-	chkbank(mfp);
-	symdef(mfp);
+  /*
+   * List Linked Files
+   */
+  newpag(mfp);
+  fprintf(mfp, "\nFiles Linked                              [ module(s) ]\n\n");
+  hdp = headp;
+  filep = linkp->f_flp;
+  while (filep) {
+    fprintf(mfp, "%-40.40s  [ ", filep->f_idp);
+    i = 0;
+    while ((hdp != NULL) && (hdp->h_lfile == filep)) {
+      if (i)
+        fprintf(mfp, ",\n%44s", "");
+      fprintf(mfp, "%-.32s", hdp->m_id);
+      hdp = hdp->h_hp;
+      i++;
+    }
+    if (i)
+      fprintf(mfp, " ]");
+    fprintf(mfp, "\n");
+    filep = filep->f_flp;
+  }
+  fprintf(mfp, "\n");
+  /*
+   * List Linked Libraries
+   */
+  if (lbfhead != NULL) {
+    fprintf(mfp,
+            "\nLibraries Linked                          [ object file ]\n\n");
+    for (lbfh = lbfhead; lbfh; lbfh = lbfh->next) {
+      fprintf(mfp, "%-40.40s  [ %-.32s ]\n", lbfh->libspc, lbfh->relfil);
+    }
+    fprintf(mfp, "\n");
+  }
+  /*
+   * List Base Address Definitions
+   */
+  if (basep) {
+    newpag(mfp);
+    fprintf(mfp, "\nUser Base Address Definitions\n\n");
+    bsp = basep;
+    while (bsp) {
+      fprintf(mfp, "%s\n", bsp->b_strp);
+      bsp = bsp->b_base;
+    }
+  }
+  /*
+   * List Global Definitions
+   */
+  if (globlp) {
+    newpag(mfp);
+    fprintf(mfp, "\nUser Global Definitions\n\n");
+    gsp = globlp;
+    while (gsp) {
+      fprintf(mfp, "%s\n", gsp->g_strp);
+      gsp = gsp->g_globl;
+    }
+  }
+  fprintf(mfp, "\n\f");
+  chkbank(mfp);
+  symdef(mfp);
 }
 
 /*)Function	int	parse()
@@ -816,223 +819,217 @@ map()
  *		structure lfile is created.
  */
 
-int
-parse()
-{
-	int c, idx;
-	char *p;
-	int sv_type;
-	char fid[FILSPC+FILSPC];
+int parse() {
+  int c, idx;
+  char *p;
+  int sv_type;
+  char fid[FILSPC + FILSPC];
 
-	while ((c = getnb()) != 0) {
-		if ( c == '-') {
-			while (ctype[c=get()] & LETTER) {
-				switch(c) {
+  while ((c = getnb()) != 0) {
+    if (c == '-') {
+      while (ctype[c = get()] & LETTER) {
+        switch (c) {
 
-				case 'h':
-				case 'H':
-					usage();
-					break;
+        case 'h':
+        case 'H':
+          usage();
+          break;
 
-				case 'c':
-				case 'C':
-					if (startp->f_type != 0)
-						break;
-					startp->f_type = F_STD;
-					doparse();
-					return(0);
+        case 'c':
+        case 'C':
+          if (startp->f_type != 0)
+            break;
+          startp->f_type = F_STD;
+          doparse();
+          return (0);
 
-				case 'f':
-				case 'F':
-					if (startp->f_type == F_LNK)
-						return(0);
-					unget(getnb());
-					if (*ip == 0) {
-						usage();
-						lkexit(ER_FATAL);
-					}
-					sv_type = startp->f_type;
-					startp->f_idp = strsto(ip);
-					startp->f_idx = fndidx(ip);
-					startp->f_type = F_LNK;
-					doparse();
-					if (sv_type == F_STD) {
-						cfp = NULL;
-						sfp = NULL;
-						startp->f_type = F_STD;
-						filep = startp;
-					}
-					return(0);
+        case 'f':
+        case 'F':
+          if (startp->f_type == F_LNK)
+            return (0);
+          unget(getnb());
+          if (*ip == 0) {
+            usage();
+            lkexit(ER_FATAL);
+          }
+          sv_type = startp->f_type;
+          startp->f_idp = strsto(ip);
+          startp->f_idx = fndidx(ip);
+          startp->f_type = F_LNK;
+          doparse();
+          if (sv_type == F_STD) {
+            cfp = NULL;
+            sfp = NULL;
+            startp->f_type = F_STD;
+            filep = startp;
+          }
+          return (0);
 
-				case 'i':
-				case 'I':
-					oflag = 1;
-					if ((c=get()) == '1') {
-						o1flag = 1;
-					} else {
-						unget(c);
-					}
-					break;
+        case 'i':
+        case 'I':
+          oflag = 1;
+          if ((c = get()) == '1') {
+            o1flag = 1;
+          } else {
+            unget(c);
+          }
+          break;
 
-				case 's':
-				case 'S':
-					oflag = 2;
-					break;
+        case 's':
+        case 'S':
+          oflag = 2;
+          break;
 
-				case 't':
-				case 'T':
-					oflag = 3;
-					break;
+        case 't':
+        case 'T':
+          oflag = 3;
+          break;
 
-				case 'o':
-				case 'O':
-					objflg = 0;
-					break;
+        case 'o':
+        case 'O':
+          objflg = 0;
+          break;
 
-				case 'v':
-				case 'V':
-					objflg = 1;
-					break;
+        case 'v':
+        case 'V':
+          objflg = 1;
+          break;
 
-				case 'm':
-				case 'M':
-					mflag = 1;
-					if ((c=get()) == '1') {
-						m1flag = 1;
-					} else {
-						unget(c);
-					}
-					break;
+        case 'm':
+        case 'M':
+          mflag = 1;
+          if ((c = get()) == '1') {
+            m1flag = 1;
+          } else {
+            unget(c);
+          }
+          break;
 
 #if NOICE
-				case 'j':
-				case 'J':
-					jflag = 1;
-					break;
+        case 'j':
+        case 'J':
+          jflag = 1;
+          break;
 #endif
 
-				case 'u':
-				case 'U':
-					uflag = 1;
-					break;
+        case 'u':
+        case 'U':
+          uflag = 1;
+          break;
 
-				case 'x':
-				case 'X':
-					xflag = 0;
-					break;
+        case 'x':
+        case 'X':
+          xflag = 0;
+          break;
 
-				case 'q':
-				case 'Q':
-					xflag = 1;
-					break;
+        case 'q':
+        case 'Q':
+          xflag = 1;
+          break;
 
-				case 'd':
-				case 'D':
-					xflag = 2;
-					break;
+        case 'd':
+        case 'D':
+          xflag = 2;
+          break;
 
-				case 'e':
-				case 'E':
-					return(1);
+        case 'e':
+        case 'E':
+          return (1);
 
-				case 'n':
-				case 'N':
-					pflag = 0;
-					break;
+        case 'n':
+        case 'N':
+          pflag = 0;
+          break;
 
-				case 'p':
-				case 'P':
-					pflag = 1;
-					break;
+        case 'p':
+        case 'P':
+          pflag = 1;
+          break;
 
-				case 'b':
-				case 'B':
-					bassav();
-					return(0);
+        case 'b':
+        case 'B':
+          bassav();
+          return (0);
 
-				case 'g':
-				case 'G':
-					gblsav();
-					return(0);
+        case 'g':
+        case 'G':
+          gblsav();
+          return (0);
 
-				case 'k':
-				case 'K':
-					addpath();
-					return(0);
+        case 'k':
+        case 'K':
+          addpath();
+          return (0);
 
-				case 'l':
-				case 'L':
-					addlib();
-					return(0);
+        case 'l':
+        case 'L':
+          addlib();
+          return (0);
 
-				case 'w':
-				case 'W':
-					wflag = 1;
-					break;
+        case 'w':
+        case 'W':
+          wflag = 1;
+          break;
 
 #if SDCDB
-				case 'y':
-				case 'Y':
-					yflag = 1;
-					break;
+        case 'y':
+        case 'Y':
+          yflag = 1;
+          break;
 #endif
 
-				case 'z':
-				case 'Z':
-					zflag = 1;
-					break;
+        case 'z':
+        case 'Z':
+          zflag = 1;
+          break;
 
-				default:
-					fprintf(stderr,
-					    "Unkown option -%c ignored\n", c);
-					break;
-				}
-			}
-		} else
-		if (ctype[c] != ILL) {
-			if (linkp == NULL) {
-				linkp = (struct lfile *)
-						new (sizeof (struct lfile));
-				lfp = linkp;
-				lfp->f_type = F_OUT;
-			} else {
-				lfp->f_flp = (struct lfile *)
-						new (sizeof (struct lfile));
-				lfp = lfp->f_flp;
-				lfp->f_type = F_REL;
-			}
-			/*
-			 * Copy Path from .LNK file
-			 */
-			idx = startp->f_idx;
-			strncpy(fid, startp->f_idp, idx);
-			/*
-			 * Concatenate the file spec
-			 */
-			getfid(fid + idx, c);
-			/*
-			 * If file spec has a path
-			 * 	use it
-			 * else
-			 *	use path of .LNK file
-			 */
-			if (fndidx(fid + idx) != 0) {
-				p = fid + idx;
-			} else {
-				p = fid;
-			}
-			/*
-			 * Save file specification
-			 */
-			lfp->f_idp = strsto(p);
-			lfp->f_idx = fndidx(p);
-			lfp->f_obj = objflg;
-		} else {
-			fprintf(stderr, "Invalid input");
-			lkexit(ER_FATAL);
-		}
-	}
-	return(0);
+        default:
+          fprintf(stderr, "Unkown option -%c ignored\n", c);
+          break;
+        }
+      }
+    } else if (ctype[c] != ILL) {
+      if (linkp == NULL) {
+        linkp = (struct lfile *)new (sizeof(struct lfile));
+        lfp = linkp;
+        lfp->f_type = F_OUT;
+      } else {
+        lfp->f_flp = (struct lfile *)new (sizeof(struct lfile));
+        lfp = lfp->f_flp;
+        lfp->f_type = F_REL;
+      }
+      /*
+       * Copy Path from .LNK file
+       */
+      idx = startp->f_idx;
+      strncpy(fid, startp->f_idp, idx);
+      /*
+       * Concatenate the file spec
+       */
+      getfid(fid + idx, c);
+      /*
+       * If file spec has a path
+       * 	use it
+       * else
+       *	use path of .LNK file
+       */
+      if (fndidx(fid + idx) != 0) {
+        p = fid + idx;
+      } else {
+        p = fid;
+      }
+      /*
+       * Save file specification
+       */
+      lfp->f_idp = strsto(p);
+      lfp->f_idx = fndidx(p);
+      lfp->f_obj = objflg;
+    } else {
+      fprintf(stderr, "Invalid input");
+      lkexit(ER_FATAL);
+    }
+  }
+  return (0);
 }
 
 /*)Function	VOID	doparse()
@@ -1070,28 +1067,26 @@ parse()
  *		structure lfile may be updated.
  */
 
-VOID
-doparse()
-{
-	cfp = NULL;
-	sfp = NULL;
-	filep = startp;
-	while (1) {
-		ip = ib;
-		if (nxtline() == 0)
-			break;
-		if (pflag && cfp->f_type != F_STD)
-			fprintf(stdout, "ASlink >> %s\n", ip);
-		if (*ip == 0 || parse())
-			break;
-	}
-	if((sfp != NULL) && (sfp != stdin)) {
-		fclose(sfp);
-	}
-	sfp = NULL;
-	startp->f_idp = "";
-	startp->f_idx = 0;
-	startp->f_type = 0;
+VOID doparse() {
+  cfp = NULL;
+  sfp = NULL;
+  filep = startp;
+  while (1) {
+    ip = ib;
+    if (nxtline() == 0)
+      break;
+    if (pflag && cfp->f_type != F_STD)
+      fprintf(stdout, "ASlink >> %s\n", ip);
+    if (*ip == 0 || parse())
+      break;
+  }
+  if ((sfp != NULL) && (sfp != stdin)) {
+    fclose(sfp);
+  }
+  sfp = NULL;
+  startp->f_idp = "";
+  startp->f_idx = 0;
+  startp->f_type = 0;
 }
 
 /*)Function	VOID	bassav()
@@ -1121,23 +1116,18 @@ doparse()
  *		The basep structure is created.
  */
 
-VOID
-bassav()
-{
-	if (basep == NULL) {
-		basep = (struct base *)
-			new (sizeof (struct base));
-		bsp = basep;
-	} else {
-		bsp->b_base = (struct base *)
-				new (sizeof (struct base));
-		bsp = bsp->b_base;
-	}
-	unget(getnb());
-	bsp->b_strp = (char *) new (strlen(ip)+1);
-	strcpy(bsp->b_strp, ip);
+VOID bassav() {
+  if (basep == NULL) {
+    basep = (struct base *)new (sizeof(struct base));
+    bsp = basep;
+  } else {
+    bsp->b_base = (struct base *)new (sizeof(struct base));
+    bsp = bsp->b_base;
+  }
+  unget(getnb());
+  bsp->b_strp = (char *)new (strlen(ip) + 1);
+  strcpy(bsp->b_strp, ip);
 }
-
 
 /*)Function	VOID	gblsav()
  *
@@ -1166,23 +1156,18 @@ bassav()
  *		The globlp structure is created.
  */
 
-VOID
-gblsav()
-{
-	if (globlp == NULL) {
-		globlp = (struct globl *)
-			new (sizeof (struct globl));
-		gsp = globlp;
-	} else {
-		gsp->g_globl = (struct globl *)
-				new (sizeof (struct globl));
-		gsp = gsp->g_globl;
-	}
-	unget(getnb());
-	gsp->g_strp = (char *) new (strlen(ip)+1);
-	strcpy(gsp->g_strp, ip);
+VOID gblsav() {
+  if (globlp == NULL) {
+    globlp = (struct globl *)new (sizeof(struct globl));
+    gsp = globlp;
+  } else {
+    gsp->g_globl = (struct globl *)new (sizeof(struct globl));
+    gsp = gsp->g_globl;
+  }
+  unget(getnb());
+  gsp->g_strp = (char *)new (strlen(ip) + 1);
+  strcpy(gsp->g_strp, ip);
 }
-
 
 /*)Function	VOID	setgbl()
  *
@@ -1216,40 +1201,36 @@ gblsav()
  *		The value of a variable is set.
  */
 
-VOID
-setgbl()
-{
-	int v;
-	struct sym *sp;
-	char id[NCPS];
+VOID setgbl() {
+  int v;
+  struct sym *sp;
+  char id[NCPS];
 
-	gsp = globlp;
-	while (gsp) {
-		ip = gsp->g_strp;
-		getid(id, -1);
-		if (getnb() == '=') {
-			v = (int) expr(0);
-			sp = lkpsym(id, 0);
-			if (sp == NULL) {
-				fprintf(stderr,
-				"No definition of symbol %s\n", id);
-				lkerr++;
-			} else {
-				if (sp->s_type & S_DEF) {
-					fprintf(stderr,
-					"Redefinition of symbol %s\n", id);
-					lkerr++;
-					sp->s_axp = NULL;
-				}
-				sp->s_addr = v;
-				sp->s_type |= S_DEF;
-			}
-		} else {
-			fprintf(stderr, "No '=' in global expression");
-			lkerr++;
-		}
-		gsp = gsp->g_globl;
-	}
+  gsp = globlp;
+  while (gsp) {
+    ip = gsp->g_strp;
+    getid(id, -1);
+    if (getnb() == '=') {
+      v = (int)expr(0);
+      sp = lkpsym(id, 0);
+      if (sp == NULL) {
+        fprintf(stderr, "No definition of symbol %s\n", id);
+        lkerr++;
+      } else {
+        if (sp->s_type & S_DEF) {
+          fprintf(stderr, "Redefinition of symbol %s\n", id);
+          lkerr++;
+          sp->s_axp = NULL;
+        }
+        sp->s_addr = v;
+        sp->s_type |= S_DEF;
+      }
+    } else {
+      fprintf(stderr, "No '=' in global expression");
+      lkerr++;
+    }
+    gsp = gsp->g_globl;
+  }
 }
 
 /*)Function	FILE *	afile(fn, ft, wf)
@@ -1298,79 +1279,92 @@ setgbl()
  *		File is opened for read or write.
  */
 
-FILE *
-afile(fn, ft, wf)
+FILE *afile(fn, ft, wf)
 char *fn;
 char *ft;
 int wf;
 {
-	char *p1, *p2;
-	int c;
-	char * frmt;
-	FILE *fp;
+  char *p1, *p2;
+  int c;
+  char *frmt;
+  FILE *fp;
 
-	if (strlen(fn) > (FILSPC-7)) {
-		fprintf(stderr, "?ASlink-Error-<filspc to long> : \"%s\"\n", fn);
-		lkerr++;
-		return(NULL);
-	}
+  if (strlen(fn) > (FILSPC - 7)) {
+    fprintf(stderr, "?ASlink-Error-<filspc to long> : \"%s\"\n", fn);
+    lkerr++;
+    return (NULL);
+  }
 
-	/*
-	 * Skip The Path
-	 */
-	strcpy(afspec, fn);
-	c = fndidx(afspec);
+  /*
+   * Skip The Path
+   */
+  strcpy(afspec, fn);
+  c = fndidx(afspec);
 
-	/*
-	 * Skip to File Extension separator
-	 */
-	p1 = strrchr(&afspec[c], FSEPX);
+  /*
+   * Skip to File Extension separator
+   */
+  p1 = strrchr(&afspec[c], FSEPX);
 
-	/*
-	 * Copy File Extension
-	 */
-	 p2 = ft;
-	 if (*p2 == 0) {
-		if (p1 == NULL) {
-			p2 = "rel";
-		} else {
-			p2 = strrchr(&fn[c], FSEPX) + 1;
-		}
-	}
-	if (p1 == NULL) {
-		p1 = &afspec[strlen(afspec)];
-	}
-	*p1++ = FSEPX;
-	while ((c = *p2++) != 0) {
-		if (p1 < &afspec[FILSPC-1])
-			*p1++ = c;
-	}
-	*p1++ = 0;
+  /*
+   * Copy File Extension
+   */
+  p2 = ft;
+  if (*p2 == 0) {
+    if (p1 == NULL) {
+      p2 = "rel";
+    } else {
+      p2 = strrchr(&fn[c], FSEPX) + 1;
+    }
+  }
+  if (p1 == NULL) {
+    p1 = &afspec[strlen(afspec)];
+  }
+  *p1++ = FSEPX;
+  while ((c = *p2++) != 0) {
+    if (p1 < &afspec[FILSPC - 1])
+      *p1++ = c;
+  }
+  *p1++ = 0;
 
-	/*
-	 * Select (Binary) Read/Write
-	 */
-	switch(wf % 4) {
-	default:
-	case 0:	frmt = "r";	break;
-	case 1:	frmt = "w";	break;
-#ifdef	DECUS
-	case 2:	frmt = "rn";	break;
-	case 3:	frmt = "wn";	break;
+  /*
+   * Select (Binary) Read/Write
+   */
+  switch (wf % 4) {
+  default:
+  case 0:
+    frmt = "r";
+    break;
+  case 1:
+    frmt = "w";
+    break;
+#ifdef DECUS
+  case 2:
+    frmt = "rn";
+    break;
+  case 3:
+    frmt = "wn";
+    break;
 #else
-	case 2:	frmt = "rb";	break;
-	case 3:	frmt = "wb";	break;
+  case 2:
+    frmt = "rb";
+    break;
+  case 3:
+    frmt = "wb";
+    break;
 #endif
-	}
-	if ((fp = fopen(afspec, frmt)) == NULL) {
-		if (wf < 4) {
-			fprintf(stderr, "?ASlink-Error-<cannot %s> : \"%s\"\n", (frmt[0] == 'w')?"create":"open", afspec);
-			lkerr++;
-		} else {
-			fprintf(stderr, "?ASlink-Warning-<cannot %s> : \"%s\"\n", (frmt[0] == 'w')?"create":"open", afspec);
-		}
-	}
-	return (fp);
+  }
+  if ((fp = fopen(afspec, frmt)) == NULL) {
+    if (wf < 4) {
+      fprintf(stderr, "?ASlink-Error-<cannot %s> : \"%s\"\n",
+              (frmt[0] == 'w') ? "create" : "open", afspec);
+      lkerr++;
+    } else {
+      fprintf(stderr, "?ASlink-Warning-<cannot %s> : \"%s\"\n",
+              (frmt[0] == 'w') ? "create" : "open", afspec);
+    }
+  }
+  return (fp);
 }
 
 /*)Function	int	fndidx(str)
@@ -1398,21 +1392,26 @@ int wf;
  *		none
  */
 
-int
-fndidx(str)
+int fndidx(str)
 char *str;
 {
-	char *p1, *p2;
+  char *p1, *p2;
 
-	/*
-	 * Skip Path Delimiters
-	 */
-	p1 = str;
-	if ((p2 = strrchr(p1,  ':')) != NULL) { p1 = p2 + 1; }
-	if ((p2 = strrchr(p1,  '/')) != NULL) { p1 = p2 + 1; }
-	if ((p2 = strrchr(p1, '\\')) != NULL) { p1 = p2 + 1; }
+  /*
+   * Skip Path Delimiters
+   */
+  p1 = str;
+  if ((p2 = strrchr(p1, ':')) != NULL) {
+    p1 = p2 + 1;
+  }
+  if ((p2 = strrchr(p1, '/')) != NULL) {
+    p1 = p2 + 1;
+  }
+  if ((p2 = strrchr(p1, '\\')) != NULL) {
+    p1 = p2 + 1;
+  }
 
-	return((int) (p1 - str));
+  return ((int)(p1 - str));
 }
 
 /*)Function	int	fndext(str)
@@ -1438,66 +1437,65 @@ char *str;
  *		none
  */
 
-int
-fndext(str)
-char * str;
+int fndext(str)
+char *str;
 {
-	char *p1, *p2;
+  char *p1, *p2;
 
-	/*
-	 * Find the file separator
-	 */
-	p1 = str + strlen(str);
-	if ((p2 = strrchr(str,  FSEPX)) != NULL) { p1 = p2; }
+  /*
+   * Find the file separator
+   */
+  p1 = str + strlen(str);
+  if ((p2 = strrchr(str, FSEPX)) != NULL) {
+    p1 = p2;
+  }
 
-	return((int) (p1 - str));
+  return ((int)(p1 - str));
 }
 
-
 char *usetxt[] = {
-	"Usage: [-Options] [-Option with arg] file",
-	"Usage: [-Options] [-Option with arg] outfile file1 [file2 ...]",
-	"  -h   or NO ARGUMENTS  Show this help list",
-	"  -p   Echo commands to stdout (default)",
-	"  -n   No echo of commands to stdout",
-	"Alternates to Command Line Input:",
-	"  -c                   ASlink >> prompt input",
-	"  -f   file[.lnk]      Command File input",
-	"Librarys:",
-	"  -k   Library path specification, one per -k",
-	"  -l   Library file specification, one per -l",
-	"Relocation:",
-	"  -b   area base address=expression",
-	"  -g   global symbol=expression",
-	"Map format:",
-	"  -m   Map output generated as (out)file[.map]",
-	"  -m1    Linker generated symbols included in (out)file[.map]",
-	"  -w   Wide listing format for map file",
-	"  -x   Hexadecimal (default)",
-	"  -d   Decimal",
-	"  -q   Octal",
-	"Output:",
-	"  -i   Intel Hex as (out)file[.i--]",
-	"  -i1    Legacy: start adddress record type set to 1",
-	"  -s   Motorola S Record as (out)file[.s--]",
-	"  -t   Tandy CoCo Disk BASIC binary as (out)file[.bi-]",
+    "Usage: [-Options] [-Option with arg] file",
+    "Usage: [-Options] [-Option with arg] outfile file1 [file2 ...]",
+    "  -h   or NO ARGUMENTS  Show this help list",
+    "  -p   Echo commands to stdout (default)",
+    "  -n   No echo of commands to stdout",
+    "Alternates to Command Line Input:",
+    "  -c                   ASlink >> prompt input",
+    "  -f   file[.lnk]      Command File input",
+    "Librarys:",
+    "  -k   Library path specification, one per -k",
+    "  -l   Library file specification, one per -l",
+    "Relocation:",
+    "  -b   area base address=expression",
+    "  -g   global symbol=expression",
+    "Map format:",
+    "  -m   Map output generated as (out)file[.map]",
+    "  -m1    Linker generated symbols included in (out)file[.map]",
+    "  -w   Wide listing format for map file",
+    "  -x   Hexadecimal (default)",
+    "  -d   Decimal",
+    "  -q   Octal",
+    "Output:",
+    "  -i   Intel Hex as (out)file[.i--]",
+    "  -i1    Legacy: start adddress record type set to 1",
+    "  -s   Motorola S Record as (out)file[.s--]",
+    "  -t   Tandy CoCo Disk BASIC binary as (out)file[.bi-]",
 #if NOICE
-	"  -j   NoICE Debug output as (out)file[.noi]",
+    "  -j   NoICE Debug output as (out)file[.noi]",
 #endif
 #if SDCDB
-	"  -y   SDCDB Debug output as (out)file[.cdb]",
+    "  -y   SDCDB Debug output as (out)file[.cdb]",
 #endif
-	"  -o   Linked file/library object output enable (default)",
-	"  -v   Linked file/library object output disable",
-	"List:",
-	"  -u   Update listing file(s) with link data as file(s)[.rst]",
-	"Case Sensitivity:",
-	"  -z   Disable Case Sensitivity for Symbols",
-	"End:",
-	"  -e   or null line terminates input",
-	"",
-	0
-};
+    "  -o   Linked file/library object output enable (default)",
+    "  -v   Linked file/library object output disable",
+    "List:",
+    "  -u   Update listing file(s) with link data as file(s)[.rst]",
+    "Case Sensitivity:",
+    "  -z   Disable Case Sensitivity for Symbols",
+    "End:",
+    "  -e   or null line terminates input",
+    "",
+    0};
 
 /*)Function	VOID	usage()
  *
@@ -1518,15 +1516,13 @@ char *usetxt[] = {
  *		none
  */
 
-VOID
-usage()
-{
-	char	**dp;
+VOID usage() {
+  char **dp;
 
-	fprintf(stderr, "\nASxxxx Linker %s", VERSION);
-	fprintf(stderr, "\nCopyright (C) %s  Alan R. Baldwin", COPYRIGHT);
-	fprintf(stderr, "\nThis program comes with ABSOLUTELY NO WARRANTY.\n\n");
-	for (dp = usetxt; *dp; dp++) {
-		fprintf(stderr, "%s\n", *dp);
-	}
+  fprintf(stderr, "\nASxxxx Linker %s", VERSION);
+  fprintf(stderr, "\nCopyright (C) %s  Alan R. Baldwin", COPYRIGHT);
+  fprintf(stderr, "\nThis program comes with ABSOLUTELY NO WARRANTY.\n\n");
+  for (dp = usetxt; *dp; dp++) {
+    fprintf(stderr, "%s\n", *dp);
+  }
 }

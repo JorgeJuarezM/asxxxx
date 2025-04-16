@@ -24,7 +24,7 @@
  *   With enhancements by
  *
  * 	G. Osborn
- *	gary@s-4.com.  
+ *	gary@s-4.com.
  */
 
 #include "aslink.h"
@@ -74,42 +74,44 @@
  *		The REL data is output in the required format.
  */
 
-VOID
-lkout(i)
+VOID lkout(i)
 int i;
 {
-	int j;
+  int j;
 
-	if (i && obj_flag) { return; }
-	if (ofp == NULL)   { return; }
+  if (i && obj_flag) {
+    return;
+  }
+  if (ofp == NULL) {
+    return;
+  }
 
-	/*
-	 * Create the Byte Output Address
-	 */
-	for (j=1; j<pcb; j++) {
-		adb_xb(pc, 0);
-	}
+  /*
+   * Create the Byte Output Address
+   */
+  for (j = 1; j < pcb; j++) {
+    adb_xb(pc, 0);
+  }
 
-	/*
-	 * Intel Formats
-	 */
-	if (oflag == 1) {
-		ixx(i);
-	} else
-	/*
-	 * Motorola Formats
-	 */
-	if (oflag == 2) {
-		sxx(i);
-	} else
-	/*
-	 * Disk Basic Formats
-	 */
-	if (oflag == 3) {
-		dbx(i);
-	}
+  /*
+   * Intel Formats
+   */
+  if (oflag == 1) {
+    ixx(i);
+  } else
+    /*
+     * Motorola Formats
+     */
+    if (oflag == 2) {
+      sxx(i);
+    } else
+      /*
+       * Disk Basic Formats
+       */
+      if (oflag == 3) {
+        dbx(i);
+      }
 }
-
 
 /*)Function	lkflush()
  *
@@ -133,31 +135,30 @@ int i;
  *		to the output file.
  */
 
-VOID
-lkflush()
-{
-	if (ofp == NULL)   { return; }
+VOID lkflush() {
+  if (ofp == NULL) {
+    return;
+  }
 
-	/*
-	 * Intel Formats
-	 */
- 	if (oflag == 1) {
-		iflush();
-	} else
-	/*
-	 * Motorola Formats
-	 */
-	if (oflag == 2) {
-		sflush();
-	} else
-	/*
-	 * Disk Basic Formats
-	 */
-	if (oflag == 3) {
-		dflush();
-	}
+  /*
+   * Intel Formats
+   */
+  if (oflag == 1) {
+    iflush();
+  } else
+    /*
+     * Motorola Formats
+     */
+    if (oflag == 2) {
+      sflush();
+    } else
+      /*
+       * Disk Basic Formats
+       */
+      if (oflag == 3) {
+        dflush();
+      }
 }
-
 
 /*Intel Format
  *      Record Mark Field    -  This  field  signifies  the  start  of a
@@ -264,95 +265,92 @@ lkflush()
  *	Plus 32 data bytes (64 characters)
  */
 
-VOID
-ixx(i)
+VOID ixx(i)
 int i;
 {
-	int k;
-	struct sym *sp;
-	a_uint j, lo_addr, hi_addr, symadr, chksum;
+  int k;
+  struct sym *sp;
+  a_uint j, lo_addr, hi_addr, symadr, chksum;
 
-
-	if (i) {
-		if (hilo == 0) {
-			switch(a_bytes){
-			default:
-			case 2:
-				j = rtval[0];
-				rtval[0] = rtval[1];
-				rtval[1] = j;
-				break;
-			case 3:
-				j = rtval[0];
-				rtval[0] = rtval[2];
-				rtval[2] = j;
-				break;
-			case 4:
-				j = rtval[0];
-				rtval[0] = rtval[3];
-				rtval[3] = j;
-				j = rtval[2];
-				rtval[2] = rtval[1];
-				rtval[1] = j;
-				break;
-			}
-		}
-		for (i=0,rtadr2=0; i<a_bytes; i++) {
-			rtadr2 = (rtadr2 << 8) | rtval[i];
-		}
-		if ((rtadr2 != rtadr1) || rtaflg) {
-			/*
-			 * data bytes not contiguous between records
-			 */
-			iflush();
-			rtadr0 = rtadr1 = rtadr2;
-			rtaflg = 0;
-		}
-		for (k=a_bytes; k<rtcnt; k++) {
-			if (rtflg[k]) {
-				rtbuf[(int) (rtadr1++ - rtadr0)] = rtval[k];
-				if (rtadr1 - rtadr0 == IXXMAXBYTES) {
-					iflush();
-				}
-			}
-		}
-	} else {
-		sp = lkpsym(".__.END.", 0);
-		if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
-			symadr = symval(sp);
-			lo_addr = symadr & 0xffff;
-			if (a_bytes > 2) {
-				hi_addr = (symadr >> 16) & 0xffff;
-				chksum =  0x00;
-				chksum += hi_addr;
-				chksum += hi_addr >> 8;
-				chksum += 0x04;
-#ifdef	LONGINT
-				fprintf(ofp, ":00%04lX04%02lX\n", hi_addr, (~chksum + 1) & 0x00ff);
+  if (i) {
+    if (hilo == 0) {
+      switch (a_bytes) {
+      default:
+      case 2:
+        j = rtval[0];
+        rtval[0] = rtval[1];
+        rtval[1] = j;
+        break;
+      case 3:
+        j = rtval[0];
+        rtval[0] = rtval[2];
+        rtval[2] = j;
+        break;
+      case 4:
+        j = rtval[0];
+        rtval[0] = rtval[3];
+        rtval[3] = j;
+        j = rtval[2];
+        rtval[2] = rtval[1];
+        rtval[1] = j;
+        break;
+      }
+    }
+    for (i = 0, rtadr2 = 0; i < a_bytes; i++) {
+      rtadr2 = (rtadr2 << 8) | rtval[i];
+    }
+    if ((rtadr2 != rtadr1) || rtaflg) {
+      /*
+       * data bytes not contiguous between records
+       */
+      iflush();
+      rtadr0 = rtadr1 = rtadr2;
+      rtaflg = 0;
+    }
+    for (k = a_bytes; k < rtcnt; k++) {
+      if (rtflg[k]) {
+        rtbuf[(int)(rtadr1++ - rtadr0)] = rtval[k];
+        if (rtadr1 - rtadr0 == IXXMAXBYTES) {
+          iflush();
+        }
+      }
+    }
+  } else {
+    sp = lkpsym(".__.END.", 0);
+    if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
+      symadr = symval(sp);
+      lo_addr = symadr & 0xffff;
+      if (a_bytes > 2) {
+        hi_addr = (symadr >> 16) & 0xffff;
+        chksum = 0x00;
+        chksum += hi_addr;
+        chksum += hi_addr >> 8;
+        chksum += 0x04;
+#ifdef LONGINT
+        fprintf(ofp, ":00%04lX04%02lX\n", hi_addr, (~chksum + 1) & 0x00ff);
 #else
-				fprintf(ofp, ":00%04X04%02X\n", hi_addr, (~chksum + 1) & 0x00ff);
+        fprintf(ofp, ":00%04X04%02X\n", hi_addr, (~chksum + 1) & 0x00ff);
 #endif
-			}
-			chksum =  0x00;
-			chksum += lo_addr;
-			chksum += lo_addr >> 8;
-			if (o1flag != 0) {
-				j = 0x01;
-			} else {
-				j = 0x03;
-			}
-			chksum += j;
-#ifdef	LONGINT
-			fprintf(ofp, ":00%04lX%02lX%02lX\n", lo_addr, j, (~chksum + 1) & 0x00ff);
+      }
+      chksum = 0x00;
+      chksum += lo_addr;
+      chksum += lo_addr >> 8;
+      if (o1flag != 0) {
+        j = 0x01;
+      } else {
+        j = 0x03;
+      }
+      chksum += j;
+#ifdef LONGINT
+      fprintf(ofp, ":00%04lX%02lX%02lX\n", lo_addr, j, (~chksum + 1) & 0x00ff);
 #else
-			fprintf(ofp, ":00%04X%02X%02X\n", lo_addr, j, (~chksum + 1) & 0x00ff);
+      fprintf(ofp, ":00%04X%02X%02X\n", lo_addr, j, (~chksum + 1) & 0x00ff);
 #endif
-		}
+    }
 
-		fprintf(ofp, ":00000001FF\n");
-	}
+    fprintf(ofp, ":00000001FF\n");
+  }
 }
-
 
 /*)Function	iflush()
  *
@@ -394,94 +392,91 @@ int i;
  * to the target system is much improved.
  */
 
-VOID
-iflush()
-{
-	int i, max, reclen;
-	a_uint chksum, lo_addr, hi_addr;
+VOID iflush() {
+  int i, max, reclen;
+  a_uint chksum, lo_addr, hi_addr;
 
-	max = (int) (rtadr1 - rtadr0);
-	if (max) {
+  max = (int)(rtadr1 - rtadr0);
+  if (max) {
 
-		/*
-		 * Only the ":" and the checksum itself are excluded
-		 * from the checksum.  The record length includes
-		 * only the data bytes.
-		 */
-		lo_addr = rtadr0 & 0xffff;
-		reclen = max;
-		chksum = reclen;
-		chksum += lo_addr;
-		chksum += lo_addr >> 8;
-#ifdef	LONGINT
-		fprintf(ofp, ":%02X%04lX00", reclen, lo_addr);
+    /*
+     * Only the ":" and the checksum itself are excluded
+     * from the checksum.  The record length includes
+     * only the data bytes.
+     */
+    lo_addr = rtadr0 & 0xffff;
+    reclen = max;
+    chksum = reclen;
+    chksum += lo_addr;
+    chksum += lo_addr >> 8;
+#ifdef LONGINT
+    fprintf(ofp, ":%02X%04lX00", reclen, lo_addr);
 #else
-		fprintf(ofp, ":%02X%04X00", reclen, lo_addr);
+    fprintf(ofp, ":%02X%04X00", reclen, lo_addr);
 #endif
-		for (i=0; i<max; i++) {
-			chksum += rtbuf[i];
-			fprintf(ofp, "%02X", rtbuf[i] & 0x00ff);
-		}
-		/*
-		 * 2's complement
-		 */
-#ifdef	LONGINT
-		fprintf(ofp, "%02lX\n", (~chksum + 1) & 0x00ff);
+    for (i = 0; i < max; i++) {
+      chksum += rtbuf[i];
+      fprintf(ofp, "%02X", rtbuf[i] & 0x00ff);
+    }
+    /*
+     * 2's complement
+     */
+#ifdef LONGINT
+    fprintf(ofp, "%02lX\n", (~chksum + 1) & 0x00ff);
 #else
-		fprintf(ofp, "%02X\n", (~chksum + 1) & 0x00ff);
+    fprintf(ofp, "%02X\n", (~chksum + 1) & 0x00ff);
 #endif
-		rtadr0 = rtadr1;
-	}
+    rtadr0 = rtadr1;
+  }
 
-	if (a_bytes > 2) {
-		hi_addr = (rtadr2 >> 16) & 0xffff;
-		if ((hi_addr != (rtadr1 >> 16)) || rtaflg) {
-			chksum =  0x00;
-			chksum += hi_addr;
-			chksum += hi_addr >> 8;
-			chksum += 0x04;
-#ifdef	LONGINT
-			fprintf(ofp, ":00%04lX04%02lX\n", hi_addr, (~chksum + 1) & 0x00ff);
+  if (a_bytes > 2) {
+    hi_addr = (rtadr2 >> 16) & 0xffff;
+    if ((hi_addr != (rtadr1 >> 16)) || rtaflg) {
+      chksum = 0x00;
+      chksum += hi_addr;
+      chksum += hi_addr >> 8;
+      chksum += 0x04;
+#ifdef LONGINT
+      fprintf(ofp, ":00%04lX04%02lX\n", hi_addr, (~chksum + 1) & 0x00ff);
 #else
-			fprintf(ofp, ":00%04X04%02X\n", hi_addr, (~chksum + 1) & 0x00ff);
+      fprintf(ofp, ":00%04X04%02X\n", hi_addr, (~chksum + 1) & 0x00ff);
 #endif
-		}
-	}
+    }
+  }
 }
-
 
 /*)S19/S28/S37 Formats
  *      Record Type Field    -  This  field  signifies  the  start  of a
  *                              record and  identifies  the  the  record
- *                              type as follows:  
+ *                              type as follows:
  *
- *             2-Byte Address:      Ascii S1 - Data Record 
- *                                  Ascii S9 - End of File Record 
- *             3-Byte Address:      Ascii S2 - Data Record 
- *                                  Ascii S8 - End of File Record 
- *             4-Byte Address:      Ascii S3 - Data Record 
- *                                  Ascii S7 - End of File Record 
+ *             2-Byte Address:      Ascii S1 - Data Record
+ *                                  Ascii S9 - End of File Record
+ *             3-Byte Address:      Ascii S2 - Data Record
+ *                                  Ascii S8 - End of File Record
+ *             4-Byte Address:      Ascii S3 - Data Record
+ *                                  Ascii S7 - End of File Record
  *
  *      Record Length Field  -  This  field  specifies the record length
  *                              which includes the  address,  data,  and
  *                              checksum   fields.   The  8  bit  record
  *                              length value is converted to  two  ascii
- *                              characters, high digit first.  
+ *                              characters, high digit first.
  *
  *      Load Address Field   -  This  field  consists  of the 4/6/8 ascii
  *                              characters which result from  converting
  *                              the  the  binary value of the address in
  *                              which to begin loading this record.  The
- *                              order is as follows:  
+ *                              order is as follows:
  *
- *           S37:                   High digit of fourth byte of address. 
- *                                  Low digit of fourth byte of address.  
- *           S28/S37:               High digit of third byte of address. 
- *                                  Low digit of third byte of address.  
- *           S19/S28/S37:           High digit of high byte of address. 
- *                                  Low digit of high byte of address.  
- *                                  High digit of low byte of address.  
- *                                  Low digit of low byte of address.  
+ *           S37:                   High digit of fourth byte of address.
+ *                                  Low digit of fourth byte of address.
+ *           S28/S37:               High digit of third byte of address.
+ *                                  Low digit of third byte of address.
+ *           S19/S28/S37:           High digit of high byte of address.
+ *                                  Low digit of high byte of address.
+ *                                  High digit of low byte of address.
+ *                                  Low digit of low byte of address.
  *
  *                              In an End of File record this field con-
  *                              sists of either 4/6/8 ascii zeros or  the
@@ -490,14 +485,14 @@ iflush()
  *      Data Field           -  This  field consists of the actual data,
  *                              converted to two ascii characters,  high
  *                              digit first.  There are no data bytes in
- *                              the End of File record.  
+ *                              the End of File record.
  *
  *      Checksum Field       -  The  checksum  field is the 8 bit binary
  *                              sum of the record length field, the load
  *                              address field, and the data field.  This
  *                              sum is then  complemented  (1's  comple-
  *                              ment)   and   converted   to  two  ascii
- *                              characters, high digit first.  
+ *                              characters, high digit first.
  */
 
 /*)Function	sxx(i)
@@ -551,104 +546,120 @@ iflush()
  *	Plus 32 data bytes (64 characters)
  */
 
-VOID
-sxx(i)
+VOID sxx(i)
 int i;
 {
-	struct sym *sp;
-	char *frmt;
-	int k, reclen;
-	a_uint	j, addr, symadr, chksum;
+  struct sym *sp;
+  char *frmt;
+  int k, reclen;
+  a_uint j, addr, symadr, chksum;
 
-	if (i) {
-		if (hilo == 0) {
-			switch(a_bytes){
-			default:
-			case 2:
-				j = rtval[0];
-				rtval[0] = rtval[1];
-				rtval[1] = j;
-				break;
-			case 3:
-				j = rtval[0];
-				rtval[0] = rtval[2];
-				rtval[2] = j;
-				break;
-			case 4:
-				j = rtval[0];
-				rtval[0] = rtval[3];
-				rtval[3] = j;
-				j = rtval[2];
-				rtval[2] = rtval[1];
-				rtval[1] = j;
-				break;
-			}
-		}
-		for (i=0,rtadr2=0; i<a_bytes; i++) {
-			rtadr2 = (rtadr2 << 8) | rtval[i];
-		}
+  if (i) {
+    if (hilo == 0) {
+      switch (a_bytes) {
+      default:
+      case 2:
+        j = rtval[0];
+        rtval[0] = rtval[1];
+        rtval[1] = j;
+        break;
+      case 3:
+        j = rtval[0];
+        rtval[0] = rtval[2];
+        rtval[2] = j;
+        break;
+      case 4:
+        j = rtval[0];
+        rtval[0] = rtval[3];
+        rtval[3] = j;
+        j = rtval[2];
+        rtval[2] = rtval[1];
+        rtval[1] = j;
+        break;
+      }
+    }
+    for (i = 0, rtadr2 = 0; i < a_bytes; i++) {
+      rtadr2 = (rtadr2 << 8) | rtval[i];
+    }
 
-		if (rtadr2 != rtadr1) {
-			/*
-			 * data bytes not contiguous between records
-			 */
-			sflush();
-			rtadr0 = rtadr1 = rtadr2;
-		}
-		for (k=a_bytes; k<rtcnt; k++) {
-			if (rtflg[k]) {
-				rtbuf[(int) (rtadr1++ - rtadr0)] = rtval[k];
-				if (rtadr1 - rtadr0 == SXXMAXBYTES) {
-					sflush();
-				}
-			}
-		}
-	} else {
-		/*
-		 * Only the "S_" and the checksum itself are excluded
-		 * from the checksum.  The record length does not
-		 * include "S_" and the pair count.  It does
-		 * include the address bytes, the data bytes,
-		 * and the checksum.
-		 */
-		reclen = 1 + a_bytes;
-		chksum = reclen;
-		sp = lkpsym(".__.END.", 0);
-		if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
-			symadr = symval(sp);
-			for (i=0,addr=symadr; i<a_bytes; i++,addr>>=8) {
-				chksum += addr;
-			}
-		} else {
-			symadr = 0;
-		}
-#ifdef	LONGINT
-		switch(a_bytes) {
-		default:
-		case 2: frmt = "S9%02X%04lX"; addr = symadr & 0x0000ffffl; break;
-		case 3: frmt = "S8%02X%06lX"; addr = symadr & 0x00ffffffl; break;
-		case 4: frmt = "S7%02X%08lX"; addr = symadr & 0xffffffffl; break;
-		}
+    if (rtadr2 != rtadr1) {
+      /*
+       * data bytes not contiguous between records
+       */
+      sflush();
+      rtadr0 = rtadr1 = rtadr2;
+    }
+    for (k = a_bytes; k < rtcnt; k++) {
+      if (rtflg[k]) {
+        rtbuf[(int)(rtadr1++ - rtadr0)] = rtval[k];
+        if (rtadr1 - rtadr0 == SXXMAXBYTES) {
+          sflush();
+        }
+      }
+    }
+  } else {
+    /*
+     * Only the "S_" and the checksum itself are excluded
+     * from the checksum.  The record length does not
+     * include "S_" and the pair count.  It does
+     * include the address bytes, the data bytes,
+     * and the checksum.
+     */
+    reclen = 1 + a_bytes;
+    chksum = reclen;
+    sp = lkpsym(".__.END.", 0);
+    if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
+      symadr = symval(sp);
+      for (i = 0, addr = symadr; i < a_bytes; i++, addr >>= 8) {
+        chksum += addr;
+      }
+    } else {
+      symadr = 0;
+    }
+#ifdef LONGINT
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "S9%02X%04lX";
+      addr = symadr & 0x0000ffffl;
+      break;
+    case 3:
+      frmt = "S8%02X%06lX";
+      addr = symadr & 0x00ffffffl;
+      break;
+    case 4:
+      frmt = "S7%02X%08lX";
+      addr = symadr & 0xffffffffl;
+      break;
+    }
 #else
-		switch(a_bytes) {
-		default:
-		case 2: frmt = "S9%02X%04X"; addr = symadr & 0x0000ffff; break;
-		case 3: frmt = "S8%02X%06X"; addr = symadr & 0x00ffffff; break;
-		case 4: frmt = "S7%02X%08X"; addr = symadr & 0xffffffff; break;
-		}
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "S9%02X%04X";
+      addr = symadr & 0x0000ffff;
+      break;
+    case 3:
+      frmt = "S8%02X%06X";
+      addr = symadr & 0x00ffffff;
+      break;
+    case 4:
+      frmt = "S7%02X%08X";
+      addr = symadr & 0xffffffff;
+      break;
+    }
 #endif
-		fprintf(ofp, frmt, reclen, addr);
-		/*
-		 * 1's complement
-		 */
-#ifdef	LONGINT
-		fprintf(ofp, "%02lX\n", (~chksum) & 0x00ff);
+    fprintf(ofp, frmt, reclen, addr);
+    /*
+     * 1's complement
+     */
+#ifdef LONGINT
+    fprintf(ofp, "%02lX\n", (~chksum) & 0x00ff);
 #else
-		fprintf(ofp, "%02X\n", (~chksum) & 0x00ff);
+    fprintf(ofp, "%02X\n", (~chksum) & 0x00ff);
 #endif
-	}
+  }
 }
-
 
 /*)Function	sflush()
  *
@@ -688,61 +699,76 @@ int i;
  * to the target system is much improved.
  */
 
-VOID
-sflush()
-{
-	char *frmt;
-	int i, max, reclen;
-	a_uint	addr, chksum;
+VOID sflush() {
+  char *frmt;
+  int i, max, reclen;
+  a_uint addr, chksum;
 
-	max = (int) (rtadr1 - rtadr0);
-	if (max == 0) {
-		return;
-	}
+  max = (int)(rtadr1 - rtadr0);
+  if (max == 0) {
+    return;
+  }
 
-	/*
-	 * Only the "S_" and the checksum itself are excluded
-	 * from the checksum.  The record length does not
-	 * include "S_" and the pair count.  It does
-	 * include the address bytes, the data bytes,
-	 * and the checksum.
-	 */
-	reclen = max + 1 + a_bytes;
-	chksum = reclen;
-	for (i=0,addr=rtadr0; i<a_bytes; i++,addr>>=8) {
-		chksum += addr;
-	}
-#ifdef	LONGINT
-	switch(a_bytes) {
-	default:
-	case 2: frmt = "S1%02X%04lX"; addr = rtadr0 & 0x0000ffffl; break;
-	case 3: frmt = "S2%02X%06lX"; addr = rtadr0 & 0x00ffffffl; break;
-	case 4: frmt = "S3%02X%08lX"; addr = rtadr0 & 0xffffffffl; break;
-	}
+  /*
+   * Only the "S_" and the checksum itself are excluded
+   * from the checksum.  The record length does not
+   * include "S_" and the pair count.  It does
+   * include the address bytes, the data bytes,
+   * and the checksum.
+   */
+  reclen = max + 1 + a_bytes;
+  chksum = reclen;
+  for (i = 0, addr = rtadr0; i < a_bytes; i++, addr >>= 8) {
+    chksum += addr;
+  }
+#ifdef LONGINT
+  switch (a_bytes) {
+  default:
+  case 2:
+    frmt = "S1%02X%04lX";
+    addr = rtadr0 & 0x0000ffffl;
+    break;
+  case 3:
+    frmt = "S2%02X%06lX";
+    addr = rtadr0 & 0x00ffffffl;
+    break;
+  case 4:
+    frmt = "S3%02X%08lX";
+    addr = rtadr0 & 0xffffffffl;
+    break;
+  }
 #else
-	switch(a_bytes) {
-	default:
-	case 2: frmt = "S1%02X%04X"; addr = rtadr0 & 0x0000ffff; break;
-	case 3: frmt = "S2%02X%06X"; addr = rtadr0 & 0x00ffffff; break;
-	case 4: frmt = "S3%02X%08X"; addr = rtadr0 & 0xffffffff; break;
-	}
+  switch (a_bytes) {
+  default:
+  case 2:
+    frmt = "S1%02X%04X";
+    addr = rtadr0 & 0x0000ffff;
+    break;
+  case 3:
+    frmt = "S2%02X%06X";
+    addr = rtadr0 & 0x00ffffff;
+    break;
+  case 4:
+    frmt = "S3%02X%08X";
+    addr = rtadr0 & 0xffffffff;
+    break;
+  }
 #endif
-	fprintf(ofp, frmt, reclen, addr);
-	for (i=0; i<max; i++) {
-		chksum += rtbuf[i];
-		fprintf(ofp, "%02X", rtbuf[i] & 0x00ff);
-	}
-	/*
-	 * 1's complement
-	 */
-#ifdef	LONGINT
-	fprintf(ofp, "%02lX\n", (~chksum) & 0x00ff);
+  fprintf(ofp, frmt, reclen, addr);
+  for (i = 0; i < max; i++) {
+    chksum += rtbuf[i];
+    fprintf(ofp, "%02X", rtbuf[i] & 0x00ff);
+  }
+  /*
+   * 1's complement
+   */
+#ifdef LONGINT
+  fprintf(ofp, "%02lX\n", (~chksum) & 0x00ff);
 #else
-	fprintf(ofp, "%02X\n", (~chksum) & 0x00ff);
+  fprintf(ofp, "%02X\n", (~chksum) & 0x00ff);
 #endif
-	rtadr0 = rtadr1;
+  rtadr0 = rtadr1;
 }
-
 
 /*)Disk BASIC Format
  *
@@ -805,90 +831,94 @@ sflush()
  *		The data is placed into the output buffer.
  */
 
-VOID
-dbx(i)
+VOID dbx(i)
 int i;
 {
-	struct sym *sp;
-	int k;
-	a_uint	j, symadr;
+  struct sym *sp;
+  int k;
+  a_uint j, symadr;
 
-	if (i) {
-		if (hilo == 0) {
-			switch(a_bytes){
-			default:
-			case 2:
-				j = rtval[0];
-				rtval[0] = rtval[1];
-				rtval[1] = j;
-				break;
-			case 3:
-				j = rtval[0];
-				rtval[0] = rtval[2];
-				rtval[2] = j;
-				break;
-			case 4:
-				j = rtval[0];
-				rtval[0] = rtval[3];
-				rtval[3] = j;
-				j = rtval[2];
-				rtval[2] = rtval[1];
-				rtval[1] = j;
-				break;
-			}
-		}
-		for (i=0,rtadr2=0; i<a_bytes; i++) {
-			rtadr2 = (rtadr2 << 8) | rtval[i];
-		}
+  if (i) {
+    if (hilo == 0) {
+      switch (a_bytes) {
+      default:
+      case 2:
+        j = rtval[0];
+        rtval[0] = rtval[1];
+        rtval[1] = j;
+        break;
+      case 3:
+        j = rtval[0];
+        rtval[0] = rtval[2];
+        rtval[2] = j;
+        break;
+      case 4:
+        j = rtval[0];
+        rtval[0] = rtval[3];
+        rtval[3] = j;
+        j = rtval[2];
+        rtval[2] = rtval[1];
+        rtval[1] = j;
+        break;
+      }
+    }
+    for (i = 0, rtadr2 = 0; i < a_bytes; i++) {
+      rtadr2 = (rtadr2 << 8) | rtval[i];
+    }
 
-		if (rtadr2 != rtadr1) {
-			/*
-			 * data bytes not contiguous between records
-			 */
-			dflush();
-			rtadr0 = rtadr1 = rtadr2;
-		}
-		for (k=a_bytes; k<rtcnt; k++) {
-			if (rtflg[k]) {
-				rtbuf[(int) (rtadr1++ - rtadr0)] = rtval[k];
-				if (rtadr1 - rtadr0 == (unsigned) (DBXMAXBYTES - (2 * a_bytes) - 1)) {
-					dflush();
-				}
-			}
-		}
-	} else {
-		/* Disk BASIC BIN Trailer */
-		sp = lkpsym(".__.END.", 0);
-		if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
-			symadr = symval(sp);
-		} else {
-			symadr = 0;
-		}
-		/* Terminator */
-		putc(0xFF, ofp);
+    if (rtadr2 != rtadr1) {
+      /*
+       * data bytes not contiguous between records
+       */
+      dflush();
+      rtadr0 = rtadr1 = rtadr2;
+    }
+    for (k = a_bytes; k < rtcnt; k++) {
+      if (rtflg[k]) {
+        rtbuf[(int)(rtadr1++ - rtadr0)] = rtval[k];
+        if (rtadr1 - rtadr0 == (unsigned)(DBXMAXBYTES - (2 * a_bytes) - 1)) {
+          dflush();
+        }
+      }
+    }
+  } else {
+    /* Disk BASIC BIN Trailer */
+    sp = lkpsym(".__.END.", 0);
+    if (sp && (sp->s_axp->a_bap->a_ofp == ofp)) {
+      symadr = symval(sp);
+    } else {
+      symadr = 0;
+    }
+    /* Terminator */
+    putc(0xFF, ofp);
 
-		/* Size (0) */
-		switch(a_bytes) {
-		case 4:	putc((int) (0 >> 24) & 0xFF, ofp);
-		case 3:	putc((int) (0 >> 16) & 0xFF, ofp);
-		default:
-		case 2:	putc((int) (0 >>  8) & 0xFF, ofp);
-			putc((int) (0 >>  0) & 0xFF, ofp);
-			break;
-		}
+    /* Size (0) */
+    switch (a_bytes) {
+    case 4:
+      putc((int)(0 >> 24) & 0xFF, ofp);
+    case 3:
+      putc((int)(0 >> 16) & 0xFF, ofp);
+    default:
+    case 2:
+      putc((int)(0 >> 8) & 0xFF, ofp);
+      putc((int)(0 >> 0) & 0xFF, ofp);
+      break;
+    }
 
-		/* Starting Address */
-		switch(a_bytes) {
-		case 4:	putc((int) (symadr >> 24) & 0xFF, ofp);
-		case 3:	putc((int) (symadr >> 16) & 0xFF, ofp);
-		default:
-		case 2:	putc((int) (symadr >>  8) & 0xFF, ofp);
-			putc((int) (symadr >>  0) & 0xFF, ofp);
-			break;
-		}
-	}
+    /* Starting Address */
+    switch (a_bytes) {
+    case 4:
+      putc((int)(symadr >> 24) & 0xFF, ofp);
+    case 3:
+      putc((int)(symadr >> 16) & 0xFF, ofp);
+    default:
+    case 2:
+      putc((int)(symadr >> 8) & 0xFF, ofp);
+      putc((int)(symadr >> 0) & 0xFF, ofp);
+      break;
+    }
+  }
 }
-
 
 /*)Function	dflush()
  *
@@ -916,44 +946,46 @@ int i;
  * Written by Boisy G. Pitre, boisy@boisypitre.com, 6-7-04
  */
 
-VOID
-dflush()
-{
-	int i, max;
+VOID dflush() {
+  int i, max;
 
-	max = (int) (rtadr1 - rtadr0);
-	if (max == 0) {
-		return;
-	}
+  max = (int)(rtadr1 - rtadr0);
+  if (max == 0) {
+    return;
+  }
 
-	/* Preamble Byte */
-	putc(0, ofp);
+  /* Preamble Byte */
+  putc(0, ofp);
 
-	/* Record Size */
-	switch(a_bytes){
-	case 4:	putc((int) (max >> 24) & 0xFF, ofp);
-	case 3:	putc((int) (max >> 16) & 0xFF, ofp);
-	default:
-	case 2:	putc((int) (max >>  8) & 0xFF, ofp);
-		putc((int) (max >>  0) & 0xFF, ofp);
-		break;
-	}
+  /* Record Size */
+  switch (a_bytes) {
+  case 4:
+    putc((int)(max >> 24) & 0xFF, ofp);
+  case 3:
+    putc((int)(max >> 16) & 0xFF, ofp);
+  default:
+  case 2:
+    putc((int)(max >> 8) & 0xFF, ofp);
+    putc((int)(max >> 0) & 0xFF, ofp);
+    break;
+  }
 
-	/* Load Address */
-	switch(a_bytes){
-	case 4:	putc((int) (rtadr0 >> 24) & 0xFF, ofp);
-	case 3:	putc((int) (rtadr0 >> 16) & 0xFF, ofp);
-	default:
-	case 2:	putc((int) (rtadr0 >>  8) & 0xFF, ofp);
-		putc((int) (rtadr0 >>  0) & 0xFF, ofp);
-		break;
-	}
+  /* Load Address */
+  switch (a_bytes) {
+  case 4:
+    putc((int)(rtadr0 >> 24) & 0xFF, ofp);
+  case 3:
+    putc((int)(rtadr0 >> 16) & 0xFF, ofp);
+  default:
+  case 2:
+    putc((int)(rtadr0 >> 8) & 0xFF, ofp);
+    putc((int)(rtadr0 >> 0) & 0xFF, ofp);
+    break;
+  }
 
-	for (i = 0; i < max; i++) {
-		putc(rtbuf[i], ofp);
-	}
+  for (i = 0; i < max; i++) {
+    putc(rtbuf[i], ofp);
+  }
 
-	rtadr0 = rtadr1;
+  rtadr0 = rtadr1;
 }
-
-

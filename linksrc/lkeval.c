@@ -76,20 +76,18 @@
  *		numerical value.
  */
 
-a_uint
-eval()
-{
-	int c, v;
-	a_uint n;
+a_uint eval() {
+  int c, v;
+  a_uint n;
 
-	c = getnb();
-	n = 0;
-	while ((v = digit(c, radix)) >= 0) {
-		n = n*radix + v;
-		c = get();
-	}
-	unget(c);
-	return((n & s_mask) ? n | ~v_mask : n & v_mask);
+  c = getnb();
+  n = 0;
+  while ((v = digit(c, radix)) >= 0) {
+    n = n * radix + v;
+    c = get();
+  }
+  unget(c);
+  return ((n & s_mask) ? n | ~v_mask : n & v_mask);
 }
 
 /*)Function	a_uint	expr(n)
@@ -135,83 +133,81 @@ eval()
  *		text string.
  */
 
-a_uint
-expr (n)
+a_uint expr(n)
 int n;
 {
-	int c, p;
-	a_uint v, ve;
+  int c, p;
+  a_uint v, ve;
 
-	v = term();
-	while (ctype[c = getnb()] & BINOP) {
-		if ((p = oprio(c)) <= n)
-			break;
-		if ((c == '>' || c == '<') && c != get()) {
-			fprintf(stderr, "Invalid expression");
-			lkerr++;
-			return(v);
-		}
-		ve = expr(p);
+  v = term();
+  while (ctype[c = getnb()] & BINOP) {
+    if ((p = oprio(c)) <= n)
+      break;
+    if ((c == '>' || c == '<') && c != get()) {
+      fprintf(stderr, "Invalid expression");
+      lkerr++;
+      return (v);
+    }
+    ve = expr(p);
 
-		/*
-		 * X-Bit Unsigned Arithmetic
-		 */
-		v  &= a_mask;
-		ve &= a_mask;
+    /*
+     * X-Bit Unsigned Arithmetic
+     */
+    v &= a_mask;
+    ve &= a_mask;
 
-		if (c == '+') {
-			v += ve;
-		} else
-		if (c == '-') {
-			v -= ve;
-		} else {
-			switch (c) {
+    if (c == '+') {
+      v += ve;
+    } else if (c == '-') {
+      v -= ve;
+    } else {
+      switch (c) {
 
-			case '*':
-				v *= ve;
-				break;
+      case '*':
+        v *= ve;
+        break;
 
-			case '/':
-				if (ve == 0) {
-					v = 0;
-				} else {
-					v /= ve;
-				}
-				break;
+      case '/':
+        if (ve == 0) {
+          v = 0;
+        } else {
+          v /= ve;
+        }
+        break;
 
-			case '&':
-				v &= ve;
-				break;
+      case '&':
+        v &= ve;
+        break;
 
-			case '|':
-				v |= ve;
-				break;
+      case '|':
+        v |= ve;
+        break;
 
-			case '%':
-				if (ve == 0) {
-					v = 0;
-				} else {
-					v %= ve;
-				}
-				break;
+      case '%':
+        if (ve == 0) {
+          v = 0;
+        } else {
+          v %= ve;
+        }
+        break;
 
-			case '^':
-				v ^= ve;
-				break;
+      case '^':
+        v ^= ve;
+        break;
 
-			case '<':
-				v <<= ve;
-				break;
+      case '<':
+        v <<= ve;
+        break;
 
-			case '>':
-				v >>= ve;
-				break;
-			}
-		}
-		v = (v & s_mask) ? v | ~v_mask : v & v_mask;
-	}
-	unget(c);
-	return(v);
+      case '>':
+        v >>= ve;
+        break;
+      }
+    }
+    v = (v & s_mask) ? v | ~v_mask : v & v_mask;
+  }
+  unget(c);
+  return (v);
 }
 
 /*)Function	a_uint	term()
@@ -256,104 +252,104 @@ int n;
  *		An arithmetic term is evaluated by scanning input text.
  */
 
-a_uint
-term()
-{
-	int c, r, n;
-	a_uint v;
-	struct sym *sp;
-	char id[NCPS];
+a_uint term() {
+  int c, r, n;
+  a_uint v;
+  struct sym *sp;
+  char id[NCPS];
 
-	c = getnb();
-	if (c == '#') { c = getnb(); }
-	if (c == '(') {
-		v = expr(0);
-		if (getnb() != ')') {
-			fprintf(stderr, "Missing delimiter");
-			lkerr++;
-		}
-		return(v);
-	}
-	if (c == '-') {
-		return(~expr(100)+1);
-	}
-	if (c == '~') {
-		return(~expr(100));
-	}
-	if (c == '\'') {
-		return(getmap(-1)&0377);
-	}
-	if (c == '\"') {
-		if (hilo) {
-			v  = (getmap(-1)&0377)<<8;
-			v |=  getmap(-1)&0377;
-		} else {
-			v  =  getmap(-1)&0377;
-			v |= (getmap(-1)&0377)<<8;
-		}
-		return((v & s_mask) ? v | ~v_mask : v & v_mask);
-	}
-	if (c == '>' || c == '<') {
-		v = expr(100);
-		if (c == '>')
-			v >>= 8;
-		return(v&0377);
-	}
-	if (ctype[c] & DIGIT) {
-		r = 10;
-		if (c == '0') {
-			c = get();
-			switch (c) {
-			case 'b':
-			case 'B':
-				r = 2;
-				c = get();
-				break;
-			case '@':
-			case 'o':
-			case 'O':
-			case 'q':
-			case 'Q':
-				r = 8;
-				c = get();
-				break;
-			case 'd':
-			case 'D':
-				r = 10;
-				c = get();
-				break;
-			case 'h':
-			case 'H':
-			case 'x':
-			case 'X':
-				r = 16;
-				c = get();
-				break;
-			default:
-				break;
-			}
-		}
-		v = 0;
-		while ((n = digit(c, r)) >= 0) {
-			v = r*v + n;
-			c = get();
-		}
-		unget(c);
-		return((v & s_mask) ? v | ~v_mask : v & v_mask);
-	}
-	if (ctype[c] & LETTER) {
-		getid(id, c);
-		if ((sp = lkpsym(id, 0)) == NULL) {
-			fprintf(stderr, "Undefined symbol %s\n", id);
-			lkerr++;
-			return(0);
-		} else {
-			return(symval(sp));
-		}
-	}
-	fprintf(stderr, "Unknown operator %c\n", c);
-	lkerr++;
-	return(0);
+  c = getnb();
+  if (c == '#') {
+    c = getnb();
+  }
+  if (c == '(') {
+    v = expr(0);
+    if (getnb() != ')') {
+      fprintf(stderr, "Missing delimiter");
+      lkerr++;
+    }
+    return (v);
+  }
+  if (c == '-') {
+    return (~expr(100) + 1);
+  }
+  if (c == '~') {
+    return (~expr(100));
+  }
+  if (c == '\'') {
+    return (getmap(-1) & 0377);
+  }
+  if (c == '\"') {
+    if (hilo) {
+      v = (getmap(-1) & 0377) << 8;
+      v |= getmap(-1) & 0377;
+    } else {
+      v = getmap(-1) & 0377;
+      v |= (getmap(-1) & 0377) << 8;
+    }
+    return ((v & s_mask) ? v | ~v_mask : v & v_mask);
+  }
+  if (c == '>' || c == '<') {
+    v = expr(100);
+    if (c == '>')
+      v >>= 8;
+    return (v & 0377);
+  }
+  if (ctype[c] & DIGIT) {
+    r = 10;
+    if (c == '0') {
+      c = get();
+      switch (c) {
+      case 'b':
+      case 'B':
+        r = 2;
+        c = get();
+        break;
+      case '@':
+      case 'o':
+      case 'O':
+      case 'q':
+      case 'Q':
+        r = 8;
+        c = get();
+        break;
+      case 'd':
+      case 'D':
+        r = 10;
+        c = get();
+        break;
+      case 'h':
+      case 'H':
+      case 'x':
+      case 'X':
+        r = 16;
+        c = get();
+        break;
+      default:
+        break;
+      }
+    }
+    v = 0;
+    while ((n = digit(c, r)) >= 0) {
+      v = r * v + n;
+      c = get();
+    }
+    unget(c);
+    return ((v & s_mask) ? v | ~v_mask : v & v_mask);
+  }
+  if (ctype[c] & LETTER) {
+    getid(id, c);
+    if ((sp = lkpsym(id, 0)) == NULL) {
+      fprintf(stderr, "Undefined symbol %s\n", id);
+      lkerr++;
+      return (0);
+    } else {
+      return (symval(sp));
+    }
+  }
+  fprintf(stderr, "Unknown operator %c\n", c);
+  lkerr++;
+  return (0);
 }
 
 /*)Function	int	digit(c, r)
@@ -379,32 +375,28 @@ term()
  *		none
  */
 
-int
-digit(c, r)
+int digit(c, r)
 int c, r;
 {
-	if (r == 16) {
-		if (ctype[c] & RAD16) {
-			if (c >= 'A' && c <= 'F')
-				return (c - 'A' + 10);
-			if (c >= 'a' && c <= 'f')
-				return (c - 'a' + 10);
-			return (c - '0');
-		}
-	} else
-	if (r == 10) {
-		if (ctype[c] & RAD10)
-			return (c - '0');
-	} else
-	if (r == 8) {
-		if (ctype[c] & RAD8)
-			return (c - '0');
-	} else
-	if (r == 2) {
-		if (ctype[c] & RAD2)
-			return (c - '0');
-	}
-	return (-1);
+  if (r == 16) {
+    if (ctype[c] & RAD16) {
+      if (c >= 'A' && c <= 'F')
+        return (c - 'A' + 10);
+      if (c >= 'a' && c <= 'f')
+        return (c - 'a' + 10);
+      return (c - '0');
+    }
+  } else if (r == 10) {
+    if (ctype[c] & RAD10)
+      return (c - '0');
+  } else if (r == 8) {
+    if (ctype[c] & RAD8)
+      return (c - '0');
+  } else if (r == 2) {
+    if (ctype[c] & RAD2)
+      return (c - '0');
+  }
+  return (-1);
 }
 
 /*)Function	int	oprio(c)
@@ -426,22 +418,21 @@ int c, r;
  *	side effects:
  *		none
  */
- 
-int
-oprio(c)
+
+int oprio(c)
 int c;
 {
-	if (c == '*' || c == '/' || c == '%')
-		return (10);
-	if (c == '+' || c == '-')
-		return (7);
-	if (c == '<' || c == '>')
-		return (5);
-	if (c == '^')
-		return (4);
-	if (c == '&')
-		return (3);
-	if (c == '|')
-		return (1);
-	return (0);
+  if (c == '*' || c == '/' || c == '%')
+    return (10);
+  if (c == '+' || c == '-')
+    return (7);
+  if (c == '<' || c == '>')
+    return (5);
+  if (c == '^')
+    return (4);
+  if (c == '&')
+    return (3);
+  if (c == '|')
+    return (1);
+  return (0);
 }

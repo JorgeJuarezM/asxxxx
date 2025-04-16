@@ -85,23 +85,22 @@
  *		input text line.
  */
 
-VOID
-getid(id, c)
+VOID getid(id, c)
 int c;
 char *id;
 {
-	char *p;
+  char *p;
 
-	if (c < 0) {
-		c = getnb();
-	}
-	p = id;
-	do {
-		if (p < &id[NCPS-1])
-			*p++ = c;
-	} while (ctype[c=get()] & (LETTER|DIGIT));
-	unget(c);
-	*p++ = 0;
+  if (c < 0) {
+    c = getnb();
+  }
+  p = id;
+  do {
+    if (p < &id[NCPS - 1])
+      *p++ = c;
+  } while (ctype[c = get()] & (LETTER | DIGIT));
+  unget(c);
+  *p++ = 0;
 }
 
 /*)Function	VOID	getfid(str,c)
@@ -127,20 +126,19 @@ char *id;
  *		the position in the current input text line.
  */
 
-VOID
-getfid(str, c)
+VOID getfid(str, c)
 int c;
 char *str;
 {
-	char *p;
+  char *p;
 
-	p = str;
-	do {
-		if (p < &str[FILSPC-1])
-			*p++ = c;
-		c = get();		
-	} while ((c != 0) && (c != ' ') && (c != '\t'));
-	*p++ = 0;
+  p = str;
+  do {
+    if (p < &str[FILSPC - 1])
+      *p++ = c;
+    c = get();
+  } while ((c != 0) && (c != ' ') && (c != '\t'));
+  *p++ = 0;
 }
 
 /*)Function	int	getnb()
@@ -162,14 +160,12 @@ char *str;
  *		in the current input text line
  */
 
-int
-getnb()
-{
-	int c;
+int getnb() {
+  int c;
 
-	while ((c=get())==' ' || c=='\t')
-		;
-	return (c);
+  while ((c = get()) == ' ' || c == '\t')
+    ;
+  return (c);
 }
 
 /*)Function	VOID	skip(c)
@@ -184,7 +180,7 @@ getnb()
  *	global variables:
  *		char	ctype[]		array of character types, one per
  *				 	ASCII character
- *		
+ *
  *	functions called:
  *		int	get()		lklex.c
  *		int	getnb()		lklex.c
@@ -194,14 +190,15 @@ getnb()
  *		Input letters and digits are skipped.
  */
 
-VOID
-skip(c)
+VOID skip(c)
 int c;
 {
-	if (c < 0)
-		c = getnb();
-	while (ctype[c=get()] & (LETTER|DIGIT)) { ; }
-	unget(c);
+  if (c < 0)
+    c = getnb();
+  while (ctype[c = get()] & (LETTER | DIGIT)) {
+    ;
+  }
+  unget(c);
 }
 
 /*)Function	int	get()
@@ -227,14 +224,12 @@ int c;
  *		line, ip is not updated.
  */
 
-int
-get()
-{
-	int c;
+int get() {
+  int c;
 
-	if ((c = *ip) != 0)
-		++ip;
-	return (c & 0x007F);
+  if ((c = *ip) != 0)
+    ++ip;
+  return (c & 0x007F);
 }
 
 /*)Function	VOID	unget(c)
@@ -265,12 +260,11 @@ get()
  *		ip decremented by 1 character position
  */
 
-VOID
-unget(c)
+VOID unget(c)
 int c;
 {
-	if (c != 0)
-		--ip;
+  if (c != 0)
+    --ip;
 }
 
 /*)Function	int	getmap(d)
@@ -304,60 +298,59 @@ int c;
  *		in the current input text line
  */
 
-int
-getmap(d)
+int getmap(d)
 int d;
 {
-	int c, n, v;
+  int c, n, v;
 
-	if ((c = get()) == '\0')
-		return (-1);
-	if (c == d)
-		return (-1);
-	if (c == '\\') {
-		c = get();
-		switch (c) {
+  if ((c = get()) == '\0')
+    return (-1);
+  if (c == d)
+    return (-1);
+  if (c == '\\') {
+    c = get();
+    switch (c) {
 
-		case 'b':
-			c = '\b';
-			break;
+    case 'b':
+      c = '\b';
+      break;
 
-		case 'f':
-			c = '\f';
-			break;
+    case 'f':
+      c = '\f';
+      break;
 
-		case 'n':
-			c = '\n';
-			break;
+    case 'n':
+      c = '\n';
+      break;
 
-		case 'r':
-			c = '\r';
-			break;
+    case 'r':
+      c = '\r';
+      break;
 
-		case 't':
-			c = '\t';
-			break;
+    case 't':
+      c = '\t';
+      break;
 
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-			n = 0;
-			v = 0;
-			while (++n<=3 && c>='0' && c<='7') {
-				v = (v<<3) + c - '0';
-				c = get();
-			}
-			unget(c);
-			c = v;
-			break;
-		}
-	}
-	return (c);
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+      n = 0;
+      v = 0;
+      while (++n <= 3 && c >= '0' && c <= '7') {
+        v = (v << 3) + c - '0';
+        c = get();
+      }
+      unget(c);
+      c = v;
+      break;
+    }
+  }
+  return (c);
 }
 
 /*)Function	int	nxtline()
@@ -419,77 +412,74 @@ int d;
  *		opened and closed sequentially scanning each in turn.
  */
 
-int
-nxtline()
-{
-	int ftype;
-	char *fid;
+int nxtline() {
+  int ftype;
+  char *fid;
 
-loop:	if (cfp && cfp->f_type == F_STD)
-		fprintf(stdout, "ASlink >> ");
+loop:
+  if (cfp && cfp->f_type == F_STD)
+    fprintf(stdout, "ASlink >> ");
 
-	if (sfp == NULL || fgets(ib, sizeof(ib), sfp) == NULL) {
-		obj_flag = 0;
-		if (sfp) {
-			if(sfp != stdin) {
-				fclose(sfp);
-			}
-			sfp = NULL;
-			lkulist(0);
-		}
-		if (cfp == NULL) {
-			cfp = filep;
-		} else {
-			cfp = cfp->f_flp;
-		}
-		if (cfp) {
-			ftype = cfp->f_type;
-			fid = cfp->f_idp;
-			if (ftype == F_STD) {
-				sfp = stdin;
-			} else
-			if (ftype == F_LNK) {
-				sfp = afile(fid, "lnk", 0);
-			} else
-			if (ftype == F_REL) {
-				obj_flag = cfp->f_obj;
-				sfp = afile(fid, "", 0);
-				if (sfp && (obj_flag == 0)) {
-				  if (uflag && (pass != 0)) {
-				    if ((tfp = afile(fid, "lst", 0)) != NULL) {
-				      if ((rfp = afile(fid, "rst", 1)) == NULL) {
-					fclose(tfp);
-					tfp = NULL;
-				      } else {
-				        hfp = afile(fid, "hlr", 4);
-				      }
-				    }
-				  }
-				}
+  if (sfp == NULL || fgets(ib, sizeof(ib), sfp) == NULL) {
+    obj_flag = 0;
+    if (sfp) {
+      if (sfp != stdin) {
+        fclose(sfp);
+      }
+      sfp = NULL;
+      lkulist(0);
+    }
+    if (cfp == NULL) {
+      cfp = filep;
+    } else {
+      cfp = cfp->f_flp;
+    }
+    if (cfp) {
+      ftype = cfp->f_type;
+      fid = cfp->f_idp;
+      if (ftype == F_STD) {
+        sfp = stdin;
+      } else if (ftype == F_LNK) {
+        sfp = afile(fid, "lnk", 0);
+      } else if (ftype == F_REL) {
+        obj_flag = cfp->f_obj;
+        sfp = afile(fid, "", 0);
+        if (sfp && (obj_flag == 0)) {
+          if (uflag && (pass != 0)) {
+            if ((tfp = afile(fid, "lst", 0)) != NULL) {
+              if ((rfp = afile(fid, "rst", 1)) == NULL) {
+                fclose(tfp);
+                tfp = NULL;
+              } else {
+                hfp = afile(fid, "hlr", 4);
+              }
+            }
+          }
+        }
 
 #if SDCDB
-				if (sfp && (pass == 0)) {
-				  SDCDBcopy(fid);
-				}
+        if (sfp && (pass == 0)) {
+          SDCDBcopy(fid);
+        }
 #endif
 
-				gline = 1;
-				hline = 1;
-			} else {
-				fprintf(stderr, "Invalid file type\n");
-				lkexit(ER_FATAL);
-			}
-			if (sfp == NULL) {
-				lkexit(ER_FATAL);
-			}
-			goto loop;
-		} else {
-			filep = NULL;
-			return(0);
-		}
-	}
-	chopcrlf(ib);
-	return (1);
+        gline = 1;
+        hline = 1;
+      } else {
+        fprintf(stderr, "Invalid file type\n");
+        lkexit(ER_FATAL);
+      }
+      if (sfp == NULL) {
+        lkexit(ER_FATAL);
+      }
+      goto loop;
+    } else {
+      filep = NULL;
+      return (0);
+    }
+  }
+  chopcrlf(ib);
+  return (1);
 }
 
 /*)Function	int	more()
@@ -515,14 +505,12 @@ loop:	if (cfp && cfp->f_type == F_STD)
  *		the position in the current input text line
  */
 
-int
-more()
-{
-	int c;
+int more() {
+  int c;
 
-	c = getnb();
-	unget(c);
-	return( (c == '\0' || c == ';') ? 0 : 1 );
+  c = getnb();
+  unget(c);
+  return ((c == '\0' || c == ';') ? 0 : 1);
 }
 
 /*)Function	char	endline()
@@ -547,13 +535,11 @@ more()
  *		position in the current input text line.
  */
 
-char
-endline()
-{
-	int c;
+char endline() {
+  int c;
 
-	c = getnb();
-	return( (c == '\0' || c == ';') ? 0 : c );
+  c = getnb();
+  return ((c == '\0' || c == ';') ? 0 : c);
 }
 
 /*)Function	VOID	chopcrlf(str)
@@ -577,19 +563,17 @@ endline()
  *		All CR and LF characters removed.
  */
 
-VOID
-chopcrlf(str)
+VOID chopcrlf(str)
 char *str;
 {
-	char *p;
-	char c;
+  char *p;
+  char c;
 
-	p = str;
-	do {
-		c = *p++ = *str++;
-		if ((c == '\r') || (c == '\n')) {
-			p--;
-		}
-	} while (c != 0);
+  p = str;
+  do {
+    c = *p++ = *str++;
+    if ((c == '\r') || (c == '\n')) {
+      p--;
+    }
+  } while (c != 0);
 }
-
