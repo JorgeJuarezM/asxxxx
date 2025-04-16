@@ -48,3 +48,9 @@ $(OUT_DIR)/as8085: directories $(ASXXSRC) $(AS8085SRC)
 
 clean:
 	rm -rf $(OUT_DIR)
+	find . -name "*.o" -exec rm {} \;
+
+
+format:
+	find . -type f -name "*.c" -exec clang-format -i {} \;  
+	find . -type f -name "*.h" -exec clang-format -i {} \;  

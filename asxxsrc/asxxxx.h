@@ -40,9 +40,9 @@
  * System Include Files
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <setjmp.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -50,19 +50,18 @@
  * Local Definitions
  */
 
-#define	VERSION	"V05.31"
-#define	COPYRIGHT "2019"
+#define VERSION "V05.31"
+#define COPYRIGHT "2019"
 
 /*
  * To include NoICE Debugging set non-zero
  */
-#define	NOICE	1
+#define NOICE 1
 
 /*
  * To include SDCC Debugging set non-zero
  */
-#define	SDCDB	1
-
+#define SDCDB 1
 
 /*
  * The assembler requires certain variables to have
@@ -79,22 +78,22 @@
 /* Turbo C++ 3.0 for DOS */
 /* 'int' is 16-bits, 'long' is 32-bits */
 
-#ifdef	__TURBOC__
-#define		INT32	long
-#define		LONGINT
+#ifdef __TURBOC__
+#define INT32 long
+#define LONGINT
 #endif
 
 /* Symantec C++ V6.x/V7.x for DOS (not DOSX) */
 /* 'int' is 16-bits, 'long' is 32-bits */
 
-#ifdef	__SC__
-#define		INT32	long
-#define		LONGINT
+#ifdef __SC__
+#define INT32 long
+#define LONGINT
 #endif
 
 /* The DEFAULT is 'int' is 32 bits */
-#ifndef	INT32
-#define		INT32	int
+#ifndef INT32
+#define INT32 int
 #endif
 
 /*)Module	asxxxx.h
@@ -110,118 +109,118 @@
  *	 compiler/operating system specific definitions
  */
 
-#undef	VOID
+#undef VOID
 
 /* DECUS C void definition */
 /* File/extension seperator */
 
-#ifdef	DECUS
-#define	VOID	char
-#define	FSEPX	'.'
+#ifdef DECUS
+#define VOID char
+#define FSEPX '.'
 #endif
 
 /* PDOS C void definition */
 /* File/extension seperator */
 
-#ifdef	PDOS
-#define	VOID	char
-#define	FSEPX	':'
+#ifdef PDOS
+#define VOID char
+#define FSEPX ':'
 #endif
 
 /* Default void definition */
 /* File/extension seperator */
 
-#ifndef	VOID
-#define	VOID	void
-#define	FSEPX	'.'
-#define	OTHERSYSTEM
+#ifndef VOID
+#define VOID void
+#define FSEPX '.'
+#define OTHERSYSTEM
 #endif
 
 /*
  * Error definitions
  */
-#define	ER_NONE		0	/* No error */
-#define	ER_WARNING	1	/* Warning */
-#define	ER_ERROR	2	/* Assembly error */
-#define	ER_FATAL	3	/* Fatal error */
+#define ER_NONE 0    /* No error */
+#define ER_WARNING 1 /* Warning */
+#define ER_ERROR 2   /* Assembly error */
+#define ER_FATAL 3   /* Fatal error */
 
 /*
  * Assembler definitions.
  */
-#define	LFTERM	'('		/* Left expression delimeter */
-#define	RTTERM	')'		/* Right expression delimeter */
+#define LFTERM '(' /* Left expression delimeter */
+#define RTTERM ')' /* Right expression delimeter */
 
-#define NCPS	256		/* Characters per symbol */
-#define	HUGE	1000		/* A huge number */
-#define NERR	2		/* Errors per line */
-#define NINPUT	380		/* Input buffer size */
-#define NCODE	380		/* Listing code buffer size */
-#define NTITL	80		/* Title buffer size */
-#define	NSBTL	80		/* SubTitle buffer size */
-#define	NHASH	(1 << 6)	/* Buckets in hash table */
-#define	HMASK	(NHASH - 1)	/* Hash mask */
-#define	NLPP	60		/* Lines per page */
-#define	MAXFIL	6		/* Maximum command line input files */
-#define	MAXINC	6		/* Maximum nesting of include files */
-#define	MAXMCR	20		/* Maximum nesting of macro expansions */
-#define	MAXIF	10		/* Maximum nesting of if/else/endif */
-#define	FILSPC	80		/* Chars. in filespec */
+#define NCPS 256          /* Characters per symbol */
+#define HUGE 1000         /* A huge number */
+#define NERR 2            /* Errors per line */
+#define NINPUT 380        /* Input buffer size */
+#define NCODE 380         /* Listing code buffer size */
+#define NTITL 80          /* Title buffer size */
+#define NSBTL 80          /* SubTitle buffer size */
+#define NHASH (1 << 6)    /* Buckets in hash table */
+#define HMASK (NHASH - 1) /* Hash mask */
+#define NLPP 60           /* Lines per page */
+#define MAXFIL 6          /* Maximum command line input files */
+#define MAXINC 6          /* Maximum nesting of include files */
+#define MAXMCR 20         /* Maximum nesting of macro expansions */
+#define MAXIF 10          /* Maximum nesting of if/else/endif */
+#define FILSPC 80         /* Chars. in filespec */
 
-#define NLIST	0		/* No listing */
-#define SLIST	1		/* Source only */
-#define ALIST	2		/* Address only */
-#define	BLIST	3		/* Address only with allocation */
-#define CLIST	4		/* Code */
-#define	ELIST	5		/* Equate or IF conditional evaluation */
+#define NLIST 0 /* No listing */
+#define SLIST 1 /* Source only */
+#define ALIST 2 /* Address only */
+#define BLIST 3 /* Address only with allocation */
+#define CLIST 4 /* Code */
+#define ELIST 5 /* Equate or IF conditional evaluation */
 
-#define	HLR_NLST	0x0080	/* For HLR file only */
+#define HLR_NLST 0x0080 /* For HLR file only */
 
-#define	LIST_ERR	0x0001	/* Error Code(s) */
-#define	LIST_LOC	0x0002	/* Location */
-#define	LIST_BIN	0x0004	/* Generated Binary Value(s)*/
-#define	LIST_EQT	0x0008	/* Assembler Equate Value */
-#define	LIST_CYC	0x0010	/* Opcode Cycles */
-#define	LIST_LIN	0x0020	/* Line Numbers */
-#define	LIST_SRC	0x0040	/* Assembler Source Code */
+#define LIST_ERR 0x0001 /* Error Code(s) */
+#define LIST_LOC 0x0002 /* Location */
+#define LIST_BIN 0x0004 /* Generated Binary Value(s)*/
+#define LIST_EQT 0x0008 /* Assembler Equate Value */
+#define LIST_CYC 0x0010 /* Opcode Cycles */
+#define LIST_LIN 0x0020 /* Line Numbers */
+#define LIST_SRC 0x0040 /* Assembler Source Code */
 
-#define	LIST_PAG	0x0080	/* Assembler Pagination */
-#define	LIST_LST	0x0100	/* .LIST/.NLIST Listing */
+#define LIST_PAG 0x0080 /* Assembler Pagination */
+#define LIST_LST 0x0100 /* .LIST/.NLIST Listing */
 
-#define	LIST_MD		0x0200	/* Macro Definition */
-#define	LIST_ME		0x0400	/* Macro Expansion */
-#define	LIST_MEB	0x0800	/* Macro Expansion Binary */
+#define LIST_MD 0x0200  /* Macro Definition */
+#define LIST_ME 0x0400  /* Macro Expansion */
+#define LIST_MEB 0x0800 /* Macro Expansion Binary */
 
-#define	LIST_BITS	0x0FFF	/* LIST  Flags Mask */
+#define LIST_BITS 0x0FFF /* LIST  Flags Mask */
 
-#define	LIST_NONE	0x0000	/* NLIST Flags Mask */
-#define	LIST_ASM	0x007F	/* LIST  Flags Mask for Assembler Line */
-#define	LIST_NORM	0x03FF	/* LIST  Flags Mask */
+#define LIST_NONE 0x0000 /* NLIST Flags Mask */
+#define LIST_ASM 0x007F  /* LIST  Flags Mask for Assembler Line */
+#define LIST_NORM 0x03FF /* LIST  Flags Mask */
 
-#define	LIST_NOT	0x1000	/* Force Complement of Listing Mode */
+#define LIST_NOT 0x1000 /* Force Complement of Listing Mode */
 
-#define	LIST_TORF	0x8000	/* IF-ENDIF Conditional Overide Flag */
+#define LIST_TORF 0x8000 /* IF-ENDIF Conditional Overide Flag */
 
-#define	T_INSERT	0	/* Command Line Insert */
-#define	T_ASM		1	/* Assembler Source File */
-#define	T_INCL		2	/* Assembler Include File */
-#define	T_MACRO		3	/* Assembler Macro */
+#define T_INSERT 0 /* Command Line Insert */
+#define T_ASM 1    /* Assembler Source File */
+#define T_INCL 2   /* Assembler Include File */
+#define T_MACRO 3  /* Assembler Macro */
 
 /*
  * Opcode Cycle definitions (Must Be The Same In ASxxxx / ASLink)
  */
-#define	CYCNT_BGN	'['	/* Cycle count begin delimiter */
-#define	CYCNT_END	']'	/* Cycle count end   delimiter */
+#define CYCNT_BGN '[' /* Cycle count begin delimiter */
+#define CYCNT_END ']' /* Cycle count end   delimiter */
 
 /*
  * OPCY_NONE bit set signifies no opcode cycles set.
  */
-#define	OPCY_NONE	((char) 0x80)	/* Opcode Cycle Count Not Set */
-#define	OPCY_MASK	((char) 0x7F)	/* Opcode Cycle Count MASK */
+#define OPCY_NONE ((char)0x80) /* Opcode Cycle Count Not Set */
+#define OPCY_MASK ((char)0x7F) /* Opcode Cycle Count MASK */
 
 /*
  * Default Page Length Mask
  */
-#define	DEFAULT_PMASK	0xFF	/* 256 Element Boundary / Length */ 
+#define DEFAULT_PMASK 0xFF /* 256 Element Boundary / Length */
 
 /*
  * NTXT must be defined to have the same value in
@@ -231,18 +230,18 @@
  * the T Line index.  The MAXIMUM value for NTXT
  * is 16.  It should not be changed.
  */
-#define	NTXT	16		/* Maximum T Line Values */
-#define	NREL	16		/* Maximum R Line Values */
+#define NTXT 16 /* Maximum T Line Values */
+#define NREL 16 /* Maximum R Line Values */
 
 /*
  * Internal Definitions
  */
-#define	dot	sym[0]		/* Dot, current loc */
-#define	dca	area[0]		/* Dca, default code area */
-#define dcb	bank[0]		/* Dcb, default code bank */
+#define dot sym[0]  /* Dot, current loc */
+#define dca area[0] /* Dca, default code area */
+#define dcb bank[0] /* Dcb, default code bank */
 
-#define	hilo	sym[3].s_addr	/* hilo, byte order flag */
-#define	mls	sym[4]		/* Mls, Macro local symbol */
+#define hilo sym[3].s_addr /* hilo, byte order flag */
+#define mls sym[4]         /* Mls, Macro local symbol */
 
 /*
  *	The defined type 'a_uint' is used for all address and
@@ -250,7 +249,7 @@
  *	required to be at least 32-bits to allow upto
  *	32-bit addressing or 32-bit value manipulation.
  */
-typedef	unsigned INT32 a_uint;
+typedef unsigned INT32 a_uint;
 
 /*
  *	The defined type 'v_sint' is used for address and
@@ -258,7 +257,7 @@ typedef	unsigned INT32 a_uint;
  *	Its size is required to be at least 32-bits to allow
  *	upto 32-bit addressing or 32-bit value manipulation.
  */
-typedef	signed INT32 v_sint;
+typedef signed INT32 v_sint;
 
 /*
  *	The area structure contains the parameter values for a
@@ -278,23 +277,21 @@ typedef	signed INT32 v_sint;
  *	within this area.  This list is used (if defined) to calculate
  *	the overall boundary required when the area is relocated.
  */
-struct	area
-{
-	struct	area *a_ap;	/* Area link */
-	struct	bank *b_bp;	/* Bank link */
-	char *	a_id;		/* Area Name */
-	int	a_ref;		/* Ref. number */
-	a_uint	a_size;		/* Area size */
-	a_uint	a_fuzz;		/* Area fuzz */
-	int	a_flag;		/* Area flags */
-	struct	bndry *a_bn;	/* Boundary link */
-	a_uint	a_bndry;	/* Area Boundary */
+struct area {
+  struct area *a_ap;  /* Area link */
+  struct bank *b_bp;  /* Bank link */
+  char *a_id;         /* Area Name */
+  int a_ref;          /* Ref. number */
+  a_uint a_size;      /* Area size */
+  a_uint a_fuzz;      /* Area fuzz */
+  int a_flag;         /* Area flags */
+  struct bndry *a_bn; /* Boundary link */
+  a_uint a_bndry;     /* Area Boundary */
 };
 
-struct	bndry
-{
-	struct	bndry *a_bn;	/* Boundary link */
-	a_uint	a_bndry;	/* Boundary value */
+struct bndry {
+  struct bndry *a_bn; /* Boundary link */
+  a_uint a_bndry;     /* Boundary value */
 };
 
 /*
@@ -309,28 +306,28 @@ struct	bndry
  *	+-----+-----+-----+-----+-----+-----+-----+-----+
  */
 
-#define	A_BYTE	0x0000		/*  8 bit */
-#define	A_WORD	0x0001		/* 16 bit */
+#define A_BYTE 0x0000 /*  8 bit */
+#define A_WORD 0x0001 /* 16 bit */
 
-#define A_1BYTE 0x0000		/* 1 Byte Word Length */
-#define A_2BYTE 0x0001		/* 2 Byte Word Length */
-#define A_3BYTE 0x0002		/* 3 Byte Word Length */
-#define A_4BYTE 0x0003		/* 4 Byte Word Length */
-#define	A_BYTES	0x0003		/* Word Length */
+#define A_1BYTE 0x0000 /* 1 Byte Word Length */
+#define A_2BYTE 0x0001 /* 2 Byte Word Length */
+#define A_3BYTE 0x0002 /* 3 Byte Word Length */
+#define A_4BYTE 0x0003 /* 4 Byte Word Length */
+#define A_BYTES 0x0003 /* Word Length */
 
-#define	A_CON	0x0400		/* Concatenating */
-#define	A_OVR	0x0404		/* Overlaying */
-#define	A_REL	0x0800		/* Relocatable */
-#define	A_ABS	0x0808		/* Absolute */
-#define	A_NOPAG	0x1000		/* Non-Paged */
-#define	A_PAG	0x1010		/* Paged */
+#define A_CON 0x0400   /* Concatenating */
+#define A_OVR 0x0404   /* Overlaying */
+#define A_REL 0x0800   /* Relocatable */
+#define A_ABS 0x0808   /* Absolute */
+#define A_NOPAG 0x1000 /* Non-Paged */
+#define A_PAG 0x1010   /* Paged */
 
-#define	A_CSEG	0x4000		/* CSEG */
-#define	A_DSEG	0x4040		/* DSEG */
-#define A_NOBNK	0x8000		/* Non-Banked */
-#define A_BNK	0x8080		/* Banked */
+#define A_CSEG 0x4000  /* CSEG */
+#define A_DSEG 0x4040  /* DSEG */
+#define A_NOBNK 0x8000 /* Non-Banked */
+#define A_BNK 0x8080   /* Banked */
 
-#define	A_OUT	0x0100		/* Output Code Flag */
+#define A_OUT 0x0100 /* Output Code Flag */
 
 /*
  *	The "R_" relocation constants define values used in
@@ -349,31 +346,31 @@ struct	bndry
  *	+-----+-----+-----+-----+-----+-----+-----+-----+
  */
 
-#define	R_BYTE	0x0000		/*  8 bit */
-#define	R_WORD	0x0001		/* 16 bit */
+#define R_BYTE 0x0000 /*  8 bit */
+#define R_WORD 0x0001 /* 16 bit */
 
-#define R_1BYTE 0x0000		/* 1 Byte */
-#define R_2BYTE 0x0001		/* 2 Byte */
-#define R_3BYTE 0x0002		/* 3 Byte */
-#define R_4BYTE 0x0003		/* 4 Byte */
-#define	R_BYTES	0x0003		/* Data Size */
+#define R_1BYTE 0x0000 /* 1 Byte */
+#define R_2BYTE 0x0001 /* 2 Byte */
+#define R_3BYTE 0x0002 /* 3 Byte */
+#define R_4BYTE 0x0003 /* 4 Byte */
+#define R_BYTES 0x0003 /* Data Size */
 
-#define	R_SGND	0x0004		/* Signed */
-#define	R_USGN	0x0008		/* Unsigned */
-#define	R_OVRF	0x0008		/* Overflow */
+#define R_SGND 0x0004 /* Signed */
+#define R_USGN 0x0008 /* Unsigned */
+#define R_OVRF 0x0008 /* Overflow */
 
-#define	R_MBRS	0x0004		/* Merge Bit Range Signed */
-				/* An alias for Signed */
-#define	R_MBRU	0x0008		/* Merge Bit Range Unsigned */
-				/* An alias for Unsigned */
-#define	R_MBRO	0x0008		/* Merge Bit Range Overflow */
-				/* An alias for Overflow */
+#define R_MBRS 0x0004 /* Merge Bit Range Signed */
+                      /* An alias for Signed */
+#define R_MBRU 0x0008 /* Merge Bit Range Unsigned */
+                      /* An alias for Unsigned */
+#define R_MBRO 0x0008 /* Merge Bit Range Overflow */
+                      /* An alias for Overflow */
 
-#define	R_MSB	0x000C		/* MSB */
-				/* Mutually exclusive with Signed / Unsigned */
+#define R_MSB 0x000C /* MSB */
+                     /* Mutually exclusive with Signed / Unsigned */
 
-#define	R_AREA	0x0000		/* Base type */
-#define	R_SYM	0x0080
+#define R_AREA 0x0000 /* Base type */
+#define R_SYM 0x0080
 
 /*
  * Note:  The PAGE modes and PCR modes are mutually exclusive !!!
@@ -382,41 +379,41 @@ struct	bndry
  * Paging Modes:
  */
 
-#define	R_NOPAG	0x0000		/* Page Mode */
-#define	R_PBITS	0x003C		/* Paging Bits */
-#define	R_PAGE	0x0030		/* Paged Addressing */
-#define	R_PAG0	0x0010		/* Page '0'    .setdp */
-#define	R_PAGN	0x0020		/* Page 'nnn'  .setdp */
-#define	R_PAGX	0x0030		/* Page 'x', Extended Relocation Mode */
-#define	R_PAGX0	0x0030		/* Page 'x', Definition 0 */
-#define	R_PAGX1	0x0034		/* Page 'x', Definition 1 */
-#define	R_PAGX2	0x0038		/* Page 'x', Definition 2 */
-#define	R_PAGX3	0x003C		/* Page 'x', Definition 3 */
+#define R_NOPAG 0x0000 /* Page Mode */
+#define R_PBITS 0x003C /* Paging Bits */
+#define R_PAGE 0x0030  /* Paged Addressing */
+#define R_PAG0 0x0010  /* Page '0'    .setdp */
+#define R_PAGN 0x0020  /* Page 'nnn'  .setdp */
+#define R_PAGX 0x0030  /* Page 'x', Extended Relocation Mode */
+#define R_PAGX0 0x0030 /* Page 'x', Definition 0 */
+#define R_PAGX1 0x0034 /* Page 'x', Definition 1 */
+#define R_PAGX2 0x0038 /* Page 'x', Definition 2 */
+#define R_PAGX3 0x003C /* Page 'x', Definition 3 */
 
 /*
  * PCR Modes:
  */
 
-#define	R_PCR	0x0040		/* PC adjust (default)    */
-#define	R_PCRN	0x0050		/* PC adjust (default) no range check */
+#define R_PCR 0x0040  /* PC adjust (default)    */
+#define R_PCRN 0x0050 /* PC adjust (default) no range check */
 
-#define	R_PCR0	0x0054		/* PC adjust (offset = 0) */
-#define	R_PCR1	0x0060		/* PC adjust (offset = 1) */
-#define	R_PCR2	0x0064		/* PC adjust (offset = 2) */
-#define	R_PCR3	0x0068		/* PC adjust (offset = 3) */
-#define	R_PCR4	0x006C		/* PC adjust (offset = 4) */
+#define R_PCR0 0x0054 /* PC adjust (offset = 0) */
+#define R_PCR1 0x0060 /* PC adjust (offset = 1) */
+#define R_PCR2 0x0064 /* PC adjust (offset = 2) */
+#define R_PCR3 0x0068 /* PC adjust (offset = 3) */
+#define R_PCR4 0x006C /* PC adjust (offset = 4) */
 
-#define	R_PCR0N	0x0058		/* PC adjust (offset = 0) no range check */
-#define	R_PCR1N	0x0070		/* PC adjust (offset = 1) no range check */
-#define	R_PCR2N	0x0074		/* PC adjust (offset = 2) no range check */
-#define	R_PCR3N	0x0078		/* PC adjust (offset = 3) no range check */
-#define	R_PCR4N	0x007C		/* PC adjust (offset = 4) no range check */
+#define R_PCR0N 0x0058 /* PC adjust (offset = 0) no range check */
+#define R_PCR1N 0x0070 /* PC adjust (offset = 1) no range check */
+#define R_PCR2N 0x0074 /* PC adjust (offset = 2) no range check */
+#define R_PCR3N 0x0078 /* PC adjust (offset = 3) no range check */
+#define R_PCR4N 0x007C /* PC adjust (offset = 4) no range check */
 
 /*
  * Basic Relocation Modes
  */
 
-#define	R_NORM	0x0000		/* No Bit Positioning */
+#define R_NORM 0x0000 /* No Bit Positioning */
 
 /*
  * Extended Relocation Modes are defined in
@@ -431,17 +428,17 @@ struct	bndry
  * Listing Control Flags
  */
 
-#define	R_HIGH	0010000		/* High Byte */
-#define	R_BYT3	0020000		/* 3rd  Byte */
-#define	R_BYT4	0040000		/* 4th  Byte */
-#define	R_RELOC	0100000		/* Relocation */
+#define R_HIGH 0010000  /* High Byte */
+#define R_BYT3 0020000  /* 3rd  Byte */
+#define R_BYT4 0040000  /* 4th  Byte */
+#define R_RELOC 0100000 /* Relocation */
 
-#define	R_DEF	00		/* Global def. */
-#define	R_REF	01		/* Global ref. */
-#define	R_REL	00		/* Relocatable */
-#define	R_ABS	02		/* Absolute */
-#define	R_GBL	00		/* Global */
-#define	R_LCL	04		/* Local */
+#define R_DEF 00 /* Global def. */
+#define R_REF 01 /* Global ref. */
+#define R_REL 00 /* Relocatable */
+#define R_ABS 02 /* Absolute */
+#define R_GBL 00 /* Global */
+#define R_LCL 04 /* Local */
 
 /*
  *	The mne structure is a linked list of the assembler
@@ -456,13 +453,12 @@ struct	bndry
  *	associated with the assembler mnemonic base instruction
  *	value.
  */
-struct	mne
-{
-	struct	mne *m_mp;	/* Hash link */
-	char	*m_id;		/* Mnemonic (JLH) */
-	char	m_type;		/* Mnemonic subtype */
-	char	m_flag;		/* Mnemonic flags */
-	a_uint	m_valu;		/* Value */
+struct mne {
+  struct mne *m_mp; /* Hash link */
+  char *m_id;       /* Mnemonic (JLH) */
+  char m_type;      /* Mnemonic subtype */
+  char m_flag;      /* Mnemonic flags */
+  a_uint m_valu;    /* Value */
 };
 
 /*
@@ -478,137 +474,136 @@ struct	mne
  *	asout.c, and the symbols address relative to the base
  *	address of the area where the symbol is located.
  */
-struct	sym
-{
-	struct	sym  *s_sp;	/* Hash link */
-	struct	tsym *s_tsym;	/* Temporary symbol link */
-	char	*s_id;		/* Symbol (JLH) */
-	char	s_type;		/* Symbol subtype */
-	char	s_flag;		/* Symbol flags */
-	struct	area *s_area;	/* Area line, 0 if absolute */
-	int	s_ref;		/* Ref. number */
-	a_uint	s_addr;		/* Address */
+struct sym {
+  struct sym *s_sp;    /* Hash link */
+  struct tsym *s_tsym; /* Temporary symbol link */
+  char *s_id;          /* Symbol (JLH) */
+  char s_type;         /* Symbol subtype */
+  char s_flag;         /* Symbol flags */
+  struct area *s_area; /* Area line, 0 if absolute */
+  int s_ref;           /* Ref. number */
+  a_uint s_addr;       /* Address */
 };
 
-#define	S_EOL		040	/* End mark for ___pst files */
+#define S_EOL 040 /* End mark for ___pst files */
 
-#define	S_LCL		001	/* Local Variable */
-#define	S_GBL		002	/* Global Variable */
-#define	S_ASG		004	/* Assigned Value */
-#define	S_MDF		010	/* Multiple Definition */
+#define S_LCL 001 /* Local Variable */
+#define S_GBL 002 /* Global Variable */
+#define S_ASG 004 /* Assigned Value */
+#define S_MDF 010 /* Multiple Definition */
 
-#define	S_NEW		0	/* New  Name (External) */
-#define	S_USER		1	/* User Name (Assigned) */
-#define	S_SPARE		2	/* Spare Definition */
-#define	S_PAGE		3	/* .page */
-#define	S_HEADER	4	/* .title, .sbttl */
-#define	  O_TITLE    0		/* .title */
-#define	  O_SBTTL    1		/* .sbttl */
-#define	S_MODUL		5	/* .module */
-#define	S_INCL		6	/* .include */
-#define	S_AREA		7	/* .area */
-#define	S_ATYP		8	/* .area type */
-#define	S_BANK		9	/* .bank */
-#define S_BTYP		10	/* .bank type */
-#define	S_ORG		11	/* .org */
-#define	S_RADIX		12	/* .radix */
-#define	S_GLOBL		13	/* .globl */
-#define	S_LOCAL		14	/* .local */
-#define	S_CONDITIONAL	15	/* .if, .iif, .else, .endif, ... */
-#define	  O_IF       0		/* .if */
-#define	  O_IFF	     1		/* .iff */
-#define	  O_IFT	     2		/* .ift */
-#define	  O_IFTF     3		/* .iftf */
-#define	  O_IFDEF    4		/* .ifdef */
-#define	  O_IFNDEF   5		/* .ifndef */
-#define	  O_IFGT     6		/* .ifgt (BGP) */
-#define	  O_IFLT     7		/* .iflt (BGP) */
-#define	  O_IFGE     8		/* .ifge (BGP) */
-#define	  O_IFLE     9		/* .ifle (BGP) */
-#define	  O_IFEQ     10		/* .ifeq (BGP) */
-#define	  O_IFNE     11		/* .ifne (BGP) */
-#define	  O_IFB      12		/* .ifb */
-#define	  O_IFNB     13		/* .ifnb */
-#define	  O_IFIDN    14		/* .ifidn */
-#define	  O_IFDIF    15		/* .ifdif */
-#define	  O_IFEND    20		/* end of .if conditionals */
-#define	  O_IIF      20		/* .iif */
-#define	  O_IIFF     21		/* .iiff */
-#define	  O_IIFT     22		/* .iift */
-#define	  O_IIFTF    23		/* .iiftf */
-#define	  O_IIFDEF   24		/* .iifdef */
-#define	  O_IIFNDEF  25		/* .iifndef */
-#define	  O_IIFGT    26		/* .iifgt */
-#define	  O_IIFLT    27		/* .iiflt */
-#define	  O_IIFGE    28		/* .iifge */
-#define	  O_IIFLE    29		/* .iifle */
-#define	  O_IIFEQ    30		/* .iifeq */
-#define	  O_IIFNE    31		/* .iifne */
-#define	  O_IIFB     32		/* .iifb */
-#define	  O_IIFNB    33		/* .iifnb */
-#define	  O_IIFIDN   34		/* .iifidn */
-#define	  O_IIFDIF   35		/* .iifdif */
-#define	  O_IIFEND   40		/* end of .iif conditionals */
-#define	  O_ELSE     40		/* .else */
-#define	  O_ENDIF    41		/* .endif */
-#define	S_LISTING	16	/* .nlist, .list */
-#define	  O_LIST     0		/* .list */
-#define	  O_NLIST    1		/* .nlist */
-#define	S_EQU		17	/* .equ, .gblequ, .lclequ */
-#define	  O_EQU      0		/* .equ */
-#define	  O_GBLEQU   1		/* .gblequ */
-#define	  O_LCLEQU   2		/* .lclequ */
-#define	S_DATA		18	/* .byte, .word, .3byte, .4byte, .db, .dw, .fcb, .fdb */
-#define	  O_1BYTE    1		/* .byte, .db, .fcb */
-#define	  O_2BYTE    2		/* .word, .dw, .fdb */
-#define	  O_3BYTE    3		/* .3byte */
-#define	  O_4BYTE    4		/* .4byte */
-#define	S_BLK		19	/* .blkb, .blkw, .blk3, .blk4, .ds, .rmb, .rs */
-/*	  O_1BYTE    1	*/	/* .blkb, .ds, .rmb, .rs */
-/*	  O_2BYTE    2	*/	/* .blkw */
-/*	  O_3BYTE    3	*/	/* .blk3 */
-/*	  O_4BYTE    4	*/	/* .blk4 */
-#define	S_ASCIX		20	/* .ascii, .ascis, .asciz, .str, .strs, .strz */
-#define	  O_ASCII    0		/* .ascii */
-#define	  O_ASCIS    1		/* .ascis */
-#define	  O_ASCIZ    2		/* .asciz */
-#define	S_DEFINE	21	/* .define, .undefine */
-#define	  O_DEF      0		/* .define */
-#define	  O_UNDEF    1		/* .undefine */
-#define	S_BOUNDARY	22	/* .even, .odd */
-#define	  O_EVEN     0		/* .even */
-#define	  O_ODD      1		/* .odd */
-#define	  O_BNDRY    2		/* .bndry */
-#define	S_MSG		23	/* .msg */
-#define	S_ERROR		24	/* .assume, .error */
-#define	  O_ASSUME   0		/* .assume */
-#define	  O_ERROR    1		/* .error */
-#define	S_MSB		25	/* .msb(0), .msb(1), .msb(2), .msb(3), .lohi, .hilo */
-#define	  O_MSB      0		/* .msb(0), .msb(1), .msb(2), .msb(3) */
-#define	  O_LOHI     1		/* .lohi */
-#define	  O_HILO     2		/* .hilo */
-#define	S_BITS		26	/* .8bit, .16bit, .24bit, .32bit */
-/*	  O_1BYTE    1	*/	/* .8bit */
-/*	  O_2BYTE    2	*/	/* .16bit */
-/*	  O_3BYTE    3	*/	/* .24bit */
-/*	  O_4BYTE    4	*/	/* .32bit */
-#define	S_END		27	/* .end */
-#define	S_MACRO		28	/* .macro, .endm, .mexit, ... */
-#define	  O_MACRO    0		/* .macro */
-#define	  O_ENDM     1		/* .endm */
-#define	  O_MEXIT    2		/* .mexit */
-#define	  O_NCHR     3		/* .nchr */
-#define	  O_NARG     4		/* .narg */
-#define	  O_NTYP     5		/* .ntyp */
-#define	  O_IRP	     6		/* .irp */
-#define	  O_IRPC     7		/* .irpc */
-#define	  O_REPT     8		/* .rept */
-#define	  O_NVAL     9		/* .nval */
-#define	  O_MDEL     10		/* .mdelete */
-#define	  O_CHECK    255	/* Building/Exiting a Macro Check */
-#define S_XXXXX		29	/* XXXXX */
+#define S_NEW 0          /* New  Name (External) */
+#define S_USER 1         /* User Name (Assigned) */
+#define S_SPARE 2        /* Spare Definition */
+#define S_PAGE 3         /* .page */
+#define S_HEADER 4       /* .title, .sbttl */
+#define O_TITLE 0        /* .title */
+#define O_SBTTL 1        /* .sbttl */
+#define S_MODUL 5        /* .module */
+#define S_INCL 6         /* .include */
+#define S_AREA 7         /* .area */
+#define S_ATYP 8         /* .area type */
+#define S_BANK 9         /* .bank */
+#define S_BTYP 10        /* .bank type */
+#define S_ORG 11         /* .org */
+#define S_RADIX 12       /* .radix */
+#define S_GLOBL 13       /* .globl */
+#define S_LOCAL 14       /* .local */
+#define S_CONDITIONAL 15 /* .if, .iif, .else, .endif, ... */
+#define O_IF 0           /* .if */
+#define O_IFF 1          /* .iff */
+#define O_IFT 2          /* .ift */
+#define O_IFTF 3         /* .iftf */
+#define O_IFDEF 4        /* .ifdef */
+#define O_IFNDEF 5       /* .ifndef */
+#define O_IFGT 6         /* .ifgt (BGP) */
+#define O_IFLT 7         /* .iflt (BGP) */
+#define O_IFGE 8         /* .ifge (BGP) */
+#define O_IFLE 9         /* .ifle (BGP) */
+#define O_IFEQ 10        /* .ifeq (BGP) */
+#define O_IFNE 11        /* .ifne (BGP) */
+#define O_IFB 12         /* .ifb */
+#define O_IFNB 13        /* .ifnb */
+#define O_IFIDN 14       /* .ifidn */
+#define O_IFDIF 15       /* .ifdif */
+#define O_IFEND 20       /* end of .if conditionals */
+#define O_IIF 20         /* .iif */
+#define O_IIFF 21        /* .iiff */
+#define O_IIFT 22        /* .iift */
+#define O_IIFTF 23       /* .iiftf */
+#define O_IIFDEF 24      /* .iifdef */
+#define O_IIFNDEF 25     /* .iifndef */
+#define O_IIFGT 26       /* .iifgt */
+#define O_IIFLT 27       /* .iiflt */
+#define O_IIFGE 28       /* .iifge */
+#define O_IIFLE 29       /* .iifle */
+#define O_IIFEQ 30       /* .iifeq */
+#define O_IIFNE 31       /* .iifne */
+#define O_IIFB 32        /* .iifb */
+#define O_IIFNB 33       /* .iifnb */
+#define O_IIFIDN 34      /* .iifidn */
+#define O_IIFDIF 35      /* .iifdif */
+#define O_IIFEND 40      /* end of .iif conditionals */
+#define O_ELSE 40        /* .else */
+#define O_ENDIF 41       /* .endif */
+#define S_LISTING 16     /* .nlist, .list */
+#define O_LIST 0         /* .list */
+#define O_NLIST 1        /* .nlist */
+#define S_EQU 17         /* .equ, .gblequ, .lclequ */
+#define O_EQU 0          /* .equ */
+#define O_GBLEQU 1       /* .gblequ */
+#define O_LCLEQU 2       /* .lclequ */
+#define S_DATA 18 /* .byte, .word, .3byte, .4byte, .db, .dw, .fcb, .fdb */
+#define O_1BYTE 1 /* .byte, .db, .fcb */
+#define O_2BYTE 2 /* .word, .dw, .fdb */
+#define O_3BYTE 3 /* .3byte */
+#define O_4BYTE 4 /* .4byte */
+#define S_BLK 19  /* .blkb, .blkw, .blk3, .blk4, .ds, .rmb, .rs */
+/*	  O_1BYTE    1	*/ /* .blkb, .ds, .rmb, .rs */
+/*	  O_2BYTE    2	*/ /* .blkw */
+/*	  O_3BYTE    3	*/ /* .blk3 */
+/*	  O_4BYTE    4	*/ /* .blk4 */
+#define S_ASCIX 20         /* .ascii, .ascis, .asciz, .str, .strs, .strz */
+#define O_ASCII 0          /* .ascii */
+#define O_ASCIS 1          /* .ascis */
+#define O_ASCIZ 2          /* .asciz */
+#define S_DEFINE 21        /* .define, .undefine */
+#define O_DEF 0            /* .define */
+#define O_UNDEF 1          /* .undefine */
+#define S_BOUNDARY 22      /* .even, .odd */
+#define O_EVEN 0           /* .even */
+#define O_ODD 1            /* .odd */
+#define O_BNDRY 2          /* .bndry */
+#define S_MSG 23           /* .msg */
+#define S_ERROR 24         /* .assume, .error */
+#define O_ASSUME 0         /* .assume */
+#define O_ERROR 1          /* .error */
+#define S_MSB 25  /* .msb(0), .msb(1), .msb(2), .msb(3), .lohi, .hilo */
+#define O_MSB 0   /* .msb(0), .msb(1), .msb(2), .msb(3) */
+#define O_LOHI 1  /* .lohi */
+#define O_HILO 2  /* .hilo */
+#define S_BITS 26 /* .8bit, .16bit, .24bit, .32bit */
+/*	  O_1BYTE    1	*/ /* .8bit */
+/*	  O_2BYTE    2	*/ /* .16bit */
+/*	  O_3BYTE    3	*/ /* .24bit */
+/*	  O_4BYTE    4	*/ /* .32bit */
+#define S_END 27           /* .end */
+#define S_MACRO 28         /* .macro, .endm, .mexit, ... */
+#define O_MACRO 0          /* .macro */
+#define O_ENDM 1           /* .endm */
+#define O_MEXIT 2          /* .mexit */
+#define O_NCHR 3           /* .nchr */
+#define O_NARG 4           /* .narg */
+#define O_NTYP 5           /* .ntyp */
+#define O_IRP 6            /* .irp */
+#define O_IRPC 7           /* .irpc */
+#define O_REPT 8           /* .rept */
+#define O_NVAL 9           /* .nval */
+#define O_MDEL 10          /* .mdelete */
+#define O_CHECK 255        /* Building/Exiting a Macro Check */
+#define S_XXXXX 29         /* XXXXX */
 
-#define S_DIREOL	30	/* Assembler Directive End Of List */
+#define S_DIREOL 30 /* Assembler Directive End Of List */
 
 /*
  *	The tsym structure is a linked list of temporary
@@ -620,14 +615,13 @@ struct	sym
  *	to the base address of the area where the symbol
  *	is located.
  */
-struct	tsym
-{
-	struct	tsym *t_lnk;	/* Link to next */
-	a_uint	t_num;		/* 0-65535$      for a 16-bit int */
-				/* 0-4294967295$ for a 32-bit int */
-	int	t_flg;		/* flags */
-	struct	area *t_area;	/* Area */
-	a_uint	t_addr;		/* Address */
+struct tsym {
+  struct tsym *t_lnk;  /* Link to next */
+  a_uint t_num;        /* 0-65535$      for a 16-bit int */
+                       /* 0-4294967295$ for a 32-bit int */
+  int t_flg;           /* flags */
+  struct area *t_area; /* Area */
+  a_uint t_addr;       /* Address */
 };
 
 /*
@@ -647,22 +641,21 @@ struct	tsym
  *	default link parameters, and the bank flags which specify
  *	what options have been specified.
  */
-struct	bank
-{
-	struct	bank *b_bp;	/* Bank link */
-	char *	b_id;		/* Bank Name */
-	char *	b_fsfx;		/* Bank File Suffix */
-	int	b_ref;		/* Ref. number */
-	a_uint	b_base;		/* Bank base address */
-	a_uint	b_size;		/* Bank size */
-	a_uint	b_map;		/* Bank mapping */
-	int	b_flag;		/* Bank flags */
+struct bank {
+  struct bank *b_bp; /* Bank link */
+  char *b_id;        /* Bank Name */
+  char *b_fsfx;      /* Bank File Suffix */
+  int b_ref;         /* Ref. number */
+  a_uint b_base;     /* Bank base address */
+  a_uint b_size;     /* Bank size */
+  a_uint b_map;      /* Bank mapping */
+  int b_flag;        /* Bank flags */
 };
 
-#define B_BASE	0001		/* 'base' address specified */
-#define B_SIZE	0002		/* 'size' of bank specified */
-#define	B_FSFX	0004		/* File suffix specified */
-#define	B_MAP	0010		/* Mapped Bank Flag */
+#define B_BASE 0001 /* 'base' address specified */
+#define B_SIZE 0002 /* 'size' of bank specified */
+#define B_FSFX 0004 /* File suffix specified */
+#define B_MAP 0010  /* Mapped Bank Flag */
 
 /*
  *	The def structure is used by the .define assembler
@@ -675,12 +668,11 @@ struct	bank
  *	(i.e. NO SPACEs or TABs).  The substitution string
  *	may contain SPACES and/or TABs.
  */
-struct def
-{
-	struct def	*d_dp;		/* link to next define */
-	char		*d_id;		/* defined string */
-	char		*d_define;	/* string to substitute for defined string */
-	int		d_dflag;	/* (1) .defined / (0) .undefined */
+struct def {
+  struct def *d_dp; /* link to next define */
+  char *d_id;       /* defined string */
+  char *d_define;   /* string to substitute for defined string */
+  int d_dflag;      /* (1) .defined / (0) .undefined */
 };
 
 /*
@@ -722,32 +714,31 @@ struct def
  *	m_dbits contains the active bit positions for the output.
  *	m_sbits contains the active bit positions for the input.
  */
-struct	mode
-{
-	char *	m_def;		/* Bit Relocation Definition */
-	a_uint	m_flag;		/* Bit Swapping Flag */
-	a_uint	m_dbits;	/* Destination Bit Mask */
-	a_uint	m_sbits;	/* Source Bit Mask */
+struct mode {
+  char *m_def;    /* Bit Relocation Definition */
+  a_uint m_flag;  /* Bit Swapping Flag */
+  a_uint m_dbits; /* Destination Bit Mask */
+  a_uint m_sbits; /* Source Bit Mask */
 };
 
 /*
  * Definitions for Character Types
  */
-#define	SPACE	'\000'
-#define ETC	'\000'
-#define	LETTER	'\001'
-#define	DIGIT	'\002'
-#define	BINOP	'\004'
-#define	RAD2	'\010'
-#define	RAD8	'\020'
-#define	RAD10	'\040'
-#define	RAD16	'\100'
-#define	ILL	'\200'
+#define SPACE '\000'
+#define ETC '\000'
+#define LETTER '\001'
+#define DIGIT '\002'
+#define BINOP '\004'
+#define RAD2 '\010'
+#define RAD8 '\020'
+#define RAD10 '\040'
+#define RAD16 '\100'
+#define ILL '\200'
 
-#define	DGT2	(DIGIT|RAD16|RAD10|RAD8|RAD2)
-#define	DGT8	(DIGIT|RAD16|RAD10|RAD8)
-#define	DGT10	(DIGIT|RAD16|RAD10)
-#define	LTR16	(LETTER|RAD16)
+#define DGT2 (DIGIT | RAD16 | RAD10 | RAD8 | RAD2)
+#define DGT8 (DIGIT | RAD16 | RAD10 | RAD8)
+#define DGT10 (DIGIT | RAD16 | RAD10)
+#define LTR16 (LETTER | RAD16)
 
 /*
  *	The exp structure is used to return the evaluation
@@ -765,16 +756,15 @@ struct	mode
  *		mode = S_NEW, flag = 1, addr contains the
  *		constant, and base = pointer to symbol.
  */
-struct	expr
-{
-	char	e_mode;		/* Address mode */
-	char	e_flag;		/* Symbol flag */
-	a_uint	e_addr;		/* Address */
-	union	{
-		struct area *e_ap;
-		struct sym  *e_sp;
-	} e_base;		/* Rel. base */
-	char	e_rlcf;		/* Rel. flags */
+struct expr {
+  char e_mode;   /* Address mode */
+  char e_flag;   /* Symbol flag */
+  a_uint e_addr; /* Address */
+  union {
+    struct area *e_ap;
+    struct sym *e_sp;
+  } e_base;    /* Rel. base */
+  char e_rlcf; /* Rel. flags */
 };
 
 /*
@@ -792,24 +782,23 @@ struct	expr
  *	afp	is the file path length (excludes the files name.ext)
  *	afn[]	is the assembler/include file path/name.ext
  */
-struct	asmf
-{
-	struct	asmf *next;	/* Link to Next Object */
-	int	objtyp;		/* Object Type */
-	int	line;		/* Saved Line Counter */
-	int	flevel;		/* saved flevel */
-	int	tlevel;		/* saved tlevel */
-	int	lnlist;		/* saved lnlist */
-	FILE *	fp;		/* FILE Handle */
-	int	afp;		/* File Path Length */
-	char	afn[FILSPC];	/* File Name */
+struct asmf {
+  struct asmf *next; /* Link to Next Object */
+  int objtyp;        /* Object Type */
+  int line;          /* Saved Line Counter */
+  int flevel;        /* saved flevel */
+  int tlevel;        /* saved tlevel */
+  int lnlist;        /* saved lnlist */
+  FILE *fp;          /* FILE Handle */
+  int afp;           /* File Path Length */
+  char afn[FILSPC];  /* File Name */
 };
 
 /*
  *	The macrofp structure masquerades as a FILE Handle
  *	for inclusion in an asmf structure.  This structure
  *	contains the reference to the macro to be inserted
- *	into the assembler stream and information to 
+ *	into the assembler stream and information to
  *	restore the assembler state at macro completion.
  *
  * The Parameters:
@@ -822,15 +811,15 @@ struct	asmf
  *	lnlist	is the saved assembler lnlist
  *	npexit	non zero if an .mexit is encountered
  */
-struct	macrofp {
-	struct mcrdef *	np;		/* pointer to macro definition */
-	struct strlst *	lstptr;		/* pointer to next line of macro */
-	int		rptcnt;		/* repeat counter */
-	int		rptidx;		/* repeat index */
-	int		flevel;		/* saved flevel */
-	int		tlevel;		/* saved tlevel */
-	int		lnlist;		/* saved lnlist */
-	int		npexit;		/* .mexit called */
+struct macrofp {
+  struct mcrdef *np;     /* pointer to macro definition */
+  struct strlst *lstptr; /* pointer to next line of macro */
+  int rptcnt;            /* repeat counter */
+  int rptidx;            /* repeat index */
+  int flevel;            /* saved flevel */
+  int tlevel;            /* saved tlevel */
+  int lnlist;            /* saved lnlist */
+  int npexit;            /* .mexit called */
 };
 
 /*
@@ -863,20 +852,20 @@ struct	macrofp {
  *	bgnxrg	is a pointer to the first expansion argument string
  *	endxrg	is a pointer to the last  expansion argument string
  */
-struct	mcrdef {
-	struct mcrdef *	next;		/* link to next macro definition */
-	char *		name;		/* pointer to the macro name */
-	struct strlst *	bgnlst;		/* link to first text line of macro */
-	struct strlst *	endlst;		/* link to last text line of macro */
-	int		type;		/* macro type */
-	int		rptcnt;		/* repeat counter */
-	int		nest;		/* macro nesting counter */
-	int		narg;		/* number of macro defintion arguments */
-	struct strlst * bgnarg;		/* link to first macro defintion argument */
-	struct strlst * endarg;		/* link to last macro definition argument */
-	int		xarg;		/* number of macro expansion arguments */
-	struct strlst * bgnxrg;		/* link to first macro expansion argument */
-	struct strlst * endxrg;		/* link to last macro xpansion argument */
+struct mcrdef {
+  struct mcrdef *next;   /* link to next macro definition */
+  char *name;            /* pointer to the macro name */
+  struct strlst *bgnlst; /* link to first text line of macro */
+  struct strlst *endlst; /* link to last text line of macro */
+  int type;              /* macro type */
+  int rptcnt;            /* repeat counter */
+  int nest;              /* macro nesting counter */
+  int narg;              /* number of macro defintion arguments */
+  struct strlst *bgnarg; /* link to first macro defintion argument */
+  struct strlst *endarg; /* link to last macro definition argument */
+  int xarg;              /* number of macro expansion arguments */
+  struct strlst *bgnxrg; /* link to first macro expansion argument */
+  struct strlst *endxrg; /* link to last macro xpansion argument */
 };
 
 /*
@@ -886,9 +875,9 @@ struct	mcrdef {
  *	next	is a pointer to the next string.
  *	text	is a pointer to a text string.
  */
-struct	strlst {
-	struct strlst *	next;		/* pointer to next string */
-	char *		text;		/* pointer to string text */
+struct strlst {
+  struct strlst *next; /* pointer to next string */
+  char *text;          /* pointer to string text */
 };
 
 /*
@@ -908,255 +897,255 @@ struct	strlst {
  *	next	is a pointer to the next memlnk structure.
  *	ptr	is a pointer to the allocated memory.
  */
-struct	memlnk {
-	struct memlnk *	next;		/* link to next memlnk */
-	VOID *		ptr;		/* pointer to allocated memory */
+struct memlnk {
+  struct memlnk *next; /* link to next memlnk */
+  VOID *ptr;           /* pointer to allocated memory */
 };
 
 /*
  *	External Definitions for all Global Variables
  */
 
-extern	int	aserr;		/*	ASxxxx error counter
-				 */
-extern	jmp_buf	jump_env;	/*	compiler dependent structure
-				 *	used by setjmp() and longjmp()
-				 */
-extern	struct	asmf	*asmc;	/*	Pointer to the current
-				 *	source input structure
-				 */
-extern	struct	asmf	*asmo;	/*	The pointer to the first
-				 *	command line insert structure
-				 */
-extern	struct	asmf	*asmp;	/*	The pointer to the first assembler
-				 *	source file structure of a linked list
-				 */
-extern	struct	asmf	*asmi;	/*	Queued pointer to an include file
-				 *	source input structure
-				 */
-extern	struct	asmf	*asmq;	/*	Queued pointer to a macro
-				 *	source input structure
-				 */
-extern	struct mcrdef *	mcrlst;	/*	link to list of defined macros
-				 */
-extern	struct mcrdef *	mcrp;	/*	link to list of defined macros
-				 */
-extern	struct memlnk *	asxmem;	/*	Assembler Memory Allocation Structure
-				 */
-extern	struct memlnk *	pmcrmem;/*	First Macro Memory Allocation Structure
-				 */
-extern	struct memlnk *	mcrmem;	/*	Macro Memory Allocation Structure
-				 */
-extern	int	asmblk;		/*	Assembler data blocks allocated
-				 */
-extern	int	mcrblk;		/*	Macro data blocks allocated
-				 */
-extern	int	incfil;		/*	include file nesting counter
-				 */
-extern	int	maxinc;		/*	maximum include file nesting encountered
-				 */
-extern	int	mcrfil;		/*	macro nesting counter
-				 */
-extern	int	maxmcr;		/*	maximum macro nesting emcountered
-				 */
-extern	int	flevel;		/*	IF-ELSE-ENDIF flag (false != 0)
-				 */
-extern	int	ftflevel;	/*	IIFF-IIFT-IIFTF FLAG
-				 */
-extern	int	tlevel;		/*	current conditional level
-				 */
-extern	int	lnlist;		/*	LIST-NLIST options
-				 */
-extern	int	ifcnd[MAXIF+1];	/*	array of IF statement condition
-				 *	values (0 = FALSE) indexed by tlevel
-				 */
-extern	int	iflvl[MAXIF+1];	/*	array of IF-ELSE-ENDIF flevel
-				 *	values indexed by tlevel
-				 */
-extern	char	afn[FILSPC];	/*	current input file specification
-				 */
-extern	int	afp;		/*	current input file path length
-				 */
-extern	char	afntmp[FILSPC];	/*	temporary input file specification
-				 */
-extern	int	afptmp;		/*	temporary input file path length
-				 */
-extern	int	srcline;	/*	current source line number
-				 */
-extern	int	asmline;	/*	current assembler file line number
-				 */
-extern	int	incline;	/*	current include file line number
-				 */
-extern	int	mcrline;	/*	current macro line number
-				 */
-extern	int	radix;		/*	current number conversion radix:
-				 *	2 (binary), 8 (octal), 10 (decimal),
-				 *	16 (hexadecimal)
-				 */
-extern	int	line;		/*	current assembler source line number
-				 */
-extern	int	page;		/*	current page number
-				 */
-extern	int	lop;		/*	current line number on page
-				 */
-extern	time_t	curtim;		/*	pointer to the current time string
-				 */
-extern	int	pass;		/*	assembler pass number
-				 */
-extern	int	aflag;		/*	-a, make all symbols global flag
-				 */
-extern	int	bflag;		/*	-b(b), listing mode flag
-				 */
-extern	int	cflag;		/*	-c, disable cycle counts in listing flag
-				 */
-extern	int	fflag;		/*	-f(f), relocations flagged flag
-				 */
-extern	int	gflag;		/*	-g, make undefined symbols global flag
-				 */
-extern	int	hflag;		/*	-h, usage help listed
-				 */
-extern	int	iflag;		/*	-i, insert command line string flag
-				 */
+extern int aserr;              /*	ASxxxx error counter
+                                */
+extern jmp_buf jump_env;       /*	compiler dependent structure
+                                *	used by setjmp() and longjmp()
+                                */
+extern struct asmf *asmc;      /*	Pointer to the current
+                                *	source input structure
+                                */
+extern struct asmf *asmo;      /*	The pointer to the first
+                                *	command line insert structure
+                                */
+extern struct asmf *asmp;      /*	The pointer to the first assembler
+                                *	source file structure of a linked list
+                                */
+extern struct asmf *asmi;      /*	Queued pointer to an include file
+                                *	source input structure
+                                */
+extern struct asmf *asmq;      /*	Queued pointer to a macro
+                                *	source input structure
+                                */
+extern struct mcrdef *mcrlst;  /*	link to list of defined macros
+                                */
+extern struct mcrdef *mcrp;    /*	link to list of defined macros
+                                */
+extern struct memlnk *asxmem;  /*	Assembler Memory Allocation Structure
+                                */
+extern struct memlnk *pmcrmem; /*	First Macro Memory Allocation Structure
+                                */
+extern struct memlnk *mcrmem;  /*	Macro Memory Allocation Structure
+                                */
+extern int asmblk;             /*	Assembler data blocks allocated
+                                */
+extern int mcrblk;             /*	Macro data blocks allocated
+                                */
+extern int incfil;             /*	include file nesting counter
+                                */
+extern int maxinc;             /*	maximum include file nesting encountered
+                                */
+extern int mcrfil;             /*	macro nesting counter
+                                */
+extern int maxmcr;             /*	maximum macro nesting emcountered
+                                */
+extern int flevel;             /*	IF-ELSE-ENDIF flag (false != 0)
+                                */
+extern int ftflevel;           /*	IIFF-IIFT-IIFTF FLAG
+                                */
+extern int tlevel;             /*	current conditional level
+                                */
+extern int lnlist;             /*	LIST-NLIST options
+                                */
+extern int ifcnd[MAXIF + 1];   /*	array of IF statement condition
+                                *	values (0 = FALSE) indexed by tlevel
+                                */
+extern int iflvl[MAXIF + 1];   /*	array of IF-ELSE-ENDIF flevel
+                                *	values indexed by tlevel
+                                */
+extern char afn[FILSPC];       /*	current input file specification
+                                */
+extern int afp;                /*	current input file path length
+                                */
+extern char afntmp[FILSPC];    /*	temporary input file specification
+                                */
+extern int afptmp;             /*	temporary input file path length
+                                */
+extern int srcline;            /*	current source line number
+                                */
+extern int asmline;            /*	current assembler file line number
+                                */
+extern int incline;            /*	current include file line number
+                                */
+extern int mcrline;            /*	current macro line number
+                                */
+extern int radix;              /*	current number conversion radix:
+                                *	2 (binary), 8 (octal), 10 (decimal),
+                                *	16 (hexadecimal)
+                                */
+extern int line;               /*	current assembler source line number
+                                */
+extern int page;               /*	current page number
+                                */
+extern int lop;                /*	current line number on page
+                                */
+extern time_t curtim;          /*	pointer to the current time string
+                                */
+extern int pass;               /*	assembler pass number
+                                */
+extern int aflag;              /*	-a, make all symbols global flag
+                                */
+extern int bflag;              /*	-b(b), listing mode flag
+                                */
+extern int cflag;              /*	-c, disable cycle counts in listing flag
+                                */
+extern int fflag;              /*	-f(f), relocations flagged flag
+                                */
+extern int gflag;              /*	-g, make undefined symbols global flag
+                                */
+extern int hflag;              /*	-h, usage help listed
+                                */
+extern int iflag;              /*	-i, insert command line string flag
+                                */
 
 #if NOICE
-extern	int	jflag;		/*	-j, enable NoICE Debug Symbols
-				 */
+extern int jflag; /*	-j, enable NoICE Debug Symbols
+                   */
 #endif
 
-extern	int	lflag;		/*	-l, generate listing flag
-				 */
-extern	int	oflag;		/*	-o, generate relocatable output flag
-				 */
-extern	int	pflag;		/*	-p, disable listing pagination
-				 */
-extern	int	rflag;		/*	-r, put line numbers in hint file for .lst to .rst
-				 */
-extern	int	sflag;		/*	-s, generate symbol table flag
-				 */
-extern	int	tflag;		/*	-t, output diagnostic parameters from assembler
-				 */
-extern	int	uflag;		/*	-u, disable .list/.nlist processing flag
-				 */
-extern	int	vflag;		/*	-v, enable out of range signed / unsigned errors
-				 */
-extern	int	wflag;		/*	-w, enable wide listing format
-				 */
-extern	int	xflag;		/*	-x, listing radix flag
-				 */
+extern int lflag; /*	-l, generate listing flag
+                   */
+extern int oflag; /*	-o, generate relocatable output flag
+                   */
+extern int pflag; /*	-p, disable listing pagination
+                   */
+extern int rflag; /*	-r, put line numbers in hint file for .lst to .rst
+                   */
+extern int sflag; /*	-s, generate symbol table flag
+                   */
+extern int tflag; /*	-t, output diagnostic parameters from assembler
+                   */
+extern int uflag; /*	-u, disable .list/.nlist processing flag
+                   */
+extern int vflag; /*	-v, enable out of range signed / unsigned errors
+                   */
+extern int wflag; /*	-w, enable wide listing format
+                   */
+extern int xflag; /*	-x, listing radix flag
+                   */
 
 #if SDCDB
-extern	int	yflag;		/*	-y, enable SDCC Debug Symbols
-				 */
+extern int yflag; /*	-y, enable SDCC Debug Symbols
+                   */
 #endif
 
-extern	int	zflag;		/*	-z, disable symbol case sensitivity
-				 */
-extern	int	a_bytes;	/*	REL file T Line address length
-				 */
-extern	a_uint	a_mask;		/*	Address Mask
-				 */
-extern	a_uint	s_mask;		/*	Sign Mask
-				 */
-extern	a_uint	v_mask;		/*	Value Mask
-				 */
-extern	a_uint	p_mask;		/*	Page Mask
-				 */
-extern	int	as_msb;		/*	current MSB byte select
-				 *	0 == low byte
-				 *	1 == high byte
-				 *	2 == third byte
-				 *	3 == fourth byte
-				 */
-extern	a_uint	laddr;		/*	address of current assembler line,
-				 *	equate, or value of .if argument
-				 */
-extern	a_uint	fuzz;		/*	tracks pass to pass changes in the
-				 *	address of symbols caused by
-				 *	variable length instruction formats
-				 */
-extern	int	lmode;		/*	listing mode
-				 */
-extern	char *	eqt_area;	/*	pointer to the area name
-				 *	associated with lmode = ELIST
-				 */
-extern	char	txt[NTXT];	/*	T Line Values
-				 */
-extern	char	rel[NREL];	/*	R Line Values
-				 */
-extern	char	*txtp;		/*	Pointer to T Line Values
-				 */
-extern	char	*relp;		/*	Pointer to R Line Values
-				 */
-extern	struct	area	*areap;	/*	pointer to an area structure
-				 */
-extern	struct	bank	*bankp;	/*	pointer to a bank structure
-				 */
-extern	struct	def	*defp;	/*	pointer to a def structure
-				 */
-extern	struct	sym	sym[];	/*	array of 1 symbol
-				 */
-extern	struct	sym	*symp;	/*	pointer to a symbol structure
-				 */
-extern	struct	sym *symhash[NHASH]; /*	array of pointers to NHASH
-				      *	linked symbol lists
-				      */
-extern	struct	mne *mnehash[NHASH]; /*	array of pointers to NHASH
-				      *	linked mnemonic/directive lists
-				      */
-extern	char	*ep;		/*	pointer into error list
-				 *	array eb[NERR]
-				 */
-extern	char	eb[NERR];	/*	array of generated error codes
-				 */
-extern	char	*ip;		/*	pointer into the assembler-source
-				 *	text line in ib[]
-				 */
-extern	char	ib[NINPUT*2];	/*	assembler-source text line for processing
-				 */
-extern	char	ic[NINPUT*2];	/*	assembler-source text line for listing
-				 */
-extern	char	*il;		/*	pointer to the assembler-source
-				 *	text line to be listed
-				 */
-extern	char	*cp;		/*	pointer to assembler output
-				 *	array cb[]
-				 */
-extern	char	cb[NCODE];	/*	array of assembler output values
-				 */
-extern	int	*cpt;		/*	pointer to assembler relocation type
-				 *	output array cbt[]
-				 */
-extern	int	cbt[NCODE];	/*	array of assembler relocation types
-				 *	describing the data in cb[]
-				 */
-extern	int	opcycles;	/*	opcode execution cycles
-				 */
-extern	char	tb[NTITL];	/*	Title string buffer
-				 */
-extern	char	stb[NSBTL];	/*	Subtitle string buffer
-				 */
-extern	char	erb[NINPUT+4];	/*	Error string buffer
-				 */
-extern	char	symtbl[];	/*	string "Symbol Table"
-				 */
-extern	char	aretbl[];	/*	string "Area Table"
-				 */
-extern	char	module[NCPS+2];	/*	module name string
-				 */
-extern	FILE	*hfp;		/*	.lst to .rst hint file handle
-				 */
-extern	FILE	*lfp;		/*	list output file handle
-				 */
-extern	FILE	*ofp;		/*	relocation output file handle
-				 */
-extern	FILE	*tfp;		/*	symbol table output file handle
-				 */
-extern	char	ctype[128];	/*	array of character types, one per
-				 *	ASCII character
-				 */
-extern	char	ccase[128];	/*	an array of characters which 
-				 *	perform the case translation function
-				 */
+extern int zflag;                  /*	-z, disable symbol case sensitivity
+                                    */
+extern int a_bytes;                /*	REL file T Line address length
+                                    */
+extern a_uint a_mask;              /*	Address Mask
+                                    */
+extern a_uint s_mask;              /*	Sign Mask
+                                    */
+extern a_uint v_mask;              /*	Value Mask
+                                    */
+extern a_uint p_mask;              /*	Page Mask
+                                    */
+extern int as_msb;                 /*	current MSB byte select
+                                    *	0 == low byte
+                                    *	1 == high byte
+                                    *	2 == third byte
+                                    *	3 == fourth byte
+                                    */
+extern a_uint laddr;               /*	address of current assembler line,
+                                    *	equate, or value of .if argument
+                                    */
+extern a_uint fuzz;                /*	tracks pass to pass changes in the
+                                    *	address of symbols caused by
+                                    *	variable length instruction formats
+                                    */
+extern int lmode;                  /*	listing mode
+                                    */
+extern char *eqt_area;             /*	pointer to the area name
+                                    *	associated with lmode = ELIST
+                                    */
+extern char txt[NTXT];             /*	T Line Values
+                                    */
+extern char rel[NREL];             /*	R Line Values
+                                    */
+extern char *txtp;                 /*	Pointer to T Line Values
+                                    */
+extern char *relp;                 /*	Pointer to R Line Values
+                                    */
+extern struct area *areap;         /*	pointer to an area structure
+                                    */
+extern struct bank *bankp;         /*	pointer to a bank structure
+                                    */
+extern struct def *defp;           /*	pointer to a def structure
+                                    */
+extern struct sym sym[];           /*	array of 1 symbol
+                                    */
+extern struct sym *symp;           /*	pointer to a symbol structure
+                                    */
+extern struct sym *symhash[NHASH]; /*	array of pointers to NHASH
+                                    *	linked symbol lists
+                                    */
+extern struct mne *mnehash[NHASH]; /*	array of pointers to NHASH
+                                    *	linked mnemonic/directive lists
+                                    */
+extern char *ep;                   /*	pointer into error list
+                                    *	array eb[NERR]
+                                    */
+extern char eb[NERR];              /*	array of generated error codes
+                                    */
+extern char *ip;                   /*	pointer into the assembler-source
+                                    *	text line in ib[]
+                                    */
+extern char ib[NINPUT * 2];        /*	assembler-source text line for processing
+                                    */
+extern char ic[NINPUT * 2];        /*	assembler-source text line for listing
+                                    */
+extern char *il;                   /*	pointer to the assembler-source
+                                    *	text line to be listed
+                                    */
+extern char *cp;                   /*	pointer to assembler output
+                                    *	array cb[]
+                                    */
+extern char cb[NCODE];             /*	array of assembler output values
+                                    */
+extern int *cpt;                   /*	pointer to assembler relocation type
+                                    *	output array cbt[]
+                                    */
+extern int cbt[NCODE];             /*	array of assembler relocation types
+                                    *	describing the data in cb[]
+                                    */
+extern int opcycles;               /*	opcode execution cycles
+                                    */
+extern char tb[NTITL];             /*	Title string buffer
+                                    */
+extern char stb[NSBTL];            /*	Subtitle string buffer
+                                    */
+extern char erb[NINPUT + 4];       /*	Error string buffer
+                                    */
+extern char symtbl[];              /*	string "Symbol Table"
+                                    */
+extern char aretbl[];              /*	string "Area Table"
+                                    */
+extern char module[NCPS + 2];      /*	module name string
+                                    */
+extern FILE *hfp;                  /*	.lst to .rst hint file handle
+                                    */
+extern FILE *lfp;                  /*	list output file handle
+                                    */
+extern FILE *ofp;                  /*	relocation output file handle
+                                    */
+extern FILE *tfp;                  /*	symbol table output file handle
+                                    */
+extern char ctype[128];            /*	array of character types, one per
+                                    *	ASCII character
+                                    */
+extern char ccase[128];            /*	an array of characters which
+                                    *	perform the case translation function
+                                    */
 /* C Library functions */
 /* for reference only
 extern	int		fclose();
@@ -1179,168 +1168,168 @@ extern	char *		strrchr();
 
 /* Machine independent functions */
 
-#ifdef	OTHERSYSTEM
+#ifdef OTHERSYSTEM
 
 /* C Library functions */
-extern	VOID		exit(int n);
+extern VOID exit(int n);
 
 /* asmain.c */
-extern	FILE *		afile(char *fn, char *ft, int wf);
-extern	VOID		afilex(char *fn, char *ft);
-extern	VOID		asexit(int i);
-extern	VOID		asmbl(void);
-extern	VOID		boundary(a_uint n);
-extern	VOID		equate(char *id,struct expr *e1,a_uint equtype);
-extern	int		fndidx(char *str);
-extern	int		intsiz(void);
-extern	VOID		insline(char *str, int i);
+extern FILE *afile(char *fn, char *ft, int wf);
+extern VOID afilex(char *fn, char *ft);
+extern VOID asexit(int i);
+extern VOID asmbl(void);
+extern VOID boundary(a_uint n);
+extern VOID equate(char *id, struct expr *e1, a_uint equtype);
+extern int fndidx(char *str);
+extern int intsiz(void);
+extern VOID insline(char *str, int i);
 /*
 extern	int		main(int argc, char *argv[]);
 */
-extern	VOID		newdot(struct area *nap);
-extern	VOID		phase(struct area *ap, a_uint a);
-extern	char *		usetxt[];
-extern	VOID		usage(void);
+extern VOID newdot(struct area *nap);
+extern VOID phase(struct area *ap, a_uint a);
+extern char *usetxt[];
+extern VOID usage(void);
 
 /* asmcro.c */
-extern	char *		fgetm(char *ptr, int len, FILE *fp);
-extern	VOID		getdarg(struct mcrdef *np);
-extern	VOID		getxarg(struct mcrdef *np);
-extern	VOID		getxstr(char *id);
-extern	VOID		macro(struct mcrdef * np);
-extern	VOID		macroscn(struct macrofp *nfp);
-extern	int		macrosub(char *id, struct macrofp *nfp);
-extern	VOID		mcrinit(void);
-extern	int		mcrprc(int code);
-extern	VOID *		mhunk(void);
-extern	char *		mstring(char *str);
-extern	char *		mstruct(int n);
-extern	struct mcrdef *	newdef(int code, char *id);
-extern	struct mcrdef *	nlookup(char *id);
+extern char *fgetm(char *ptr, int len, FILE *fp);
+extern VOID getdarg(struct mcrdef *np);
+extern VOID getxarg(struct mcrdef *np);
+extern VOID getxstr(char *id);
+extern VOID macro(struct mcrdef *np);
+extern VOID macroscn(struct macrofp *nfp);
+extern int macrosub(char *id, struct macrofp *nfp);
+extern VOID mcrinit(void);
+extern int mcrprc(int code);
+extern VOID *mhunk(void);
+extern char *mstring(char *str);
+extern char *mstruct(int n);
+extern struct mcrdef *newdef(int code, char *id);
+extern struct mcrdef *nlookup(char *id);
 
 /* aslex.c */
-extern	VOID		chopcrlf(char *str);
-extern	int		comma(int flag);
-extern	char		endline(void);
-extern	int		get(void);
-extern	int		getdlm(void);
-extern	VOID		getdstr(char *str, int slen);
-extern	VOID		getid(char *id, int c);
-extern	int		getmap(int d);
-extern	int		getnb(void);
-extern	int		getlnm(void);
-extern	VOID		getst(char *id, int c);
-extern	int		more(void);
-extern	int		nxtline(void);
-extern	int		replace(char *id);
-extern	VOID		scanline(void);
-extern	VOID		unget(int c);
+extern VOID chopcrlf(char *str);
+extern int comma(int flag);
+extern char endline(void);
+extern int get(void);
+extern int getdlm(void);
+extern VOID getdstr(char *str, int slen);
+extern VOID getid(char *id, int c);
+extern int getmap(int d);
+extern int getnb(void);
+extern int getlnm(void);
+extern VOID getst(char *id, int c);
+extern int more(void);
+extern int nxtline(void);
+extern int replace(char *id);
+extern VOID scanline(void);
+extern VOID unget(int c);
 
 /* assym.c */
-extern	VOID		allglob(void);
-extern	struct	area *	alookup(char *id);
-extern	VOID		asfree(void);
-extern	struct	bank *	blookup(char *id);
-extern	struct	def *	dlookup(char *id);
-extern	int		hash(char *p, int flag);
-extern	struct	sym *	lookup(char *id);
-extern	struct	mne *	mlookup(char *id);
-extern	char *		new(unsigned int n);
-extern	struct	sym *	slookup(char *id);
-extern	char *		strsto(char *str);
-extern	int		symeq(char *p1, char *p2, int flag);
-extern	VOID		syminit(void);
-extern	VOID		symglob(void);
+extern VOID allglob(void);
+extern struct area *alookup(char *id);
+extern VOID asfree(void);
+extern struct bank *blookup(char *id);
+extern struct def *dlookup(char *id);
+extern int hash(char *p, int flag);
+extern struct sym *lookup(char *id);
+extern struct mne *mlookup(char *id);
+extern char *new(unsigned int n);
+extern struct sym *slookup(char *id);
+extern char *strsto(char *str);
+extern int symeq(char *p1, char *p2, int flag);
+extern VOID syminit(void);
+extern VOID symglob(void);
 
 /* assubr.c */
-extern	VOID		aerr(void);
-extern	VOID		diag(void);
-extern	VOID		err(int c);
-extern	char *		errors[];
-extern	char *		geterr(int c);
-extern	VOID		qerr(void);
-extern	VOID		rerr(void);
+extern VOID aerr(void);
+extern VOID diag(void);
+extern VOID err(int c);
+extern char *errors[];
+extern char *geterr(int c);
+extern VOID qerr(void);
+extern VOID rerr(void);
 
 /* asexpr.c */
-extern	VOID		abscheck(struct expr *esp);
-extern	a_uint		absexpr(void);
-extern	VOID		clrexpr(struct expr *esp);
-extern	int		digit(int c, int r);
-extern	VOID		exprmasks(int n);
-extern	VOID		expr(struct expr *esp, int n);
-extern	int		is_abs(struct expr *esp);
-extern	int		oprio(int c);
-extern	a_uint		rngchk(a_uint n);
-extern	VOID		term(struct expr *esp);
+extern VOID abscheck(struct expr *esp);
+extern a_uint absexpr(void);
+extern VOID clrexpr(struct expr *esp);
+extern int digit(int c, int r);
+extern VOID exprmasks(int n);
+extern VOID expr(struct expr *esp, int n);
+extern int is_abs(struct expr *esp);
+extern int oprio(int c);
+extern a_uint rngchk(a_uint n);
+extern VOID term(struct expr *esp);
 
 /* asdbg */
-extern	char *		BaseFileName(struct asmf *currFile);
-extern	VOID		DefineNoICE_Line(void);
-extern	VOID		DefineSDCC_Line(void);
+extern char *BaseFileName(struct asmf *currFile);
+extern VOID DefineNoICE_Line(void);
+extern VOID DefineSDCC_Line(void);
 
 /* aslist.c */
-extern	VOID		list(void);
-extern	VOID		list1(char *wp, int *wpt, int nb);
-extern	VOID		list2(int t);
-extern	VOID		listhlr(int hlr_lst, int hlr_mode, int hlr_nb);
-extern	VOID		lstsym(FILE *fp);
-extern	VOID		slew(FILE *fp, int flag);
+extern VOID list(void);
+extern VOID list1(char *wp, int *wpt, int nb);
+extern VOID list2(int t);
+extern VOID listhlr(int hlr_lst, int hlr_mode, int hlr_nb);
+extern VOID lstsym(FILE *fp);
+extern VOID slew(FILE *fp, int flag);
 
 /* asout.c */
-extern	int		lobyte(a_uint v);
-extern	int		hibyte(a_uint v);
-extern	int		thrdbyte(a_uint v);
-extern	int		frthbyte(a_uint v);
-extern	VOID		out(char *p, int n);
-extern	VOID		outarea(struct area *ap);
-extern	VOID		outbank(struct bank *bp);
-extern	VOID		outmode(int index, struct mode *sdp);
-extern	VOID		outmline(char *p, char *q);
-extern	VOID		outdp(struct area *carea, struct expr *esp, int r);
-extern	VOID		outall(void);
-extern	VOID		outdot(void);
-extern	VOID		outbuf(char *s);
-extern	VOID		outchk(int nt, int nr);
-extern	VOID		outgsd(void);
-extern	VOID		outsym(struct sym *sp);
-extern	VOID		outab(a_uint v);
-extern	VOID		outaw(a_uint v);
-extern	VOID		outa3b(a_uint v);
-extern	VOID		outa4b(a_uint v);
-extern	VOID		outaxb(int i, a_uint v);
-extern	VOID		outatxb(int i, a_uint v);
-extern	VOID		outrb(struct expr *esp, int r);
-extern	VOID		outrw(struct expr *esp, int r);
-extern	VOID		outr3b(struct expr *esp, int r);
-extern	VOID		outr4b(struct expr *esp, int r);
-extern	VOID		outrxb(int i, struct expr *esp, int r);
-extern	VOID		outrbm(struct expr *esp, int r, a_uint v);
-extern	VOID		outrwm(struct expr *esp, int r, a_uint v);
-extern	VOID		outr3bm(struct expr *esp, int r, a_uint v);
-extern	VOID		outr4bm(struct expr *esp, int r, a_uint v);
-extern	VOID		outrxbm(int i, struct expr *esp, int r, a_uint v);
-extern	a_uint		outmerge(a_uint esp, int r, a_uint v);
-extern	VOID		out_lb(a_uint v, int t);
-extern	VOID		out_lw(a_uint v, int t);
-extern	VOID		out_l3b(a_uint v, int t);
-extern	VOID		out_l4b(a_uint v, int t);
-extern	VOID		out_lxb(int i, a_uint v, int t);
-extern	VOID		out_rw(a_uint v);
-extern	VOID		out_txb(int i, a_uint v);
+extern int lobyte(a_uint v);
+extern int hibyte(a_uint v);
+extern int thrdbyte(a_uint v);
+extern int frthbyte(a_uint v);
+extern VOID out(char *p, int n);
+extern VOID outarea(struct area *ap);
+extern VOID outbank(struct bank *bp);
+extern VOID outmode(int index, struct mode *sdp);
+extern VOID outmline(char *p, char *q);
+extern VOID outdp(struct area *carea, struct expr *esp, int r);
+extern VOID outall(void);
+extern VOID outdot(void);
+extern VOID outbuf(char *s);
+extern VOID outchk(int nt, int nr);
+extern VOID outgsd(void);
+extern VOID outsym(struct sym *sp);
+extern VOID outab(a_uint v);
+extern VOID outaw(a_uint v);
+extern VOID outa3b(a_uint v);
+extern VOID outa4b(a_uint v);
+extern VOID outaxb(int i, a_uint v);
+extern VOID outatxb(int i, a_uint v);
+extern VOID outrb(struct expr *esp, int r);
+extern VOID outrw(struct expr *esp, int r);
+extern VOID outr3b(struct expr *esp, int r);
+extern VOID outr4b(struct expr *esp, int r);
+extern VOID outrxb(int i, struct expr *esp, int r);
+extern VOID outrbm(struct expr *esp, int r, a_uint v);
+extern VOID outrwm(struct expr *esp, int r, a_uint v);
+extern VOID outr3bm(struct expr *esp, int r, a_uint v);
+extern VOID outr4bm(struct expr *esp, int r, a_uint v);
+extern VOID outrxbm(int i, struct expr *esp, int r, a_uint v);
+extern a_uint outmerge(a_uint esp, int r, a_uint v);
+extern VOID out_lb(a_uint v, int t);
+extern VOID out_lw(a_uint v, int t);
+extern VOID out_l3b(a_uint v, int t);
+extern VOID out_l4b(a_uint v, int t);
+extern VOID out_lxb(int i, a_uint v, int t);
+extern VOID out_rw(a_uint v);
+extern VOID out_txb(int i, a_uint v);
 
 /* Machine dependent variables */
 
-extern	char *		cpu;
-extern	char *		dsft;
-extern	struct	area	area[];
-extern	struct	bank	bank[];
-extern	struct	mne	mne[];
-extern	struct	mode *	modep[16];
+extern char *cpu;
+extern char *dsft;
+extern struct area area[];
+extern struct bank bank[];
+extern struct mne mne[];
+extern struct mode *modep[16];
 
 /* Machine dependent functions */
 
-extern	VOID		machine(struct mne *mp);
-extern	VOID		minit(void);
+extern VOID machine(struct mne *mp);
+extern VOID minit(void);
 
 /* asxcnv.c */
 
@@ -1350,7 +1339,7 @@ extern	int		main(int argc, char *argv[]);
 extern	char *		usetxt[];
 extern	VOID		usage(void);
 */
-extern	VOID		linout(char *str, unsigned int n);
+extern VOID linout(char *str, unsigned int n);
 
 /* asxscn.c */
 
@@ -1360,168 +1349,168 @@ extern	int		main(int argc, char *argv[]);
 extern	char *		usetxt[];
 extern	VOID		usage(void);
 */
-extern	int		dgt(int rdx, char *str, int n);
+extern int dgt(int rdx, char *str, int n);
 
 #else
 
 /* C Library functions */
-extern	VOID		exit();
+extern VOID exit();
 
 /* asmain.c */
-extern	FILE *		afile();
-extern	VOID		afilex();
-extern	VOID		asexit();
-extern	VOID		asmbl();
+extern FILE *afile();
+extern VOID afilex();
+extern VOID asexit();
+extern VOID asmbl();
 extern	VOID		boundary);
-extern	VOID		equate();
-extern	int		fndidx();
-extern	int		intsiz();
-extern	VOID		insline();
-extern	int		main();
-extern	VOID		newdot();
-extern	VOID		phase();
-extern	char *		usetxt[];
-extern	VOID		usage();
+extern VOID equate();
+extern int fndidx();
+extern int intsiz();
+extern VOID insline();
+extern int main();
+extern VOID newdot();
+extern VOID phase();
+extern char *usetxt[];
+extern VOID usage();
 
 /* asmcro.c */
-extern	char *		fgetm();
-extern	VOID		getdarg();
-extern	VOID		getxarg();
-extern	VOID		getxstr();
-extern	VOID		macro();
-extern	VOID		macroscn();
-extern	int		macrosub();
-extern	VOID		mcrinit();
-extern	int		mcrprc();
-extern	VOID *		mhunk();
-extern	char *		mstring();
-extern	char *		mstruct();
-extern	struct mcrdef *	newdef();
-extern	struct mcrdef *	nlookup();
+extern char *fgetm();
+extern VOID getdarg();
+extern VOID getxarg();
+extern VOID getxstr();
+extern VOID macro();
+extern VOID macroscn();
+extern int macrosub();
+extern VOID mcrinit();
+extern int mcrprc();
+extern VOID *mhunk();
+extern char *mstring();
+extern char *mstruct();
+extern struct mcrdef *newdef();
+extern struct mcrdef *nlookup();
 
 /* aslex.c */
-extern	VOID		chopcrlf();
-extern	int		comma();
-extern	char		endline();
-extern	int		get();
-extern	int		getdlm();
-extern	VOID		getdstr();
-extern	VOID		getid();
-extern	int		getmap();
-extern	int		getnb();
-extern	int		getlnm();
-extern	VOID		getst();
-extern	int		more();
-extern	int		nxtline();
-extern	int		replace();
-extern	VOID		scanline();
-extern	VOID		unget();
+extern VOID chopcrlf();
+extern int comma();
+extern char endline();
+extern int get();
+extern int getdlm();
+extern VOID getdstr();
+extern VOID getid();
+extern int getmap();
+extern int getnb();
+extern int getlnm();
+extern VOID getst();
+extern int more();
+extern int nxtline();
+extern int replace();
+extern VOID scanline();
+extern VOID unget();
 
 /* assym.c */
-extern	VOID		allglob();
-extern	struct	area *	alookup();
-extern	VOID		asfree();
-extern	struct	bank *	blookup();
-extern	struct	def *	dlookup();
-extern	int		hash();
-extern	struct	sym *	lookup();
-extern	struct	mne *	mlookup();
-extern	char *		new();
-extern	struct	sym *	slookup();
-extern	char *		strsto();
-extern	int		symeq();
-extern	VOID		syminit();
-extern	VOID		symglob();
+extern VOID allglob();
+extern struct area *alookup();
+extern VOID asfree();
+extern struct bank *blookup();
+extern struct def *dlookup();
+extern int hash();
+extern struct sym *lookup();
+extern struct mne *mlookup();
+extern char *new();
+extern struct sym *slookup();
+extern char *strsto();
+extern int symeq();
+extern VOID syminit();
+extern VOID symglob();
 
 /* assubr.c */
-extern	VOID		aerr();
-extern	VOID		diag();
-extern	VOID		err();
-extern	char *		errors[];
-extern	char *		geterr();
-extern	VOID		qerr();
-extern	VOID		rerr();
+extern VOID aerr();
+extern VOID diag();
+extern VOID err();
+extern char *errors[];
+extern char *geterr();
+extern VOID qerr();
+extern VOID rerr();
 
 /* asexpr.c */
-extern	VOID		abscheck();
-extern	a_uint		absexpr();
-extern	VOID		clrexpr();
-extern	int		digit();
-extern	VOID		exprmasks();
-extern	VOID		expr();
-extern	int		is_abs();
-extern	int		oprio();
-extern	a_uint		rngchk();
-extern	VOID		term();
+extern VOID abscheck();
+extern a_uint absexpr();
+extern VOID clrexpr();
+extern int digit();
+extern VOID exprmasks();
+extern VOID expr();
+extern int is_abs();
+extern int oprio();
+extern a_uint rngchk();
+extern VOID term();
 
 /* asdbg */
-extern	char *		BaseFileName();
-extern	VOID		DefineNoICE_Line();
-extern	VOID		DefineSDCC_Line();
+extern char *BaseFileName();
+extern VOID DefineNoICE_Line();
+extern VOID DefineSDCC_Line();
 
 /* aslist.c */
-extern	VOID		list();
-extern	VOID		list1();
-extern	VOID		list2();
-extern	VOID		listhlr();
-extern	VOID		lstsym();
-extern	VOID		slew();
+extern VOID list();
+extern VOID list1();
+extern VOID list2();
+extern VOID listhlr();
+extern VOID lstsym();
+extern VOID slew();
 
 /* asout.c */
-extern	int		lobyte();
-extern	int		hibyte();
-extern	int		thrdbyte();
-extern	int		frthbyte();
-extern	VOID		out();
-extern	VOID		outarea();
-extern	VOID		outbank();
-extern	VOID		outmode();
-extern	VOID		outmline();
-extern	VOID		outdp();
-extern	VOID		outall();
-extern	VOID		outdot();
-extern	VOID		outbuf();
-extern	VOID		outchk();
-extern	VOID		outgsd();
-extern	VOID		outsym();
-extern	VOID		outab();
-extern	VOID		outaw();
-extern	VOID		outa3b();
-extern	VOID		outa4b();
-extern	VOID		outaxb();
-extern	VOID		outatxb();
-extern	VOID		outrb();
-extern	VOID		outrw();
-extern	VOID		outr3b();
-extern	VOID		outr4b();
-extern	VOID		outrxb();
-extern	VOID		outrbm();
-extern	VOID		outrwm();
-extern	VOID		outr3bm();
-extern	VOID		outr4bm();
-extern	VOID		outrxbm();
-extern	a_uint		outmerge();
-extern	VOID		out_lb();
-extern	VOID		out_lw();
-extern	VOID		out_l3b();
-extern	VOID		out_l4b();
-extern	VOID		out_lxb();
-extern	VOID		out_rw();
-extern	VOID		out_txb();
+extern int lobyte();
+extern int hibyte();
+extern int thrdbyte();
+extern int frthbyte();
+extern VOID out();
+extern VOID outarea();
+extern VOID outbank();
+extern VOID outmode();
+extern VOID outmline();
+extern VOID outdp();
+extern VOID outall();
+extern VOID outdot();
+extern VOID outbuf();
+extern VOID outchk();
+extern VOID outgsd();
+extern VOID outsym();
+extern VOID outab();
+extern VOID outaw();
+extern VOID outa3b();
+extern VOID outa4b();
+extern VOID outaxb();
+extern VOID outatxb();
+extern VOID outrb();
+extern VOID outrw();
+extern VOID outr3b();
+extern VOID outr4b();
+extern VOID outrxb();
+extern VOID outrbm();
+extern VOID outrwm();
+extern VOID outr3bm();
+extern VOID outr4bm();
+extern VOID outrxbm();
+extern a_uint outmerge();
+extern VOID out_lb();
+extern VOID out_lw();
+extern VOID out_l3b();
+extern VOID out_l4b();
+extern VOID out_lxb();
+extern VOID out_rw();
+extern VOID out_txb();
 
 /* Machine dependent variables */
 
-extern	char *		cpu;
-extern	char *		dsft;
-extern	struct	area	area[];
-extern	struct	bank	bank[];
-extern	struct	mne	mne[];
-extern	struct	mode *	modep[16];
+extern char *cpu;
+extern char *dsft;
+extern struct area area[];
+extern struct bank bank[];
+extern struct mne mne[];
+extern struct mode *modep[16];
 
 /* Machine dependent functions */
 
-extern	VOID		machine();
-extern	VOID		minit();
+extern VOID machine();
+extern VOID minit();
 
 /* asxcnv.c */
 
@@ -1531,7 +1520,7 @@ extern	int		main();
 extern	char *		usetxt[];
 extern	VOID		usage();
 */
-extern	VOID		linout();
+extern VOID linout();
 
 /* asxscn.c */
 
@@ -1541,7 +1530,6 @@ extern	int		main();
 extern	char *		usetxt[];
 extern	VOID		usage();
 */
-extern	int		dgt();
+extern int dgt();
 
 #endif
-

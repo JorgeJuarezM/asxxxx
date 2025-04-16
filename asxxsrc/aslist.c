@@ -28,7 +28,7 @@
  *
  *	Mike McCarty
  *	mike dot mccarty at sbcglobal dot net
-*/
+ */
 
 #include "asxxxx.h"
 
@@ -54,7 +54,7 @@
  *	which includes the input source, line numbers,
  *	and generated code.  Numerical output may be selected
  *	as hexadecimal, decimal, or octal.
- * 
+ *
  *	local variables:
  *		int	a		beginning character position for option
  *		int	b		number of character positions for option
@@ -114,8 +114,8 @@ ee XXXX xx xx xx xx xx xx LLLLL *************	HEX(16)
 ee 000000 ooo ooo ooo ooo LLLLL *************	OCTAL(16)
 ee  DDDDD ddd ddd ddd ddd LLLLL *************	DECIMAL(16)
                      XXXX
-		   OOOOOO
-		    DDDDD
+                   OOOOOO
+                    DDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -125,8 +125,8 @@ ee    XXXXXX xx xx xx xx xx xx xx LLLLL *********	HEX(24)
 ee   OO000000 ooo ooo ooo ooo ooo LLLLL *********	OCTAL(24)
 ee   DDDDDDDD ddd ddd ddd ddd ddd LLLLL *********	DECIMAL(24)
                            XXXXXX
-			 OOOOOOOO
-			 DDDDDDDD
+                         OOOOOOOO
+                         DDDDDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -136,8 +136,8 @@ ee  XXXXXXXX xx xx xx xx xx xx xx LLLLL *********	HEX(32)
 eeOOOOO000000 ooo ooo ooo ooo ooo LLLLL *********	OCTAL(32)
 ee DDDDDDDDDD ddd ddd ddd ddd ddd LLLLL *********	DECIMAL(32)
                          XXXXXXXX
-		      OOOOOOOOOOO
-		       DDDDDDDDDD
+                      OOOOOOOOOOO
+                       DDDDDDDDDD
 */
 
 /* The Output Formats,  With Cycle Count [nn]
@@ -149,8 +149,8 @@ ee XXXX xx xx xx xx xx[nn]LLLLL *************	HEX(16)
 ee 000000 ooo ooo ooo [nn]LLLLL *************	OCTAL(16)
 ee  DDDDD ddd ddd ddd [nn]LLLLL *************	DECIMAL(16)
                      XXXX
-		   OOOOOO
-		    DDDDD
+                   OOOOOO
+                    DDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -160,8 +160,8 @@ ee    XXXXXX xx xx xx xx xx xx[nn]LLLLL *********	HEX(24)
 ee   OO000000 ooo ooo ooo ooo [nn]LLLLL *********	OCTAL(24)
 ee   DDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(24)
                            XXXXXX
-			 OOOOOOOO
-			 DDDDDDDD
+                         OOOOOOOO
+                         DDDDDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -171,8 +171,8 @@ ee  XXXXXXXX xx xx xx xx xx xx[nn]LLLLL *********	HEX(32)
 eeOOOOO000000 ooo ooo ooo ooo [nn]LLLLL *********	OCTAL(32)
 ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
                          XXXXXXXX
-		      OOOOOOOOOOO
-		       DDDDDDDDDD
+                      OOOOOOOOOOO
+                       DDDDDDDDDD
 */
 
 /*
@@ -200,540 +200,735 @@ ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
  *
  */
 
-VOID
-list()
-{
-	char *frmt, *wp;
-	int *wpt;
-	int n, nb, nl;
-	int listing, paging;
-	int hlr_lst;
-	int a, b, i, op;
+VOID list() {
+  char *frmt, *wp;
+  int *wpt;
+  int n, nb, nl;
+  int listing, paging;
+  int hlr_lst;
+  int a, b, i, op;
 
-	/*
-	 * Get Correct Line Number
-	 */
-	line = srcline;
+  /*
+   * Get Correct Line Number
+   */
+  line = srcline;
 
-	/*
-	 * Internal Listing
-	 */
-	listing = lnlist;
+  /*
+   * Internal Listing
+   */
+  listing = lnlist;
 
-	/*
-	 * Listing Control Override
-	 */
-	if (uflag) {
-		listing = LIST_BITS;
-		if (lmode == NLIST) {
-			lmode = SLIST;
-		}
-	}
+  /*
+   * Listing Control Override
+   */
+  if (uflag) {
+    listing = LIST_BITS;
+    if (lmode == NLIST) {
+      lmode = SLIST;
+    }
+  }
 
-	/*
-	 * Paging Control
-	 */
-	paging = !pflag && ((lnlist & LIST_PAG) || (uflag == 1)) ? 1 : 0;
+  /*
+   * Paging Control
+   */
+  paging = !pflag && ((lnlist & LIST_PAG) || (uflag == 1)) ? 1 : 0;
 
-	/*
-	 * ALIST/BLIST Output Processing
-	 */
-	if (lmode == ALIST) {
-		outchk(HUGE,HUGE);
-	}
-	if (lmode == ALIST || lmode == BLIST) {
-		outdot();
-	}
+  /*
+   * ALIST/BLIST Output Processing
+   */
+  if (lmode == ALIST) {
+    outchk(HUGE, HUGE);
+  }
+  if (lmode == ALIST || lmode == BLIST) {
+    outdot();
+  }
 
-	/*
-	 * Check NO-LIST Conditions
-	 */
-	if ((lfp == NULL) || (lmode == NLIST)) {
-		if ((cp - cb) || (rflag > 1)) {
-			listhlr(HLR_NLST, lmode, (int) (cp - cb));
-		}
-		return;
-	}
+  /*
+   * Check NO-LIST Conditions
+   */
+  if ((lfp == NULL) || (lmode == NLIST)) {
+    if ((cp - cb) || (rflag > 1)) {
+      listhlr(HLR_NLST, lmode, (int)(cp - cb));
+    }
+    return;
+  }
 
-	/*
-	 * Check Listing Nothing
-	 */
-	if (listing == LIST_NONE) {
-		if ((cp - cb) || (rflag > 1)) {
-			listhlr(HLR_NLST, lmode, (int) (cp - cb));
-		}
-		return;
-	}
+  /*
+   * Check Listing Nothing
+   */
+  if (listing == LIST_NONE) {
+    if ((cp - cb) || (rflag > 1)) {
+      listhlr(HLR_NLST, lmode, (int)(cp - cb));
+    }
+    return;
+  }
 
-	/*
-	 * ON ERROR override listing
-	 */
-	if ((ep != eb) && (listing & LIST_ERR)) {
-		listing |= LIST_ASM;
-	} else {
-		/*
-		 * In a MACRO test for LIST_ME and LIST_MEB overrides
-		 */
-		switch (lmode) {
-		case SLIST:
-		case ALIST:
-		case BLIST:
-		case CLIST:
-		case ELIST:
-			if (asmc->objtyp == T_MACRO) {
-				/* Priority 1
-				 * LIST_ME - Enables listing
-				 */
-				if (listing & LIST_ME) {
-					;
-				} else
-				/* Priority 2
-				 * LIST_MEB - Location and Binary only listing
-				 */
-				if (listing & LIST_MEB) {
-					listing &= ~LIST_ASM;
-					listing |= (LIST_LOC | LIST_BIN);
-				} else {
-				/* Priority 3
-				 * Default - Listing inhibited
-				 */
-					listing = LIST_NONE;
-					if ((cp - cb) || (rflag > 1)) {
-						listhlr(HLR_NLST, lmode, (int) (cp - cb));
-					}
-					return;
-				}
-			}
-			break;
-	
-		default:
-			if ((cp - cb) || (rflag > 1)) {
-				listhlr(HLR_NLST, lmode, (int) (cp - cb));
-			}
-			return;
-		}
-	}
+  /*
+   * ON ERROR override listing
+   */
+  if ((ep != eb) && (listing & LIST_ERR)) {
+    listing |= LIST_ASM;
+  } else {
+    /*
+     * In a MACRO test for LIST_ME and LIST_MEB overrides
+     */
+    switch (lmode) {
+    case SLIST:
+    case ALIST:
+    case BLIST:
+    case CLIST:
+    case ELIST:
+      if (asmc->objtyp == T_MACRO) {
+        /* Priority 1
+         * LIST_ME - Enables listing
+         */
+        if (listing & LIST_ME) {
+          ;
+        } else
+          /* Priority 2
+           * LIST_MEB - Location and Binary only listing
+           */
+          if (listing & LIST_MEB) {
+            listing &= ~LIST_ASM;
+            listing |= (LIST_LOC | LIST_BIN);
+          } else {
+            /* Priority 3
+             * Default - Listing inhibited
+             */
+            listing = LIST_NONE;
+            if ((cp - cb) || (rflag > 1)) {
+              listhlr(HLR_NLST, lmode, (int)(cp - cb));
+            }
+            return;
+          }
+      }
+      break;
 
-	/*
-	 * Move to next line.
-	 */
-	slew(lfp, paging);
+    default:
+      if ((cp - cb) || (rflag > 1)) {
+        listhlr(HLR_NLST, lmode, (int)(cp - cb));
+      }
+      return;
+    }
+  }
 
-	/*
-	 * Initialize parameters
-	 */
-	hlr_lst = LIST_NONE;
-	op = 0;
-	n = nb = nl = (int) (cp - cb);
-	wp = cb;
-	wpt = cbt;
+  /*
+   * Move to next line.
+   */
+  slew(lfp, paging);
 
-	/*
-	 * LIST_ERR - Output a maximum of NERR error codes with listing.
-	 */
-	if (listing & LIST_ERR) {
-		if (eb != ep) {
-			switch(lmode) {
-			default:
-			case SLIST:
-				break;
-			case ALIST:
-			case BLIST:
-			case CLIST:
-			case ELIST:
-				hlr_lst |= LIST_ERR;
-				while (ep < &eb[NERR])
-					*ep++ = ' ';
-				fprintf(lfp, "%.2s", eb);
-				op = 2;
-				break;
-			}
-		}
-	}
+  /*
+   * Initialize parameters
+   */
+  hlr_lst = LIST_NONE;
+  op = 0;
+  n = nb = nl = (int)(cp - cb);
+  wp = cb;
+  wpt = cbt;
 
-	/*
-	 * LIST_LOC - Location Address
-	 */
-	if (listing & LIST_LOC) {
-		switch(lmode) {
-		default:
-		case SLIST:
-		case ELIST:
-			break;
-		case ALIST:
-		case BLIST:
-		case CLIST:
-			hlr_lst |= LIST_LOC;
-			switch (xflag) {
-			default:
-			case 0:		/* HEX */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 3; b = 4; frmt = "%04lX"; break;
-				case 3: a = 6; b = 6; frmt = "%06lX"; break;
-				case 4: a = 4; b = 8; frmt = "%08lX"; break;
-				}
+  /*
+   * LIST_ERR - Output a maximum of NERR error codes with listing.
+   */
+  if (listing & LIST_ERR) {
+    if (eb != ep) {
+      switch (lmode) {
+      default:
+      case SLIST:
+        break;
+      case ALIST:
+      case BLIST:
+      case CLIST:
+      case ELIST:
+        hlr_lst |= LIST_ERR;
+        while (ep < &eb[NERR])
+          *ep++ = ' ';
+        fprintf(lfp, "%.2s", eb);
+        op = 2;
+        break;
+      }
+    }
+  }
+
+  /*
+   * LIST_LOC - Location Address
+   */
+  if (listing & LIST_LOC) {
+    switch (lmode) {
+    default:
+    case SLIST:
+    case ELIST:
+      break;
+    case ALIST:
+    case BLIST:
+    case CLIST:
+      hlr_lst |= LIST_LOC;
+      switch (xflag) {
+      default:
+      case 0: /* HEX */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 3;
+          b = 4;
+          frmt = "%04lX";
+          break;
+        case 3:
+          a = 6;
+          b = 6;
+          frmt = "%06lX";
+          break;
+        case 4:
+          a = 4;
+          b = 8;
+          frmt = "%08lX";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 3; b = 4; frmt = "%04X"; break;
-				case 3: a = 6; b = 6; frmt = "%06X"; break;
-				case 4: a = 4; b = 8; frmt = "%08X"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 3;
+          b = 4;
+          frmt = "%04X";
+          break;
+        case 3:
+          a = 6;
+          b = 6;
+          frmt = "%06X";
+          break;
+        case 4:
+          a = 4;
+          b = 8;
+          frmt = "%08X";
+          break;
+        }
 #endif
-				break;
+        break;
 
-			case 1:		/* OCTAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 3; b = 6; frmt = "%06lo"; break;
-				case 3: a = 5; b = 8; frmt = "%08lo"; break;
-				case 4: a = 2; b = 11; frmt = "%011lo"; break;
-				}
+      case 1: /* OCTAL */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 3;
+          b = 6;
+          frmt = "%06lo";
+          break;
+        case 3:
+          a = 5;
+          b = 8;
+          frmt = "%08lo";
+          break;
+        case 4:
+          a = 2;
+          b = 11;
+          frmt = "%011lo";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 3; b = 6; frmt = "%06o"; break;
-				case 3: a = 5; b = 8; frmt = "%08o"; break;
-				case 4: a = 2; b = 11; frmt = "%011o"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 3;
+          b = 6;
+          frmt = "%06o";
+          break;
+        case 3:
+          a = 5;
+          b = 8;
+          frmt = "%08o";
+          break;
+        case 4:
+          a = 2;
+          b = 11;
+          frmt = "%011o";
+          break;
+        }
 #endif
-				break;
+        break;
 
-			case 2:		/* DECIMAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 4; b = 5; frmt = "%05lu"; break;
-				case 3: a = 5; b = 8; frmt = "%08lu"; break;
-				case 4: a = 3; b = 10; frmt = "%010lu"; break;
-				}
+      case 2: /* DECIMAL */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 4;
+          b = 5;
+          frmt = "%05lu";
+          break;
+        case 3:
+          a = 5;
+          b = 8;
+          frmt = "%08lu";
+          break;
+        case 4:
+          a = 3;
+          b = 10;
+          frmt = "%010lu";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 4; b = 5; frmt = "%05u"; break;
-				case 3: a = 5; b = 8; frmt = "%08u"; break;
-				case 4: a = 3; b = 10; frmt = "%010u"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 4;
+          b = 5;
+          frmt = "%05u";
+          break;
+        case 3:
+          a = 5;
+          b = 8;
+          frmt = "%08u";
+          break;
+        case 4:
+          a = 3;
+          b = 10;
+          frmt = "%010u";
+          break;
+        }
 #endif
-				break;
-			}
-			for (i=0; i<(a-op); i++) {
-				fprintf(lfp, " ");
-			}
-			op = a;
-			fprintf(lfp, frmt, laddr & a_mask);
-			op += b;
-		}
-	}
+        break;
+      }
+      for (i = 0; i < (a - op); i++) {
+        fprintf(lfp, " ");
+      }
+      op = a;
+      fprintf(lfp, frmt, laddr & a_mask);
+      op += b;
+    }
+  }
 
-	/*
-	 * LIST_BIN - List binary output
-	 */
-	if (listing & LIST_BIN) {
-		if (nb != 0) {
-			switch(lmode) {
-			default:
-			case SLIST:
-			case ALIST:
-			case BLIST:
-			case ELIST:
-				break;
-			case CLIST:
-				hlr_lst |= LIST_BIN;
-				switch (xflag) {
-				default:
-				case 0:		/* HEX */
-					switch(a_bytes) {
-					default:
-					case 2: a = 7; b = 3; n = 6; break;
-					case 3:
-					case 4: a = 12; b = 3; n = 7; break;
-					}
-					break;
+  /*
+   * LIST_BIN - List binary output
+   */
+  if (listing & LIST_BIN) {
+    if (nb != 0) {
+      switch (lmode) {
+      default:
+      case SLIST:
+      case ALIST:
+      case BLIST:
+      case ELIST:
+        break;
+      case CLIST:
+        hlr_lst |= LIST_BIN;
+        switch (xflag) {
+        default:
+        case 0: /* HEX */
+          switch (a_bytes) {
+          default:
+          case 2:
+            a = 7;
+            b = 3;
+            n = 6;
+            break;
+          case 3:
+          case 4:
+            a = 12;
+            b = 3;
+            n = 7;
+            break;
+          }
+          break;
 
-				case 1:		/* OCTAL */
-					switch(a_bytes) {
-					default:
-					case 2: a = 9; b = 4; n = 4; break;
-					case 3:
-					case 4: a = 13; b = 4; n = 5; break;
-					}
-					break;
+        case 1: /* OCTAL */
+          switch (a_bytes) {
+          default:
+          case 2:
+            a = 9;
+            b = 4;
+            n = 4;
+            break;
+          case 3:
+          case 4:
+            a = 13;
+            b = 4;
+            n = 5;
+            break;
+          }
+          break;
 
-				case 2:		/* DECIMAL */
-					switch(a_bytes) {
-					default:
-					case 2: a = 9; b = 4; n = 4; break;
-					case 3:
-					case 4: a = 13; b = 4; n = 5; break;
-					}
-					break;
-				}
-				for (i=0; i<(a-op); i++) {
-					fprintf(lfp, " ");
-				}
-				op = a;
+        case 2: /* DECIMAL */
+          switch (a_bytes) {
+          default:
+          case 2:
+            a = 9;
+            b = 4;
+            n = 4;
+            break;
+          case 3:
+          case 4:
+            a = 13;
+            b = 4;
+            n = 5;
+            break;
+          }
+          break;
+        }
+        for (i = 0; i < (a - op); i++) {
+          fprintf(lfp, " ");
+        }
+        op = a;
 
-				/*
-				 * If we list cycles decrease maximum bytes on this line.
-				 */
-				nl = (!cflag && !(opcycles & OPCY_NONE) && (listing & LIST_CYC)) ? (n-1) : n;
-				nl = (nb > nl) ? nl : nb;
-	 			list1(wp, wpt, nl);
-				wp += nl;
-				wpt += nl;
-				op += (nl * b);
-			}
-		}
-	}
+        /*
+         * If we list cycles decrease maximum bytes on this line.
+         */
+        nl = (!cflag && !(opcycles & OPCY_NONE) && (listing & LIST_CYC))
+                 ? (n - 1)
+                 : n;
+        nl = (nb > nl) ? nl : nb;
+        list1(wp, wpt, nl);
+        wp += nl;
+        wpt += nl;
+        op += (nl * b);
+      }
+    }
+  }
 
-	/*
-	 * LIST_EQT - Equate Listing Option
-	 */
-	if (listing & LIST_EQT) {
-		switch(lmode) {
-		default:
-		case SLIST:
-		case ALIST:
-		case BLIST:
-		case CLIST:
-			break;
-		case ELIST:
-			hlr_lst |= LIST_EQT;
-			switch (xflag) {
-			default:
-			case 0:		/* HEX */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 21; b = 4; frmt = "%04lX"; break;
-				case 3: a = 27; b = 6; frmt = "%06lX"; break;
-				case 4: a = 25; b = 8; frmt = "%08lX"; break;
-				}
+  /*
+   * LIST_EQT - Equate Listing Option
+   */
+  if (listing & LIST_EQT) {
+    switch (lmode) {
+    default:
+    case SLIST:
+    case ALIST:
+    case BLIST:
+    case CLIST:
+      break;
+    case ELIST:
+      hlr_lst |= LIST_EQT;
+      switch (xflag) {
+      default:
+      case 0: /* HEX */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 21;
+          b = 4;
+          frmt = "%04lX";
+          break;
+        case 3:
+          a = 27;
+          b = 6;
+          frmt = "%06lX";
+          break;
+        case 4:
+          a = 25;
+          b = 8;
+          frmt = "%08lX";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 21; b = 4; frmt = "%04X"; break;
-				case 3: a = 27; b = 6; frmt = "%06X"; break;
-				case 4: a = 25; b = 8; frmt = "%08X"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 21;
+          b = 4;
+          frmt = "%04X";
+          break;
+        case 3:
+          a = 27;
+          b = 6;
+          frmt = "%06X";
+          break;
+        case 4:
+          a = 25;
+          b = 8;
+          frmt = "%08X";
+          break;
+        }
 #endif
-				break;
+        break;
 
-			case 1:		/* OCTAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 19; b = 6; frmt = "%06lo"; break;
-				case 3: a = 25; b = 8; frmt = "%08lo"; break;
-				case 4: a = 22; b = 11; frmt = "%011lo"; break;
-				}
+      case 1: /* OCTAL */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 19;
+          b = 6;
+          frmt = "%06lo";
+          break;
+        case 3:
+          a = 25;
+          b = 8;
+          frmt = "%08lo";
+          break;
+        case 4:
+          a = 22;
+          b = 11;
+          frmt = "%011lo";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 19; b = 6; frmt = "%06o"; break;
-				case 3: a = 25; b = 8; frmt = "%08o"; break;
-				case 4: a = 22; b = 11; frmt = "%011o"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 19;
+          b = 6;
+          frmt = "%06o";
+          break;
+        case 3:
+          a = 25;
+          b = 8;
+          frmt = "%08o";
+          break;
+        case 4:
+          a = 22;
+          b = 11;
+          frmt = "%011o";
+          break;
+        }
 #endif
-				break;
+        break;
 
-			case 2:		/* DECIMAL */
-#ifdef	LONGINT
-				switch(a_bytes) {
-				default:
-				case 2: a = 20; b = 5; frmt = "%05lu"; break;
-				case 3: a = 25; b = 8; frmt = "%08lu"; break;
-				case 4: a = 23; b = 10; frmt = "%%010lu"; break;
-				}
+      case 2: /* DECIMAL */
+#ifdef LONGINT
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 20;
+          b = 5;
+          frmt = "%05lu";
+          break;
+        case 3:
+          a = 25;
+          b = 8;
+          frmt = "%08lu";
+          break;
+        case 4:
+          a = 23;
+          b = 10;
+          frmt = "%%010lu";
+          break;
+        }
 #else
-				switch(a_bytes) {
-				default:
-				case 2: a = 20; b = 5; frmt = "%05u"; break;
-				case 3: a = 25; b = 8; frmt = "%08u"; break;
-				case 4: a = 23; b = 10; frmt = "%010u"; break;
-				}
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 20;
+          b = 5;
+          frmt = "%05u";
+          break;
+        case 3:
+          a = 25;
+          b = 8;
+          frmt = "%08u";
+          break;
+        case 4:
+          a = 23;
+          b = 10;
+          frmt = "%010u";
+          break;
+        }
 #endif
-				break;
-			}
-			for (i=0; i<(a-op); i++) {
-				fprintf(lfp, " ");
-			}
-			op = a;
-			fprintf(lfp, frmt, laddr & a_mask);
-			op += b;
-			break;
-		}
-	}
+        break;
+      }
+      for (i = 0; i < (a - op); i++) {
+        fprintf(lfp, " ");
+      }
+      op = a;
+      fprintf(lfp, frmt, laddr & a_mask);
+      op += b;
+      break;
+    }
+  }
 
-	/*
-	 * LIST_CYC - Output opcode cycle count with listing.
-	 */
-	if (listing & LIST_CYC) {
-		if (!cflag && !(opcycles & OPCY_NONE)) {
-			switch(lmode) {
-			default:
-			case SLIST:
-			case ALIST:
-			case BLIST:
-			case ELIST:
-				break;
-			case CLIST:
-				hlr_lst |= LIST_CYC;
-				switch(a_bytes) {
-				default:
-				case 2: a = 22; b = 4; break;
-				case 3:
-				case 4: a = 30; b = 4; break;
-				}
-				for (i=0; i<(a-op); i++) {
-					fprintf(lfp, " ");
-				}
-				op = a;
-				fprintf(lfp, "%c%2d%c", CYCNT_BGN, opcycles, CYCNT_END);
-				op += b;
-				break;
-			}
-		}
-	}
+  /*
+   * LIST_CYC - Output opcode cycle count with listing.
+   */
+  if (listing & LIST_CYC) {
+    if (!cflag && !(opcycles & OPCY_NONE)) {
+      switch (lmode) {
+      default:
+      case SLIST:
+      case ALIST:
+      case BLIST:
+      case ELIST:
+        break;
+      case CLIST:
+        hlr_lst |= LIST_CYC;
+        switch (a_bytes) {
+        default:
+        case 2:
+          a = 22;
+          b = 4;
+          break;
+        case 3:
+        case 4:
+          a = 30;
+          b = 4;
+          break;
+        }
+        for (i = 0; i < (a - op); i++) {
+          fprintf(lfp, " ");
+        }
+        op = a;
+        fprintf(lfp, "%c%2d%c", CYCNT_BGN, opcycles, CYCNT_END);
+        op += b;
+        break;
+      }
+    }
+  }
 
-	/*
-	 * LIST_LIN - Output line number with listing.
-	 */
-	if (listing & LIST_LIN) {
-		switch(lmode) {
-		default:
-			break;
-		case SLIST:
-		case ALIST:
-		case BLIST:
-		case ELIST:
-		case CLIST:
-			hlr_lst |= LIST_LIN;
-			switch(a_bytes) {
-			default:
-			case 2: a = 26; b = 5; break;
-			case 3:
-			case 4: a = 34; b = 5; break;
-			}
-			for (i=0; i<(a-op); i++) {
-				fprintf(lfp, " ");
-			}
-			op = a;
-			fprintf(lfp, "%5u", line);
-			op += b;
-			break;
-		}
-	}
+  /*
+   * LIST_LIN - Output line number with listing.
+   */
+  if (listing & LIST_LIN) {
+    switch (lmode) {
+    default:
+      break;
+    case SLIST:
+    case ALIST:
+    case BLIST:
+    case ELIST:
+    case CLIST:
+      hlr_lst |= LIST_LIN;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 26;
+        b = 5;
+        break;
+      case 3:
+      case 4:
+        a = 34;
+        b = 5;
+        break;
+      }
+      for (i = 0; i < (a - op); i++) {
+        fprintf(lfp, " ");
+      }
+      op = a;
+      fprintf(lfp, "%5u", line);
+      op += b;
+      break;
+    }
+  }
 
-	/*
-	 * LIST_SRC - Output assembler source with listing.
-	 */
-	if (listing & LIST_SRC) {
-		switch(lmode) {
-		default:
-			break;
-		case SLIST:
-		case ALIST:
-		case BLIST:
-		case ELIST:
-		case CLIST:
-			hlr_lst |= LIST_SRC;
-			switch(a_bytes) {
-			default:
-			case 2: a = 32; break;
-			case 3:
-			case 4: a = 40; break;
-			}
-			for (i=0; i<(a-op); i++) {
-				fprintf(lfp, " ");
-			}
-			fprintf(lfp, "%s", il);
-			break;
-		}
-	}
+  /*
+   * LIST_SRC - Output assembler source with listing.
+   */
+  if (listing & LIST_SRC) {
+    switch (lmode) {
+    default:
+      break;
+    case SLIST:
+    case ALIST:
+    case BLIST:
+    case ELIST:
+    case CLIST:
+      hlr_lst |= LIST_SRC;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 32;
+        break;
+      case 3:
+      case 4:
+        a = 40;
+        break;
+      }
+      for (i = 0; i < (a - op); i++) {
+        fprintf(lfp, " ");
+      }
+      fprintf(lfp, "%s", il);
+      break;
+    }
+  }
 
-	/*
-	 * Check Listing Nothing
-	 */
-	if (hlr_lst == LIST_NONE) {
-		if ((cp - cb) || (rflag > 1)) {
-			listhlr(HLR_NLST, lmode, (int) (cp - cb));
-		}
-		return;
-	}
+  /*
+   * Check Listing Nothing
+   */
+  if (hlr_lst == LIST_NONE) {
+    if ((cp - cb) || (rflag > 1)) {
+      listhlr(HLR_NLST, lmode, (int)(cp - cb));
+    }
+    return;
+  }
 
-	/*
-	 * Listing output line complete
-	 */
-	fprintf(lfp, "\n");
-	if (!(hlr_lst & LIST_BIN)) {
-		listhlr(hlr_lst, lmode, (int) (cp - cb));
-		return;
-	} else
-	if (nb == 0) {
-		listhlr(hlr_lst, lmode, 0);
-		return;
-	} else {
-		listhlr(hlr_lst, lmode, nl);
-		nb = (nb > nl) ? (nb - nl) : 0;
-		if (nb == 0) {
-			return;
-		}
-	}
+  /*
+   * Listing output line complete
+   */
+  fprintf(lfp, "\n");
+  if (!(hlr_lst & LIST_BIN)) {
+    listhlr(hlr_lst, lmode, (int)(cp - cb));
+    return;
+  } else if (nb == 0) {
+    listhlr(hlr_lst, lmode, 0);
+    return;
+  } else {
+    listhlr(hlr_lst, lmode, nl);
+    nb = (nb > nl) ? (nb - nl) : 0;
+    if (nb == 0) {
+      return;
+    }
+  }
 
-	/*
-	 * Subsequent lines of output if more data.
-	 */
-	if (listing & LIST_BIN) {
-		/*
-		 * Format
-		 */
-		switch (xflag) {
-		default:
-		case 0:		/* HEX */
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%7s"; break;
-			case 3:
-			case 4: frmt = "%12s"; break;
-			}
-			break;
+  /*
+   * Subsequent lines of output if more data.
+   */
+  if (listing & LIST_BIN) {
+    /*
+     * Format
+     */
+    switch (xflag) {
+    default:
+    case 0: /* HEX */
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "%7s";
+        break;
+      case 3:
+      case 4:
+        frmt = "%12s";
+        break;
+      }
+      break;
 
-		case 1:		/* OCTAL */
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%9s"; break;
-			case 3:
-			case 4: frmt = "%13s"; break;
-			}
-			break;
+    case 1: /* OCTAL */
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "%9s";
+        break;
+      case 3:
+      case 4:
+        frmt = "%13s";
+        break;
+      }
+      break;
 
-		case 2:		/* DECIMAL */
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%9s"; break;
-			case 3:
-			case 4: frmt = "%13s"; break;
-			}
-			break;
-		}
+    case 2: /* DECIMAL */
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "%9s";
+        break;
+      case 3:
+      case 4:
+        frmt = "%13s";
+        break;
+      }
+      break;
+    }
 
-		while (nb > 0) {
-			nl = (nb > n) ? n : nb;
-			slew(lfp, paging);
-			fprintf(lfp, frmt, "");
-			list1(wp, wpt, nl);
-			putc('\n', lfp);
-			listhlr(LIST_BIN, lmode, nl);
-			nb -= nl;
-			wp += nl;
-			wpt += nl;
-		}
-	}
+    while (nb > 0) {
+      nl = (nb > n) ? n : nb;
+      slew(lfp, paging);
+      fprintf(lfp, frmt, "");
+      list1(wp, wpt, nl);
+      putc('\n', lfp);
+      listhlr(LIST_BIN, lmode, nl);
+      nb -= nl;
+      wp += nl;
+      wpt += nl;
+    }
+  }
 }
 
 /*)Function	VOID	list1(wp, wpt, n)
@@ -757,36 +952,35 @@ list()
  *		Data formatted and output to listing.
  */
 
-VOID
-list1(wp, wpt, nb)
+VOID list1(wp, wpt, nb)
 char *wp;
 int *wpt, nb;
 {
-	int i;
-	char *frmt;
+  int i;
+  char *frmt;
 
-	switch (xflag) {
-	default:
-	case 0:		/* HEX */
-		frmt = "%02X";
-		break;
+  switch (xflag) {
+  default:
+  case 0: /* HEX */
+    frmt = "%02X";
+    break;
 
-	case 1:		/* OCTAL */
-		frmt = "%03o";
-		break;
+  case 1: /* OCTAL */
+    frmt = "%03o";
+    break;
 
-	case 2:		/* DECIMAL */
-		frmt = "%03u";
-		break;
-	}
+  case 2: /* DECIMAL */
+    frmt = "%03u";
+    break;
+  }
 
-	/*
-	 * Output bytes.
-	 */
-	for (i=0; i<nb; ++i) {
-		list2(*wpt++);
-		fprintf(lfp, frmt, (*wp++)&0377);
-	}
+  /*
+   * Output bytes.
+   */
+  for (i = 0; i < nb; ++i) {
+    list2(*wpt++);
+    fprintf(lfp, frmt, (*wp++) & 0377);
+  }
 }
 
 /*)Function	VOID	list2(t)
@@ -809,57 +1003,59 @@ int *wpt, nb;
  *		Relocation flag output to listing file.
  */
 
-VOID
-list2(t)
+VOID list2(t)
 int t;
 {
-	int c;
+  int c;
 
-	c = ' ';
+  c = ' ';
 
-	/*
-	 * Designate a relocatable word by `.
-	 */
-	if (fflag == 1) {
-		if (t & R_RELOC) {
-			c = '`';
-		}
-	} else
-	/*
-	 * Designate a relocatable word by its mode:
-	 *	paged			* (n) (M) (N)
-	 *	unsigned/bit range	u (v) (U) (V)
-	 *	operand offset		p (q) (P) (Q)
-	 *	relocatable symbol	r (s) (R) (S)
-	 */
-	if (fflag >= 2) {
-		if (t & R_RELOC) {
-			if (t & R_PCR) {
-				c = 'p';
-			} else
-			if (t & R_PAGE) {
-				c = '*';
-			} else
-			if ((t & (R_SGND | R_USGN)) == R_USGN) {
-				c = 'u';
-			} else {
-				c = 'r';
-			}
-			if (c == '*') {
-				if (t & R_HIGH) c = 'n';
-				if (t & R_BYT3) c = 'M';
-				if (t & R_BYT4) c = 'N';
-			} else {
-				if (t & R_HIGH || t & R_BYT4) c += 1;
-				if (t & R_BYT3 || t & R_BYT4) c &= ~0x20;
-			}
-		}
-	}
+  /*
+   * Designate a relocatable word by `.
+   */
+  if (fflag == 1) {
+    if (t & R_RELOC) {
+      c = '`';
+    }
+  } else
+    /*
+     * Designate a relocatable word by its mode:
+     *	paged			* (n) (M) (N)
+     *	unsigned/bit range	u (v) (U) (V)
+     *	operand offset		p (q) (P) (Q)
+     *	relocatable symbol	r (s) (R) (S)
+     */
+    if (fflag >= 2) {
+      if (t & R_RELOC) {
+        if (t & R_PCR) {
+          c = 'p';
+        } else if (t & R_PAGE) {
+          c = '*';
+        } else if ((t & (R_SGND | R_USGN)) == R_USGN) {
+          c = 'u';
+        } else {
+          c = 'r';
+        }
+        if (c == '*') {
+          if (t & R_HIGH)
+            c = 'n';
+          if (t & R_BYT3)
+            c = 'M';
+          if (t & R_BYT4)
+            c = 'N';
+        } else {
+          if (t & R_HIGH || t & R_BYT4)
+            c += 1;
+          if (t & R_BYT3 || t & R_BYT4)
+            c &= ~0x20;
+        }
+      }
+    }
 
-	/*
-	 * Output the selected mode.
-	 */
-	putc(c, lfp);
+  /*
+   * Output the selected mode.
+   */
+  putc(c, lfp);
 }
 
 /*)Function	VOID	listhlr(hlr_lst, hlr_mode, nb)
@@ -888,44 +1084,42 @@ int t;
  *		is written to the HLR file.
  */
 
-VOID
-listhlr(hlr_lst, hlr_mode, hlr_nb)
+VOID listhlr(hlr_lst, hlr_mode, hlr_nb)
 int hlr_lst;
 int hlr_mode;
 int hlr_nb;
 {
-	char *frmt;
+  char *frmt;
 
-	if (hfp == NULL)
-		return;
+  if (hfp == NULL)
+    return;
 
-	if (rflag) {
-		fprintf(hfp, "  %5u", line);
-	}
+  if (rflag) {
+    fprintf(hfp, "  %5u", line);
+  }
 
-	switch (xflag) {
-	default:
-	case 0:		/* HEX */
-		frmt = " %02X %02X %02X";
-		break;
+  switch (xflag) {
+  default:
+  case 0: /* HEX */
+    frmt = " %02X %02X %02X";
+    break;
 
-	case 1:		/* OCTAL */
-		frmt = " %03o %03o %03o";
-		break;
+  case 1: /* OCTAL */
+    frmt = " %03o %03o %03o";
+    break;
 
-	case 2:		/* DECIMAL */
-		frmt = " %03u %03u %03u";
-		break;
-	}
-	fprintf(hfp, frmt, hlr_lst, hlr_mode, hlr_nb);
-	if (lmode == ELIST) {
-		if (eqt_area != NULL) {
-			fprintf(hfp, " %s", eqt_area);
-		}
-	}
-	fprintf(hfp, "\n");
+  case 2: /* DECIMAL */
+    frmt = " %03u %03u %03u";
+    break;
+  }
+  fprintf(hfp, frmt, hlr_lst, hlr_mode, hlr_nb);
+  if (lmode == ELIST) {
+    if (eqt_area != NULL) {
+      fprintf(hfp, " %s", eqt_area);
+    }
+  }
+  fprintf(hfp, "\n");
 }
-
 
 /*)Function	VOID	slew(fp, flag)
  *
@@ -944,7 +1138,7 @@ int hlr_nb;
  *	local variables:
  *		char *	frmt		string format
  *		char	np[]		new page string
- *		char	tp[]		temporary string	
+ *		char	tp[]		temporary string
  *
  *	global variables:
  *		char	cpu[]		cpu type string
@@ -963,70 +1157,76 @@ int hlr_nb;
  *		a new page header is output to the listing file.
  */
 
-VOID
-slew(fp,flag)
+VOID slew(fp, flag)
 FILE *fp;
 int flag;
 {
-	char *frmt;
-	char np[80];
-	char tp[80];
+  char *frmt;
+  char np[80];
+  char tp[80];
 
-	if (lop++ >= NLPP) {
-		if (flag) {
-			/*
-			 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
-			 *ASxxxx Assembler Vxx.xx  (Motorola 6809)                                Page 1
-			 */
-		 	/*
-			 * Total string length is 78 characters.
-			 */
-			sprintf(tp, "ASxxxx Assembler %s  (%s)", VERSION, cpu);
-			sprintf(np, "%-78s", tp);
-			/*
-			 * Right justify page number in string.
-			 */
-			sprintf(tp, "Page %u", ++page);
-			memcpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
-			/*
-			 * Output string.
-			 */
-			fprintf(fp, "\f%s\n", np);
-			/*
-			 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
-			 *Hexadecimal [16-Bits]                                 Sun Sep 15 17:22:25 2013
-			 */
-		 	/*
-			 * Total string length is 78 characters.
-			 */
-			switch(xflag) {
-			default:
-			case 0:	frmt = "Hexadecimal [%d-Bits]"; break;
-			case 1:	frmt = "Octal [%d-Bits]"; break;
-			case 2:	frmt = "Decimal [%d-Bits]"; break;
-			}
-			sprintf(tp, frmt, 8 * a_bytes);
-			sprintf(np, "%-78s", tp);
-			/*
-			 * Right justify current time in string.
-			 */
-			strncpy(&np[strlen(np) - 24], ctime(&curtim), 24);
-			/*
-			 * Output string.
-			 */
-			fprintf(fp, "%s\n", np);
-			fprintf(fp, "%s\n", tb);
-			fprintf(fp, "%s\n\n", stb);
-			if ((fp == lfp) && (asmc != NULL)) {
-				for (lop=1; lop<6; lop++) {
-					listhlr(LIST_SRC, SLIST, 0);
-				}
-			}
-			lop = 6;
-		} else {
-			lop = 1;
-		}
-	}
+  if (lop++ >= NLPP) {
+    if (flag) {
+      /*
+       *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+       *ASxxxx Assembler Vxx.xx  (Motorola 6809) Page 1
+       */
+      /*
+       * Total string length is 78 characters.
+       */
+      sprintf(tp, "ASxxxx Assembler %s  (%s)", VERSION, cpu);
+      sprintf(np, "%-78s", tp);
+      /*
+       * Right justify page number in string.
+       */
+      sprintf(tp, "Page %u", ++page);
+      memcpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
+      /*
+       * Output string.
+       */
+      fprintf(fp, "\f%s\n", np);
+      /*
+       *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+       *Hexadecimal [16-Bits]                                 Sun Sep 15
+       *17:22:25 2013
+       */
+      /*
+       * Total string length is 78 characters.
+       */
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "Hexadecimal [%d-Bits]";
+        break;
+      case 1:
+        frmt = "Octal [%d-Bits]";
+        break;
+      case 2:
+        frmt = "Decimal [%d-Bits]";
+        break;
+      }
+      sprintf(tp, frmt, 8 * a_bytes);
+      sprintf(np, "%-78s", tp);
+      /*
+       * Right justify current time in string.
+       */
+      strncpy(&np[strlen(np) - 24], ctime(&curtim), 24);
+      /*
+       * Output string.
+       */
+      fprintf(fp, "%s\n", np);
+      fprintf(fp, "%s\n", tb);
+      fprintf(fp, "%s\n\n", stb);
+      if ((fp == lfp) && (asmc != NULL)) {
+        for (lop = 1; lop < 6; lop++) {
+          listhlr(LIST_SRC, SLIST, 0);
+        }
+      }
+      lop = 6;
+    } else {
+      lop = 1;
+    }
+  }
 }
 
 /*)Function	VOID	lstsym(fp)
@@ -1076,361 +1276,457 @@ int flag;
  *		Symbol and area tables output.
  */
 
-VOID
-lstsym(fp)
+VOID lstsym(fp)
 FILE *fp;
 {
-	int c, i, j, k, n, paging;
-	int nmsym, narea, nbank;
-	a_uint sa;
-	char *frmt, *ptr;
-	struct sym *sp;
-	struct sym **p;
-	struct area *ap;
-	struct bank *bp;
+  int c, i, j, k, n, paging;
+  int nmsym, narea, nbank;
+  a_uint sa;
+  char *frmt, *ptr;
+  struct sym *sp;
+  struct sym **p;
+  struct area *ap;
+  struct bank *bp;
 
-	/*
-	 * Symbol Table Header
-	 */
-	strcpy(stb, &symtbl[0]);
-	lop = NLPP;
-	if (fp == tfp) {
-		page = 0;
-		paging = 1;
-	} else {
-		paging = !pflag && ((lnlist & LIST_PAG) || (uflag == 1)) ? 1 : 0;
-	}
-	slew(fp, 1);
+  /*
+   * Symbol Table Header
+   */
+  strcpy(stb, &symtbl[0]);
+  lop = NLPP;
+  if (fp == tfp) {
+    page = 0;
+    paging = 1;
+  } else {
+    paging = !pflag && ((lnlist & LIST_PAG) || (uflag == 1)) ? 1 : 0;
+  }
+  slew(fp, 1);
 
-	/*
-	 * Find number of symbols
-	 */
-	nmsym = 0;
-	for (i=0; i<NHASH; i++) {
-		sp = symhash[i];
-		while (sp) {
-			if (sp != &dot)
-				++nmsym;
-			sp = sp->s_sp;
-		}
-	}
-	if (nmsym == 0)
-		goto atable;
+  /*
+   * Find number of symbols
+   */
+  nmsym = 0;
+  for (i = 0; i < NHASH; i++) {
+    sp = symhash[i];
+    while (sp) {
+      if (sp != &dot)
+        ++nmsym;
+      sp = sp->s_sp;
+    }
+  }
+  if (nmsym == 0)
+    goto atable;
 
-	/*
-	 * Allocate space for an array of pointers to symbols
-	 * and load array.
-	 */
-	p = (struct sym **) new (sizeof((struct sym *) sp)*nmsym);
-	nmsym = 0;
-	for (i=0; i<NHASH; i++) {
-		sp = symhash[i];
-		while (sp) {
-			if (sp != &dot)
-				p[nmsym++] = sp;
-			sp = sp->s_sp;
-		}
-	}
+  /*
+   * Allocate space for an array of pointers to symbols
+   * and load array.
+   */
+  p = (struct sym **)new (sizeof((struct sym *)sp) * nmsym);
+  nmsym = 0;
+  for (i = 0; i < NHASH; i++) {
+    sp = symhash[i];
+    while (sp) {
+      if (sp != &dot)
+        p[nmsym++] = sp;
+      sp = sp->s_sp;
+    }
+  }
 
-	/*
-	 * Bubble Sort on Symbol Table Array
-	 */
-	j = 1;
-	c = nmsym - 1;
-	while (j) {
-		j = 0;
-		for (i=0; i<c; ++i) {
-			if (strcmp(&p[i]->s_id[0],&p[i+1]->s_id[0]) > 0) {
-				j = 1;
-				sp = p[i+1];
-				p[i+1] = p[i];
-				p[i] = sp;
-			}
-		}
-	}
+  /*
+   * Bubble Sort on Symbol Table Array
+   */
+  j = 1;
+  c = nmsym - 1;
+  while (j) {
+    j = 0;
+    for (i = 0; i < c; ++i) {
+      if (strcmp(&p[i]->s_id[0], &p[i + 1]->s_id[0]) > 0) {
+        j = 1;
+        sp = p[i + 1];
+        p[i + 1] = p[i];
+        p[i] = sp;
+      }
+    }
+  }
 
-	/*
-	 * Symbol Table Output
-	 */
-	for (i=0; i<nmsym;) {
-		sp = p[i];
-		if (sp->s_area) {
-			j = sp->s_area->a_ref;
-			switch(xflag) {
-			default:
-			case 0:	frmt = " %2X "; break;
-			case 1:	frmt = "%3o "; break;
-			case 2:	frmt = "%3u "; break;
-			}
-			fprintf(fp, frmt, j);
-		} else {
-			fprintf(fp, "    ");
-		}
+  /*
+   * Symbol Table Output
+   */
+  for (i = 0; i < nmsym;) {
+    sp = p[i];
+    if (sp->s_area) {
+      j = sp->s_area->a_ref;
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = " %2X ";
+        break;
+      case 1:
+        frmt = "%3o ";
+        break;
+      case 2:
+        frmt = "%3u ";
+        break;
+      }
+      fprintf(fp, frmt, j);
+    } else {
+      fprintf(fp, "    ");
+    }
 
-		ptr = &sp->s_id[0];
-		if (wflag) {
-			fprintf(fp, "%-55.55s", ptr );	/* JLH */
-		} else {
-			fprintf(fp, "%-14.14s", ptr);
-		}
-		if (sp->s_flag & S_ASG) {
-			fprintf(fp, " = ");
-		} else {
-			fprintf(fp, "   ");
-		}
-		if (sp->s_type == S_NEW) {
-			switch(a_bytes) {
-			default:
-			case 2:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  **** "; break;
-				case 1:	frmt = "****** "; break;
-				case 2:	frmt = " ***** "; break;
-				}
-				break;
+    ptr = &sp->s_id[0];
+    if (wflag) {
+      fprintf(fp, "%-55.55s", ptr); /* JLH */
+    } else {
+      fprintf(fp, "%-14.14s", ptr);
+    }
+    if (sp->s_flag & S_ASG) {
+      fprintf(fp, " = ");
+    } else {
+      fprintf(fp, "   ");
+    }
+    if (sp->s_type == S_NEW) {
+      switch (a_bytes) {
+      default:
+      case 2:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  **** ";
+          break;
+        case 1:
+          frmt = "****** ";
+          break;
+        case 2:
+          frmt = " ***** ";
+          break;
+        }
+        break;
 
-			case 3:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  ****** "; break;
-				case 1:	frmt = "******** "; break;
-				case 2:	frmt = "******** "; break;
-				}
-				break;
+      case 3:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  ****** ";
+          break;
+        case 1:
+          frmt = "******** ";
+          break;
+        case 2:
+          frmt = "******** ";
+          break;
+        }
+        break;
 
-			case 4:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   ******** "; break;
-				case 1:	frmt = "*********** "; break;
-				case 2:	frmt = " ********** "; break;
-				}
-				break;
+      case 4:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   ******** ";
+          break;
+        case 1:
+          frmt = "*********** ";
+          break;
+        case 2:
+          frmt = " ********** ";
+          break;
+        }
+        break;
+      }
+      fprintf(fp, "%s", frmt);
+    } else {
+      sa = sp->s_addr & a_mask;
+#ifdef LONGINT
+      switch (a_bytes) {
+      default:
+      case 2:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  %04lX ";
+          break;
+        case 1:
+          frmt = "%06lo ";
+          break;
+        case 2:
+          frmt = " %05lu ";
+          break;
+        }
+        break;
 
-			}
-			fprintf(fp, "%s", frmt);
-		} else {
-			sa = sp->s_addr & a_mask;
-#ifdef	LONGINT
-			switch(a_bytes) {
-			default:
-			case 2:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  %04lX "; break;
-				case 1:	frmt = "%06lo "; break;
-				case 2:	frmt = " %05lu "; break;
-				}
-				break;
+      case 3:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  %06lX ";
+          break;
+        case 1:
+          frmt = "%08lo ";
+          break;
+        case 2:
+          frmt = "%08lu ";
+          break;
+        }
+        break;
 
-			case 3:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  %06lX "; break;
-				case 1:	frmt = "%08lo "; break;
-				case 2:	frmt = "%08lu "; break;
-				}
-				break;
-
-			case 4:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   %08lX "; break;
-				case 1:	frmt = "%011lo "; break;
-				case 2:	frmt = " %010lu "; break;
-				}
-				break;
-			}
+      case 4:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   %08lX ";
+          break;
+        case 1:
+          frmt = "%011lo ";
+          break;
+        case 2:
+          frmt = " %010lu ";
+          break;
+        }
+        break;
+      }
 #else
-			switch(a_bytes) {
-			default:
-			case 2:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  %04X "; break;
-				case 1:	frmt = "%06o "; break;
-				case 2:	frmt = " %05u "; break;
-				}
-				break;
+      switch (a_bytes) {
+      default:
+      case 2:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  %04X ";
+          break;
+        case 1:
+          frmt = "%06o ";
+          break;
+        case 2:
+          frmt = " %05u ";
+          break;
+        }
+        break;
 
-			case 3:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "  %06X "; break;
-				case 1:	frmt = "%08o "; break;
-				case 2:	frmt = "%08u "; break;
-				}
-				break;
+      case 3:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "  %06X ";
+          break;
+        case 1:
+          frmt = "%08o ";
+          break;
+        case 2:
+          frmt = "%08u ";
+          break;
+        }
+        break;
 
-			case 4:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   %08X "; break;
-				case 1:	frmt = "%011o "; break;
-				case 2:	frmt = " %010u "; break;
-				}
-				break;
-			}
+      case 4:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   %08X ";
+          break;
+        case 1:
+          frmt = "%011o ";
+          break;
+        case 2:
+          frmt = " %010u ";
+          break;
+        }
+        break;
+      }
 #endif
-			fprintf(fp, frmt, sa);
-		}
+      fprintf(fp, frmt, sa);
+    }
 
-		j = 0;
-		if (sp->s_flag & S_GBL) {
-			putc('G', fp);
-			++j;
-		}
-		if (sp->s_flag & S_LCL) {
-			putc('L', fp);
-			++j;
-		}
-		if (sp->s_area != NULL) {
-			putc('R', fp);
-			++j;
-		}
-		if (sp->s_type == S_NEW) {
-			putc('X', fp);
-			++j;
-		}
-		if (wflag) {
-			putc('\n', fp);		/* JLH */
-			slew(fp, paging);
-			++i;
-		} else {
-			if (++i % 2 == 0) {
-				putc('\n', fp);
-				slew(fp, paging);
-			} else
-			if (i < nmsym) {
-				while (j++ < 4)
-					putc(' ', fp);
-				fprintf(fp, "| ");
-			}
-		}
-	}
-	if (nmsym % 2) {
-		putc('\n', fp);
-	}
-	putc('\n', fp);
+    j = 0;
+    if (sp->s_flag & S_GBL) {
+      putc('G', fp);
+      ++j;
+    }
+    if (sp->s_flag & S_LCL) {
+      putc('L', fp);
+      ++j;
+    }
+    if (sp->s_area != NULL) {
+      putc('R', fp);
+      ++j;
+    }
+    if (sp->s_type == S_NEW) {
+      putc('X', fp);
+      ++j;
+    }
+    if (wflag) {
+      putc('\n', fp); /* JLH */
+      slew(fp, paging);
+      ++i;
+    } else {
+      if (++i % 2 == 0) {
+        putc('\n', fp);
+        slew(fp, paging);
+      } else if (i < nmsym) {
+        while (j++ < 4)
+          putc(' ', fp);
+        fprintf(fp, "| ");
+      }
+    }
+  }
+  if (nmsym % 2) {
+    putc('\n', fp);
+  }
+  putc('\n', fp);
 
-	/*
-	 * Area Table Header
-	 */
+  /*
+   * Area Table Header
+   */
 
 atable:
-	strcpy(stb, &aretbl[0]);
-	lop = NLPP;
-	slew(fp, 1);
+  strcpy(stb, &aretbl[0]);
+  lop = NLPP;
+  slew(fp, 1);
 
-	/*
-	 * Area Table Output
-	 */
-	narea = areap->a_ref + 1;
-	nbank = bankp->b_ref + 1;
+  /*
+   * Area Table Output
+   */
+  narea = areap->a_ref + 1;
+  nbank = bankp->b_ref + 1;
 
-	for (n=0; n<nbank; ++n) {
-		bp = bankp;
-		for (j=n+1; j<nbank; ++j)
-			bp = bp->b_bp;
-		if (nbank > 1) {
-			fprintf(fp, "[%.79s]\n", bp->b_id );
-			slew(fp, paging);
-		}
-	 	for (i=0; i<narea; ++i) {
-			ap = areap;
-			for (j=i+1; j<narea; ++j)
-				ap = ap->a_ap;
-			j = ap->a_ref;
-			if ((n == 0) && (ap->b_bp == NULL)) {
-				;
-			} else
-			if (ap->b_bp != bp) {
-				continue;
-			}
-			switch(xflag) {
-			default:
-			case 0:	frmt = "  %2X "; break;
-			case 1:	frmt = " %3o "; break;
-			case 2:	frmt = " %3u "; break;
-			}
-			fprintf(fp, frmt, j);
+  for (n = 0; n < nbank; ++n) {
+    bp = bankp;
+    for (j = n + 1; j < nbank; ++j)
+      bp = bp->b_bp;
+    if (nbank > 1) {
+      fprintf(fp, "[%.79s]\n", bp->b_id);
+      slew(fp, paging);
+    }
+    for (i = 0; i < narea; ++i) {
+      ap = areap;
+      for (j = i + 1; j < narea; ++j)
+        ap = ap->a_ap;
+      j = ap->a_ref;
+      if ((n == 0) && (ap->b_bp == NULL)) {
+        ;
+      } else if (ap->b_bp != bp) {
+        continue;
+      }
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "  %2X ";
+        break;
+      case 1:
+        frmt = " %3o ";
+        break;
+      case 2:
+        frmt = " %3u ";
+        break;
+      }
+      fprintf(fp, frmt, j);
 
-			ptr = &ap->a_id[0];
-			if (wflag) {
-				fprintf(fp, "%-35.35s", ptr );
-			} else {
-				fprintf(fp, "%-14.14s", ptr);
-			}
+      ptr = &ap->a_id[0];
+      if (wflag) {
+        fprintf(fp, "%-35.35s", ptr);
+      } else {
+        fprintf(fp, "%-14.14s", ptr);
+      }
 
-			sa = ap->a_size & a_mask;
-			k = ap->a_flag;
-#ifdef	LONGINT
-			switch(a_bytes) {
-			default:
-			case 2:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %4lX   flags %4X\n"; break;
-				case 1:	frmt = "   size %6lo   flags %6o\n"; break;
-				case 2:	frmt = "   size %5lu   flags %6u\n"; break;
-				}
-				break;
+      sa = ap->a_size & a_mask;
+      k = ap->a_flag;
+#ifdef LONGINT
+      switch (a_bytes) {
+      default:
+      case 2:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %4lX   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %6lo   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %5lu   flags %6u\n";
+          break;
+        }
+        break;
 
-			case 3:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %6lX   flags %4X\n"; break;
-				case 1:	frmt = "   size %8lo   flags %6o\n"; break;
-				case 2:	frmt = "   size %8lu   flags %6u\n"; break;
-				}
-				break;
+      case 3:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %6lX   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %8lo   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %8lu   flags %6u\n";
+          break;
+        }
+        break;
 
-			case 4:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %8lX   flags %4X\n"; break;
-				case 1:	frmt = "   size %11lo   flags %6o\n"; break;
-				case 2:	frmt = "   size %10lu   flags %6u\n"; break;
-				}
-				break;
-			}
+      case 4:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %8lX   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %11lo   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %10lu   flags %6u\n";
+          break;
+        }
+        break;
+      }
 #else
-			switch(a_bytes) {
-			default:
-			case 2:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %4X   flags %4X\n"; break;
-				case 1:	frmt = "   size %6o   flags %6o\n"; break;
-				case 2:	frmt = "   size %5u   flags %6u\n"; break;
-				}
-				break;
+      switch (a_bytes) {
+      default:
+      case 2:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %4X   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %6o   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %5u   flags %6u\n";
+          break;
+        }
+        break;
 
-			case 3:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %6X   flags %4X\n"; break;
-				case 1:	frmt = "   size %8o   flags %6o\n"; break;
-				case 2:	frmt = "   size %8u   flags %6u\n"; break;
-				}
-				break;
+      case 3:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %6X   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %8o   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %8u   flags %6u\n";
+          break;
+        }
+        break;
 
-			case 4:
-				switch(xflag) {
-				default:
-				case 0:	frmt = "   size %8X   flags %4X\n"; break;
-				case 1:	frmt = "   size %11o   flags %6o\n"; break;
-				case 2:	frmt = "   size %10u   flags %6u\n"; break;
-				}
-				break;
-			}
+      case 4:
+        switch (xflag) {
+        default:
+        case 0:
+          frmt = "   size %8X   flags %4X\n";
+          break;
+        case 1:
+          frmt = "   size %11o   flags %6o\n";
+          break;
+        case 2:
+          frmt = "   size %10u   flags %6u\n";
+          break;
+        }
+        break;
+      }
 #endif
-			fprintf(fp, frmt, sa, k);
-			slew(fp, paging);
-		}
-	}
-	putc('\n', fp);
+      fprintf(fp, frmt, sa, k);
+      slew(fp, paging);
+    }
+  }
+  putc('\n', fp);
 }
-
-

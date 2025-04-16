@@ -25,7 +25,6 @@
 
 #include "asxxxx.h"
 
-
 /*)Module	asout.c
  *
  *	The module asout.c contains all the functions used to
@@ -34,23 +33,23 @@
  *
  * 	The  assemblers' output object file is an ascii file containing
  *	the information needed by the linker  to  bind  multiple  object
- *	modules into a complete loadable memory image.  
+ *	modules into a complete loadable memory image.
  *
- *	The object module contains the following designators:  
+ *	The object module contains the following designators:
  *
  *		[XDQ][HL][234]
  *			X	 Hexadecimal radix
  *			D	 Decimal radix
  *			Q	 Octal radix
- *	
+ *
  *			H	 Most significant byte first
  *			L	 Least significant byte first
- *	
+ *
  *			2	 16-Bit Relocatable Addresses/Data
  *			3	 24-Bit Relocatable Addresses/Data
  *			4	 32-Bit Relocatable Addresses/Data
  *
- *		H	Header 
+ *		H	Header
  *		M	Module
  *		G	Merge Mode
  *		B	Bank
@@ -66,25 +65,25 @@
  * 	The  first  line  of  an object module contains the [XDQ][HL][234]
  *	format specifier (i.e.  XH2 indicates  a  hexadecimal  file  with
  *	most significant byte first and 16-bit addresses) for the
- *	following designators.  
+ *	following designators.
  *
  *
  *	(2)	Header Line
  *
- *		H aa areas gg global symbols 
+ *		H aa areas gg global symbols
  *
  * 	The  header  line  specifies  the number of areas(aa) and the
  *	number of global symbols(gg) defined or referenced in  this  ob-
- *	ject module segment.  
+ *	ject module segment.
  *
  *
- *	(3)	Module Line 
+ *	(3)	Module Line
  *
- *		M name 
+ *		M name
  *
  * 	The  module  line  specifies  the module name from which this
  *	header segment was assembled.  The module line will  not  appear
- *	if the .module directive was not used in the source program.  
+ *	if the .module directive was not used in the source program.
  *
  *
  *	(4)	Merge Mode Line
@@ -128,69 +127,69 @@
  *	specifying the File Suffix parameter (fsfx).  This allows
  *	the seperation of multiple data and code segments into
  *	isolated output files.
- *	
- *	
- *	(6)	Symbol Line 
  *
- *		S string Defnnnn 
  *
- *			or 
+ *	(6)	Symbol Line
  *
- *		S string Refnnnn 
+ *		S string Defnnnn
+ *
+ *			or
+ *
+ *		S string Refnnnn
  *
  * 	The  symbol line defines (Def) or references (Ref) the symbol
  *	'string' with the value nnnn.  The defined value is relative  to
  *	the  current area base address.  References to constants and ex-
  *	ternal global symbols will always appear before the  first  area
  *	definition.  References to external symbols will have a value of
- *	zero.  
+ *	zero.
  *
  *
- *	(7)	Area Line 
+ *	(7)	Area Line
  *
- *		A label size ss flags ff 
+ *		A label size ss flags ff
  *
  * 	The  area  line  defines the area label, the size (ss) of the
  *	area in PC increments, and the area flags (ff).  The area flags
  *	specify the area properties:
  *
  *		Basic PC Increment Size in Bytes	<1:0>
- *		OVR/CON		(0x0404/0x0400 i.e.  bit position 2) 
- *		ABS/REL		(0x0808/0x0800 i.e.  bit position 3) 
- *		PAG/NOPAG	(0x1010/0x1000 i.e.  bit position 4) 
+ *		OVR/CON		(0x0404/0x0400 i.e.  bit position 2)
+ *		ABS/REL		(0x0808/0x0800 i.e.  bit position 3)
+ *		PAG/NOPAG	(0x1010/0x1000 i.e.  bit position 4)
  *		DSEG/CSEG	(0x4040/0x4000 i.e.  bit position 6)
  *		BANKED/NOBANK	(0x8080/0x8000 i.e   bit position 7)
  *
  *
- *	(8)	T Line 
+ *	(8)	T Line
  *
- *		T xx xx nn nn nn nn nn ...  
+ *		T xx xx nn nn nn nn nn ...
  *
  * 	The  T  line contains the assembled code output by the assem-
  *	bler with xx xx being the offset address from the  current  area
  *	base address and nn being the assembled instructions and data in
  *	byte format.  (xx xx and nn nn can be 2, 3, or 4 bytes as
- *	specified by the .REL file header.) 
+ *	specified by the .REL file header.)
  *
  *
- *	(9)	R Line 
+ *	(9)	R Line
  *
- *		R 0 0 nn nn n1 n2 xx xx ...  
+ *		R 0 0 nn nn n1 n2 xx xx ...
  *
  * 	The R line provides the relocation information to the linker.
  *	The nn nn value is the current area index, i.e.  which area  the
  *	current  values  were  assembled.  Relocation information is en-
- *	coded in groups of 4 bytes:  
+ *	coded in groups of 4 bytes:
  *
- *	1.  n1 is the relocation mode and object format 
- *	 	1.  bits <1:0> specify the number of bytes to output) 
- *	 	2.  bit 2 signed(0x00)/unsigned(0x04) byte data 
+ *	1.  n1 is the relocation mode and object format
+ *	 	1.  bits <1:0> specify the number of bytes to output)
+ *	 	2.  bit 2 signed(0x00)/unsigned(0x04) byte data
  *		3.  bit 3 normal(0x00)/MSB(0x08) of value (2nd byte)
- *	 	4.  bit 4 normal(0x00)/page '0'(0x10) reference 
+ *	 	4.  bit 4 normal(0x00)/page '0'(0x10) reference
  *	 	5.  bit 5 normal(0x00)/page 'nnn'(0x20) reference
  *			PAGX mode if both bits are set
- *	 	6.  bit 6 normal(0x00)/PC relative(0x40) relocation 
- *	 	7.  bit 7 relocatable area(0x00)/symbol(0x80) 
+ *	 	6.  bit 6 normal(0x00)/PC relative(0x40) relocation
+ *	 	7.  bit 7 relocatable area(0x00)/symbol(0x80)
  *
  *	2.  n2 is a byte index and merge mode index
  *		1.  bits <3:0> are a byte index into the corresponding
@@ -202,33 +201,33 @@
  *
  *	3.  xx xx  is the area/symbol index for the area/symbol be-
  *	 	ing referenced.  the corresponding area/symbol is found
- *		in the header area/symbol lists.  
+ *		in the header area/symbol lists.
  *
  *
  *	The groups of 4 bytes are repeated for each item requiring relo-
- *	cation in the preceeding T line.  
+ *	cation in the preceeding T line.
  *
  *
- *	(10)	P Line 
+ *	(10)	P Line
  *
- *		P 0 0 nn nn n1 n2 xx xx 
+ *		P 0 0 nn nn n1 n2 xx xx
  *
  * 	The  P  line provides the paging information to the linker as
  *	specified by a .setdp directive.  The format of  the  relocation
  *	information is identical to that of the R line.  The correspond-
- *	ing T line has the following information:  
- *		T xx xx aa aa bb bb 
+ *	ing T line has the following information:
+ *		T xx xx aa aa bb bb
  *
  * 	Where  aa aa is the area reference number which specifies the
  *	selected page area and bb bb is the base address  of  the  page.
  *	bb bb will require relocation processing if the 'n1 n2 xx xx' is
  *	specified in the P line.  The linker will verify that  the  base
  *	address is on a 256 byte boundary and that the page length of an
- *	area defined with the PAG type is not larger than 256 bytes.  
+ *	area defined with the PAG type is not larger than 256 bytes.
  *
  * 	The  linker  defaults any direct page references to the first
  *	area defined in the input REL file.  All ASxxxx assemblers  will
- *	specify the _CODE area first, making this the default page area. 
+ *	specify the _CODE area first, making this the default page area.
  *
  *
  *	asout.c contains the following functions:
@@ -295,32 +294,28 @@
  *		Absolute data is processed.
  */
 
-VOID
-outab(v)
+VOID outab(v)
 a_uint v;
 {
-	outaxb(1, v);
+  outaxb(1, v);
 }
 
-VOID
-outaw(v)
+VOID outaw(v)
 a_uint v;
 {
-	outaxb(2, v);
+  outaxb(2, v);
 }
 
-VOID
-outa3b(v)
+VOID outa3b(v)
 a_uint v;
 {
-	outaxb(3, v);
+  outaxb(3, v);
 }
 
-VOID
-outa4b(v)
+VOID outa4b(v)
 a_uint v;
 {
-	outaxb(4, v);
+  outaxb(4, v);
 }
 
 /*)Function	VOID	outaxb(i, v)
@@ -348,30 +343,29 @@ a_uint v;
  *		The current assembly address is incremented by i.
  */
 
-VOID
-outaxb(i, v)
+VOID outaxb(i, v)
 int i;
 a_uint v;
 {
-	int p_bytes;
+  int p_bytes;
 
-	if (pass == 2) {
-		out_lxb(i, v, 0);
-		if (oflag) {
-			outchk(i, 0);
-			outatxb(i, v);
-		}
-	}
-	/*
-	 * Update the Program Counter
-	 * based upon the area type.
-	 */
-	p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
-	dot.s_addr += (i/p_bytes) + (i % p_bytes ? 1 : 0);
-	/*
-	 * Area has code
-	 */
-	dot.s_area->a_flag |= A_OUT;
+  if (pass == 2) {
+    out_lxb(i, v, 0);
+    if (oflag) {
+      outchk(i, 0);
+      outatxb(i, v);
+    }
+  }
+  /*
+   * Update the Program Counter
+   * based upon the area type.
+   */
+  p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
+  dot.s_addr += (i / p_bytes) + (i % p_bytes ? 1 : 0);
+  /*
+   * Area has code
+   */
+  dot.s_area->a_flag |= A_OUT;
 }
 
 /*)Function	VOID	outatxb(i, v)
@@ -398,22 +392,29 @@ a_uint v;
  *		i bytes are placed into the T Line Buffer.
  */
 
-VOID
-outatxb(i, v)
+VOID outatxb(i, v)
 int i;
 a_uint v;
 {
-	if ((int) hilo) {
-		if (i >= 4) *txtp++ = frthbyte(v);
-		if (i >= 3) *txtp++ = thrdbyte(v);
-		if (i >= 2) *txtp++ = hibyte(v);
-		if (i >= 1) *txtp++ = lobyte(v);
-	} else {
-		if (i >= 1) *txtp++ = lobyte(v);
-		if (i >= 2) *txtp++ = hibyte(v);
-		if (i >= 3) *txtp++ = thrdbyte(v);
-		if (i >= 4) *txtp++ = frthbyte(v);
-	}
+  if ((int)hilo) {
+    if (i >= 4)
+      *txtp++ = frthbyte(v);
+    if (i >= 3)
+      *txtp++ = thrdbyte(v);
+    if (i >= 2)
+      *txtp++ = hibyte(v);
+    if (i >= 1)
+      *txtp++ = lobyte(v);
+  } else {
+    if (i >= 1)
+      *txtp++ = lobyte(v);
+    if (i >= 2)
+      *txtp++ = hibyte(v);
+    if (i >= 3)
+      *txtp++ = thrdbyte(v);
+    if (i >= 4)
+      *txtp++ = frthbyte(v);
+  }
 }
 
 /*)Function	VOID	outrb(esp, r)
@@ -431,7 +432,7 @@ a_uint v;
  *
  *	global variables:
  *		none
- *		
+ *
  *	functions called:
  *		int	outrxb()	asout.c
  *
@@ -439,36 +440,32 @@ a_uint v;
  *	        relocatable data processed
  */
 
-VOID
-outrb(esp, r)
+VOID outrb(esp, r)
 struct expr *esp;
 int r;
 {
-	outrxb(1, esp, r);
+  outrxb(1, esp, r);
 }
 
-VOID
-outrw(esp, r)
+VOID outrw(esp, r)
 struct expr *esp;
 int r;
 {
-	outrxb(2, esp, r);
+  outrxb(2, esp, r);
 }
 
-VOID
-outr3b(esp, r)
+VOID outr3b(esp, r)
 struct expr *esp;
 int r;
 {
-	outrxb(3, esp, r);
+  outrxb(3, esp, r);
 }
 
-VOID
-outr4b(esp, r)
+VOID outr4b(esp, r)
 struct expr *esp;
 int r;
 {
-	outrxb(4, esp, r);
+  outrxb(4, esp, r);
 }
 
 /*)Function	VOID	outrxb(i, esp, r)
@@ -497,7 +494,7 @@ int r;
  *		char *	relp		pointer to rel array
  *		char	txt[]		assembled code/data array
  *		char *	txtp		pointer to txt array
- *		
+ *
  *	functions called:
  *		int	hibyte()	asout.c
  *		int	lobyte()	asout.c
@@ -514,139 +511,183 @@ int r;
  *		The current assembly address is incremented by i.
  */
 
-VOID
-outrxb(i, esp, r)
+VOID outrxb(i, esp, r)
 int i;
 struct expr *esp;
 int r;
 {
-	a_uint m, n;
-	int p_bytes;
+  a_uint m, n;
+  int p_bytes;
 
-	if (pass == 2) {
-		if (esp->e_flag==0 && esp->e_base.e_ap==NULL &&
-		   !((r & (R_PAGE | R_PCR))==R_PAGN)) {
-			/*
-			 * Mask Value Selection
-			 */
-#ifdef	LONGINT
-			switch(i) {
-			default:
-			case 1:	m = (a_uint) ~0x0000007Fl;	n = (a_uint) ~0x000000FFl;	break;	/* 1 byte  */
-			case 2:	m = (a_uint) ~0x00007FFFl;	n = (a_uint) ~0x0000FFFFl;	break;	/* 2 bytes */
-			case 3:	m = (a_uint) ~0x007FFFFFl;	n = (a_uint) ~0x00FFFFFFl;	break;	/* 3 bytes */
-			case 4:	m = (a_uint) ~0x7FFFFFFFl;	n = (a_uint) ~0xFFFFFFFFl;	break;	/* 4 bytes */
-			}
+  if (pass == 2) {
+    if (esp->e_flag == 0 && esp->e_base.e_ap == NULL &&
+        !((r & (R_PAGE | R_PCR)) == R_PAGN)) {
+      /*
+       * Mask Value Selection
+       */
+#ifdef LONGINT
+      switch (i) {
+      default:
+      case 1:
+        m = (a_uint)~0x0000007Fl;
+        n = (a_uint)~0x000000FFl;
+        break; /* 1 byte  */
+      case 2:
+        m = (a_uint)~0x00007FFFl;
+        n = (a_uint)~0x0000FFFFl;
+        break; /* 2 bytes */
+      case 3:
+        m = (a_uint)~0x007FFFFFl;
+        n = (a_uint)~0x00FFFFFFl;
+        break; /* 3 bytes */
+      case 4:
+        m = (a_uint)~0x7FFFFFFFl;
+        n = (a_uint)~0xFFFFFFFFl;
+        break; /* 4 bytes */
+      }
 #else
-			switch(i) {
-			default:
-			case 1:	m = (a_uint) ~0x0000007F;	n = (a_uint) ~0x000000FF;	break;	/* 1 byte  */
-			case 2:	m = (a_uint) ~0x00007FFF;	n = (a_uint) ~0x0000FFFF;	break;	/* 2 bytes */
-			case 3:	m = (a_uint) ~0x007FFFFF;	n = (a_uint) ~0x00FFFFFF;	break;	/* 3 bytes */
-			case 4:	m = (a_uint) ~0x7FFFFFFF;	n = (a_uint) ~0xFFFFFFFF;	break;	/* 4 bytes */
-			}
+      switch (i) {
+      default:
+      case 1:
+        m = (a_uint)~0x0000007F;
+        n = (a_uint)~0x000000FF;
+        break; /* 1 byte  */
+      case 2:
+        m = (a_uint)~0x00007FFF;
+        n = (a_uint)~0x0000FFFF;
+        break; /* 2 bytes */
+      case 3:
+        m = (a_uint)~0x007FFFFF;
+        n = (a_uint)~0x00FFFFFF;
+        break; /* 3 bytes */
+      case 4:
+        m = (a_uint)~0x7FFFFFFF;
+        n = (a_uint)~0xFFFFFFFF;
+        break; /* 4 bytes */
+      }
 #endif
-			/*
-			 * Signed Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_SGND) &&
-			   ((m & esp->e_addr) != m) && ((m & esp->e_addr) != 0))
-				aerr();
+      /*
+       * Signed Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_SGND) &&
+          ((m & esp->e_addr) != m) && ((m & esp->e_addr) != 0))
+        aerr();
 
-			/*
-			 * Unsigned/Overflow Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_USGN) &&
-			   ((n & esp->e_addr) != 0))
-				aerr();
+      /*
+       * Unsigned/Overflow Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_USGN) &&
+          ((n & esp->e_addr) != 0))
+        aerr();
 
-			/*
-			 * Page0 Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_PAG0) &&
-			   ((n & esp->e_addr) != 0))
-				err('d');
+      /*
+       * Page0 Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_PAG0) &&
+          ((n & esp->e_addr) != 0))
+        err('d');
 
-			/*
-			 * R_MSB Option
-			 */
-			if (i == 1) {
-				r |= esp->e_rlcf;
-				if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
-					switch(as_msb) {
-					default:
-					case 0:	esp->e_addr = lobyte(esp->e_addr);	break;
-					case 1:	esp->e_addr = hibyte(esp->e_addr);	break;
-					case 2:	esp->e_addr = thrdbyte(esp->e_addr);	break;
-					case 3:	esp->e_addr = frthbyte(esp->e_addr);	break;
-					}
-				}
-			}
+      /*
+       * R_MSB Option
+       */
+      if (i == 1) {
+        r |= esp->e_rlcf;
+        if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
+          switch (as_msb) {
+          default:
+          case 0:
+            esp->e_addr = lobyte(esp->e_addr);
+            break;
+          case 1:
+            esp->e_addr = hibyte(esp->e_addr);
+            break;
+          case 2:
+            esp->e_addr = thrdbyte(esp->e_addr);
+            break;
+          case 3:
+            esp->e_addr = frthbyte(esp->e_addr);
+            break;
+          }
+        }
+      }
 
-			out_lxb(i,esp->e_addr,0);
-			if (oflag) {
-				outchk(i,0);
-				outatxb(i,esp->e_addr);
-			}
-		} else {
-			if (i == 1) {
-				r |= R_BYTE | esp->e_rlcf;
-				if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
-					r &= ~R_BYTES;
-					r |= as_msb;
-					switch(as_msb) {
-					default:
-					case 0:	out_lb(lobyte(esp->e_addr),r|R_RELOC);		break;
-					case 1:	out_lb(hibyte(esp->e_addr),r|R_RELOC|R_HIGH);	break;
-					case 2:	out_lb(thrdbyte(esp->e_addr),r|R_RELOC|R_BYT3);	break;
-					case 3:	out_lb(frthbyte(esp->e_addr),r|R_RELOC|R_BYT4);	break;
-					}
-				} else {
-					out_lb(lobyte(esp->e_addr),r|R_RELOC);
-				}
-			} else {
-				switch(i) {
-				default:
-				case 2: r |= R_WORD; break;
-				case 3: r |= R_3BYTE; break;
-				case 4: r |= R_4BYTE; break;
-				}
-				r |= esp->e_rlcf;
-				out_lxb(i,esp->e_addr,r|R_RELOC);
-			}
-			if (oflag) {
-				outchk(a_bytes,4);
-				out_txb(a_bytes,esp->e_addr);
-				if (esp->e_base.e_ap == NULL) {
-					n = area[1].a_ref;
-					r |= R_AREA;
-					if ((r & (R_PAGE | R_PCR)) != R_PAGN) {
-						fprintf(stderr, "?ASxxxx-OUTRXB-NULL-POINTER error.\n\n");
-					}
-				} else
-				if (esp->e_flag) {
-					n = esp->e_base.e_sp->s_ref;
-					r |= R_SYM;
-				} else {
-					n = esp->e_base.e_ap->a_ref;
-					r |= R_AREA;
-				}
-				*relp++ = r;
-				*relp++ = ((r & 0x0F00) >> 4) | (txtp - txt - a_bytes);
-				out_rw(n);
-			}
-		}
-	}
-	/*
-	 * Update the Program Counter
-	 * based upon the area type.
-	 */
-	p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
-	dot.s_addr += (i/p_bytes) + (i % p_bytes ? 1 : 0);
-	/*
-	 * Area has code
-	 */
-	dot.s_area->a_flag |= A_OUT;
+      out_lxb(i, esp->e_addr, 0);
+      if (oflag) {
+        outchk(i, 0);
+        outatxb(i, esp->e_addr);
+      }
+    } else {
+      if (i == 1) {
+        r |= R_BYTE | esp->e_rlcf;
+        if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
+          r &= ~R_BYTES;
+          r |= as_msb;
+          switch (as_msb) {
+          default:
+          case 0:
+            out_lb(lobyte(esp->e_addr), r | R_RELOC);
+            break;
+          case 1:
+            out_lb(hibyte(esp->e_addr), r | R_RELOC | R_HIGH);
+            break;
+          case 2:
+            out_lb(thrdbyte(esp->e_addr), r | R_RELOC | R_BYT3);
+            break;
+          case 3:
+            out_lb(frthbyte(esp->e_addr), r | R_RELOC | R_BYT4);
+            break;
+          }
+        } else {
+          out_lb(lobyte(esp->e_addr), r | R_RELOC);
+        }
+      } else {
+        switch (i) {
+        default:
+        case 2:
+          r |= R_WORD;
+          break;
+        case 3:
+          r |= R_3BYTE;
+          break;
+        case 4:
+          r |= R_4BYTE;
+          break;
+        }
+        r |= esp->e_rlcf;
+        out_lxb(i, esp->e_addr, r | R_RELOC);
+      }
+      if (oflag) {
+        outchk(a_bytes, 4);
+        out_txb(a_bytes, esp->e_addr);
+        if (esp->e_base.e_ap == NULL) {
+          n = area[1].a_ref;
+          r |= R_AREA;
+          if ((r & (R_PAGE | R_PCR)) != R_PAGN) {
+            fprintf(stderr, "?ASxxxx-OUTRXB-NULL-POINTER error.\n\n");
+          }
+        } else if (esp->e_flag) {
+          n = esp->e_base.e_sp->s_ref;
+          r |= R_SYM;
+        } else {
+          n = esp->e_base.e_ap->a_ref;
+          r |= R_AREA;
+        }
+        *relp++ = r;
+        *relp++ = ((r & 0x0F00) >> 4) | (txtp - txt - a_bytes);
+        out_rw(n);
+      }
+    }
+  }
+  /*
+   * Update the Program Counter
+   * based upon the area type.
+   */
+  p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
+  dot.s_addr += (i / p_bytes) + (i % p_bytes ? 1 : 0);
+  /*
+   * Area has code
+   */
+  dot.s_area->a_flag |= A_OUT;
 }
 
 /*)Function	VOID	outrbm(esp, r, v)
@@ -665,7 +706,7 @@ int r;
  *
  *	global variables:
  *		none
- *		
+ *
  *	functions called:
  *		int	outrxbm()	asout.c
  *
@@ -673,40 +714,36 @@ int r;
  *	        relocatable data processed
  */
 
-VOID
-outrbm(esp, r, v)
+VOID outrbm(esp, r, v)
 struct expr *esp;
 int r;
 a_uint v;
 {
-	outrxbm(1, esp, r, v);
+  outrxbm(1, esp, r, v);
 }
 
-VOID
-outrwm(esp, r, v)
+VOID outrwm(esp, r, v)
 struct expr *esp;
 int r;
 a_uint v;
 {
-	outrxbm(2, esp, r, v);
+  outrxbm(2, esp, r, v);
 }
 
-VOID
-outr3bm(esp, r, v)
+VOID outr3bm(esp, r, v)
 struct expr *esp;
 int r;
 a_uint v;
 {
-	outrxbm(3, esp, r, v);
+  outrxbm(3, esp, r, v);
 }
 
-VOID
-outr4bm(esp, r, v)
+VOID outr4bm(esp, r, v)
 struct expr *esp;
 int r;
 a_uint v;
 {
-	outrxbm(4, esp, r, v);
+  outrxbm(4, esp, r, v);
 }
 
 /*)Function	VOID	outrxbm(i, esp, r, v)
@@ -744,7 +781,7 @@ a_uint v;
  *		char *	relp		pointer to rel array
  *		char	txt[]		assembled code/data array
  *		char *	txtp		pointer to txt array
- *		
+ *
  *	functions called:
  *		VOID	aerr()		assubr.c
  *		int	hibyte()	asout.c
@@ -763,129 +800,149 @@ a_uint v;
  *		The current assembly address is incremented by i.
  */
 
-VOID
-outrxbm(i, esp, r, v)
+VOID outrxbm(i, esp, r, v)
 int i;
 struct expr *esp;
 int r;
 a_uint v;
 {
-	a_uint esprv, m;
-	int n, p_bytes;
-	struct mode *mp;
+  a_uint esprv, m;
+  int n, p_bytes;
+  struct mode *mp;
 
-	if (pass == 2) {
-		esprv = outmerge(esp->e_addr, r, v);
-		if (esp->e_flag==0 && esp->e_base.e_ap==NULL &&
-		   !((r & (R_PAGE | R_PCR))==R_PAGN)) {
-			/*
-			 * Signed Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_SGND) &&
-			   ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
-			   	m = ~(mp->m_sbits >> 1);
-				if (((m & esp->e_addr) != m) && ((m & esp->e_addr) != 0))
-					aerr();
-			}
-			/*
-			 * Unsigned/Overflow Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_USGN) &&
-			   ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
-				if (~mp->m_sbits & esp->e_addr)
-					aerr();
-			}
-			/*
-			 * Page0 Range Check
-			 */
-			if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_PAG0) &&
-			   ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
-				if (~mp->m_sbits & esp->e_addr)
-					err('d');
-			}
+  if (pass == 2) {
+    esprv = outmerge(esp->e_addr, r, v);
+    if (esp->e_flag == 0 && esp->e_base.e_ap == NULL &&
+        !((r & (R_PAGE | R_PCR)) == R_PAGN)) {
+      /*
+       * Signed Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_SGND) &&
+          ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
+        m = ~(mp->m_sbits >> 1);
+        if (((m & esp->e_addr) != m) && ((m & esp->e_addr) != 0))
+          aerr();
+      }
+      /*
+       * Unsigned/Overflow Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_USGN) &&
+          ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
+        if (~mp->m_sbits & esp->e_addr)
+          aerr();
+      }
+      /*
+       * Page0 Range Check
+       */
+      if (((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_PAG0) &&
+          ((mp = modep[(r >> 8) & 0x0F]) != 0)) {
+        if (~mp->m_sbits & esp->e_addr)
+          err('d');
+      }
 
-			/*
-			 * R_MSB Option
-			 */
-			if (i == 1) {
-				r |= esp->e_rlcf;
-				if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
-					switch(as_msb) {
-					default:
-					case 0:	esp->e_addr = lobyte(esp->e_addr);	break;
-					case 1:	esp->e_addr = hibyte(esp->e_addr);	break;
-					case 2:	esp->e_addr = thrdbyte(esp->e_addr);	break;
-					case 3:	esp->e_addr = frthbyte(esp->e_addr);	break;
-					}
-					esprv = outmerge(esp->e_addr, r, v);
-				}
-			}
+      /*
+       * R_MSB Option
+       */
+      if (i == 1) {
+        r |= esp->e_rlcf;
+        if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
+          switch (as_msb) {
+          default:
+          case 0:
+            esp->e_addr = lobyte(esp->e_addr);
+            break;
+          case 1:
+            esp->e_addr = hibyte(esp->e_addr);
+            break;
+          case 2:
+            esp->e_addr = thrdbyte(esp->e_addr);
+            break;
+          case 3:
+            esp->e_addr = frthbyte(esp->e_addr);
+            break;
+          }
+          esprv = outmerge(esp->e_addr, r, v);
+        }
+      }
 
-			out_lxb(i,esprv,0);
-			if (oflag) {
-				outchk(i,0);
-				outatxb(i,esprv);
-			}
-		} else {
-			if (i == 1) {
-				r |= R_BYTE | esp->e_rlcf;
-				if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
-					r &= ~R_BYTES;
-					r |= as_msb;
-					switch(as_msb) {
-					default:
-					case 0:	out_lb(lobyte(esp->e_addr),r|R_RELOC);		break;
-					case 1:	out_lb(hibyte(esp->e_addr),r|R_RELOC|R_HIGH);	break;
-					case 2:	out_lb(thrdbyte(esp->e_addr),r|R_RELOC|R_BYT3);	break;
-					case 3:	out_lb(frthbyte(esp->e_addr),r|R_RELOC|R_BYT4);	break;
-					}
-				} else {
-					out_lb(lobyte(esprv),r|R_RELOC);
-				}
-			} else {
-				switch(i) {
-				default:
-				case 2: r |= R_WORD; break;
-				case 3: r |= R_3BYTE; break;
-				case 4: r |= R_4BYTE; break;
-				}
-				r |= esp->e_rlcf;
-				out_lxb(i,esprv,r|R_RELOC);
-			}
-			if (oflag) {
-				outchk(2*a_bytes,4);
-				out_txb(a_bytes,esp->e_addr);
-				if (esp->e_base.e_ap == NULL) {
-					n = area[1].a_ref;
-					r |= R_AREA;
-					if ((r & (R_PAGE | R_PCR)) != R_PAGN) {
-						fprintf(stderr, "?ASxxxx-OUTRXBM-NULL-POINTER error.\n\n");
-					}
-				} else
-				if (esp->e_flag) {
-					n = esp->e_base.e_sp->s_ref;
-					r |= R_SYM;
-				} else {
-					n = esp->e_base.e_ap->a_ref;
-					r |= R_AREA;
-				}
-				*relp++ = r;
-				*relp++ = ((r & 0x0F00) >> 4) | (txtp - txt - a_bytes);
-				out_rw(n);
-				outatxb(a_bytes,v);
-			}
-		}
-	}
-	/*
-	 * Update the Program Counter
-	 * based upon the area type.
-	 */
-	p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
-	dot.s_addr += (i/p_bytes) + (i % p_bytes ? 1 : 0);
-	/*
-	 * Area has code
-	 */
-	dot.s_area->a_flag |= A_OUT;
+      out_lxb(i, esprv, 0);
+      if (oflag) {
+        outchk(i, 0);
+        outatxb(i, esprv);
+      }
+    } else {
+      if (i == 1) {
+        r |= R_BYTE | esp->e_rlcf;
+        if ((r & (R_SGND | R_USGN | R_PAGX | R_PCR)) == R_MSB) {
+          r &= ~R_BYTES;
+          r |= as_msb;
+          switch (as_msb) {
+          default:
+          case 0:
+            out_lb(lobyte(esp->e_addr), r | R_RELOC);
+            break;
+          case 1:
+            out_lb(hibyte(esp->e_addr), r | R_RELOC | R_HIGH);
+            break;
+          case 2:
+            out_lb(thrdbyte(esp->e_addr), r | R_RELOC | R_BYT3);
+            break;
+          case 3:
+            out_lb(frthbyte(esp->e_addr), r | R_RELOC | R_BYT4);
+            break;
+          }
+        } else {
+          out_lb(lobyte(esprv), r | R_RELOC);
+        }
+      } else {
+        switch (i) {
+        default:
+        case 2:
+          r |= R_WORD;
+          break;
+        case 3:
+          r |= R_3BYTE;
+          break;
+        case 4:
+          r |= R_4BYTE;
+          break;
+        }
+        r |= esp->e_rlcf;
+        out_lxb(i, esprv, r | R_RELOC);
+      }
+      if (oflag) {
+        outchk(2 * a_bytes, 4);
+        out_txb(a_bytes, esp->e_addr);
+        if (esp->e_base.e_ap == NULL) {
+          n = area[1].a_ref;
+          r |= R_AREA;
+          if ((r & (R_PAGE | R_PCR)) != R_PAGN) {
+            fprintf(stderr, "?ASxxxx-OUTRXBM-NULL-POINTER error.\n\n");
+          }
+        } else if (esp->e_flag) {
+          n = esp->e_base.e_sp->s_ref;
+          r |= R_SYM;
+        } else {
+          n = esp->e_base.e_ap->a_ref;
+          r |= R_AREA;
+        }
+        *relp++ = r;
+        *relp++ = ((r & 0x0F00) >> 4) | (txtp - txt - a_bytes);
+        out_rw(n);
+        outatxb(a_bytes, v);
+      }
+    }
+  }
+  /*
+   * Update the Program Counter
+   * based upon the area type.
+   */
+  p_bytes = 1 + ((dot.s_area->a_flag) & A_BYTES);
+  dot.s_addr += (i / p_bytes) + (i % p_bytes ? 1 : 0);
+  /*
+   * Area has code
+   */
+  dot.s_area->a_flag |= A_OUT;
 }
 
 /*)Function	VOID	outmerge(esp, r, v)
@@ -898,16 +955,15 @@ a_uint v;
  *	and the variable v using the merge specification coded in r.
  *
  *	local variables:
- *		struct mode  *mp	pointer to a merge specification structure
- *		char *	p		pointer to the merge specification string
- *		int	i		loop counter
- *		int	j		temporary
- *		int	m		bit shuffled value
+ *		struct mode  *mp	pointer to a merge specification
+ *structure char *	p		pointer to the merge specification
+ *string int	i		loop counter int	j temporary int	m
+ *bit shuffled value
  *
  *	global variables:
- *		struct mode  *modep[]	array of pointers to merge specification structures
- *		FILE	*stderr		error console
- *		
+ *		struct mode  *modep[]	array of pointers to merge specification
+ *structures FILE	*stderr		error console
+ *
  *	functions called:
  *		int	fprintf()	c_library
  *		VOID	asexit()	asmain.c
@@ -920,30 +976,30 @@ a_uint esp;
 int r;
 a_uint base;
 {
-	struct mode *mp;
-	char *p;
-	int i, j;
-	a_uint m;
+  struct mode *mp;
+  char *p;
+  int i, j;
+  a_uint m;
 
-	r = (r >> 8) & 0x0F;
+  r = (r >> 8) & 0x0F;
 
-	if ((mp = modep[r]) == NULL) {
-		fprintf(stderr, "?ASxxxx-OUTMERGE-UNDEFINED-G-MODE error.\n\n");
-		asexit(ER_FATAL);
-	}
+  if ((mp = modep[r]) == NULL) {
+    fprintf(stderr, "?ASxxxx-OUTMERGE-UNDEFINED-G-MODE error.\n\n");
+    asexit(ER_FATAL);
+  }
 
-	if (mp->m_flag) {
-		m = 0;
-		p = mp->m_def;
-		for (i=0; i<32; i++) {
-			if ((j = (int) *p++) & 0x80) {
-				m |= (esp & (((a_uint) 1) << i)) ? (((a_uint) 1) << (j & 0x1F)) : 0;
-			}
-		}
-	} else {
-		m = esp & mp->m_dbits;
-	}
-	return((base & ~mp->m_dbits) | m);
+  if (mp->m_flag) {
+    m = 0;
+    p = mp->m_def;
+    for (i = 0; i < 32; i++) {
+      if ((j = (int)*p++) & 0x80) {
+        m |= (esp & (((a_uint)1) << i)) ? (((a_uint)1) << (j & 0x1F)) : 0;
+      }
+    }
+  } else {
+    m = esp & mp->m_dbits;
+  }
+  return ((base & ~mp->m_dbits) | m);
 }
 
 /*)Function	VOID	outdp(carea, esp, r)
@@ -966,7 +1022,7 @@ a_uint base;
  *		char *	relp		pointer to rel array
  *		char	txt[]		assembled code/data array
  *		char *	txtp		pointer to txt array
- *		
+ *
  *	functions called:
  *		VOID	outbuf()	asout.c
  *		VOID	outchk()	asout.c
@@ -978,40 +1034,38 @@ a_uint base;
  *		Paging information dumped to .REL file.
  */
 
-VOID
-outdp(carea, esp, r)
+VOID outdp(carea, esp, r)
 struct area *carea;
 struct expr *esp;
 int r;
 {
-	a_uint n;
+  a_uint n;
 
-	if (oflag && pass==2) {
-		outchk(HUGE,HUGE);
-		out_txb(a_bytes,carea->a_ref);
-		out_txb(a_bytes,esp->e_addr);
-		if (esp->e_flag || esp->e_base.e_ap!=NULL) {
-			if (esp->e_base.e_ap == NULL) {
-				n = area[1].a_ref;
-				r |= R_AREA;
-				fprintf(stderr, "?ASxxxx-OUTDP-NULL-POINTER error.\n\n");
-			} else
-			if (esp->e_flag) {
-				n = esp->e_base.e_sp->s_ref;
-				r |= R_SYM;
-			} else {
-				n = esp->e_base.e_ap->a_ref;
-				r |= R_AREA;
-			}
-			*relp++ = r;
-			*relp++ = txtp - txt - a_bytes;
-			out_rw(n);
-		}
-		if (p_mask != 0xFF) {
-			out_txb(a_bytes,p_mask);
-		}
-		outbuf("P");
-	}
+  if (oflag && pass == 2) {
+    outchk(HUGE, HUGE);
+    out_txb(a_bytes, carea->a_ref);
+    out_txb(a_bytes, esp->e_addr);
+    if (esp->e_flag || esp->e_base.e_ap != NULL) {
+      if (esp->e_base.e_ap == NULL) {
+        n = area[1].a_ref;
+        r |= R_AREA;
+        fprintf(stderr, "?ASxxxx-OUTDP-NULL-POINTER error.\n\n");
+      } else if (esp->e_flag) {
+        n = esp->e_base.e_sp->s_ref;
+        r |= R_SYM;
+      } else {
+        n = esp->e_base.e_ap->a_ref;
+        r |= R_AREA;
+      }
+      *relp++ = r;
+      *relp++ = txtp - txt - a_bytes;
+      out_rw(n);
+    }
+    if (p_mask != 0xFF) {
+      out_txb(a_bytes, p_mask);
+    }
+    outbuf("P");
+  }
 }
 
 /*)Function	VOID	outall()
@@ -1034,11 +1088,9 @@ int r;
  *		assembled data and relocation buffers will be cleared.
  */
 
-VOID
-outall()
-{
-	if (oflag && pass==2)
-		outbuf("R");
+VOID outall() {
+  if (oflag && pass == 2)
+    outbuf("R");
 }
 
 /*)Function	VOID	outdot()
@@ -1066,19 +1118,17 @@ outall()
  *		assembled data and relocation buffers will be cleared.
  */
 
-VOID
-outdot()
-{
-	if (oflag && pass==2) {
-		fprintf(ofp, "T");
-		out(txt,(int) (txtp-txt));
-		fprintf(ofp, "\n");
-		fprintf(ofp, "R");
-		out(rel,(int) (relp-rel));
-		fprintf(ofp, "\n");
-		txtp = txt;
-		relp = rel;
-	}
+VOID outdot() {
+  if (oflag && pass == 2) {
+    fprintf(ofp, "T");
+    out(txt, (int)(txtp - txt));
+    fprintf(ofp, "\n");
+    fprintf(ofp, "R");
+    out(rel, (int)(relp - rel));
+    fprintf(ofp, "\n");
+    txtp = txt;
+    relp = rel;
+  }
 }
 
 /*)Function	outchk(nt, nr)
@@ -1111,24 +1161,23 @@ outdot()
  *		Data and relocation buffers may be emptied and initialized.
  */
 
-VOID
-outchk(nt, nr)
+VOID outchk(nt, nr)
 int nt;
 int nr;
 {
-	struct area *ap;
+  struct area *ap;
 
-	if (txtp+nt >= &txt[NTXT] || relp+nr >= &rel[NREL]) {
-		outbuf("R");
-	}
-	if (txtp == txt) {
-		out_txb(a_bytes,dot.s_addr);
-		if ((ap = dot.s_area) != NULL) {
-			*relp++ = R_AREA;
-			*relp++ = 0;
-			out_rw(ap->a_ref);
-		}
-	}
+  if (txtp + nt >= &txt[NTXT] || relp + nr >= &rel[NREL]) {
+    outbuf("R");
+  }
+  if (txtp == txt) {
+    out_txb(a_bytes, dot.s_addr);
+    if ((ap = dot.s_area) != NULL) {
+      *relp++ = R_AREA;
+      *relp++ = 0;
+      out_rw(ap->a_ref);
+    }
+  }
 }
 
 /*)Function	VOID	outbuf(s)
@@ -1158,20 +1207,19 @@ int nr;
  *		buffer pointers and counters initialized.
  */
 
-VOID
-outbuf(s)
+VOID outbuf(s)
 char *s;
 {
-	if (txtp > &txt[a_bytes]) {
-		fprintf(ofp, "T");
-		out(txt,(int) (txtp-txt));
-		fprintf(ofp, "\n");
-		fprintf(ofp, "%s", s);
-		out(rel,(int) (relp-rel));
-		fprintf(ofp, "\n");
-	}
-	txtp = txt;
-	relp = rel;
+  if (txtp > &txt[a_bytes]) {
+    fprintf(ofp, "T");
+    out(txt, (int)(txtp - txt));
+    fprintf(ofp, "\n");
+    fprintf(ofp, "%s", s);
+    out(rel, (int)(relp - rel));
+    fprintf(ofp, "\n");
+  }
+  txtp = txt;
+  relp = rel;
 }
 
 /*)Function	VOID	outgsd()
@@ -1206,11 +1254,10 @@ char *s;
  *		area *	areap		pointer to an area structure
  *		bank *	bankp		pointer to a  bank structure
  *		int	hilo		byte order
- *		mode *	modep[]		array of pointers to the merge mode structures
- *		char	module[]	module name string
- *		sym *	symhash[]	array of pointers to NHASH
- *					linked symbol lists
- *		int	xflag		-x, listing radix flag
+ *		mode *	modep[]		array of pointers to the merge mode
+ *structures char	module[]	module name string sym *
+ *symhash[]	array of pointers to NHASH linked symbol lists int	xflag
+ *-x, listing radix flag
  *
  *	functions called:
  *		int	fprintf()	c_library
@@ -1224,125 +1271,124 @@ char *s;
  *		and area information is output to the .REL file.
  */
 
-VOID
-outgsd()
-{
-	struct area *ap;
-	struct bank *bp;
-	struct sym  *sp;
-	int i, j;
-	char *ptr;
-	int narea, nglob, nbank, nmode, rn;
+VOID outgsd() {
+  struct area *ap;
+  struct bank *bp;
+  struct sym *sp;
+  int i, j;
+  char *ptr;
+  int narea, nglob, nbank, nmode, rn;
 
-	/*
-	 * Number of areas
-	 */
-	narea = areap->a_ref + 1;
+  /*
+   * Number of areas
+   */
+  narea = areap->a_ref + 1;
 
-	/*
-	 * Number of global references/absolutes
-	 */
-	nglob = 0;
-	for (i = 0; i < NHASH; ++i) {
-		sp = symhash[i];
-		while (sp) {
-			if (sp->s_flag&S_GBL)
-				nglob += 1;
-			sp = sp->s_sp;
-		}
-	}
+  /*
+   * Number of global references/absolutes
+   */
+  nglob = 0;
+  for (i = 0; i < NHASH; ++i) {
+    sp = symhash[i];
+    while (sp) {
+      if (sp->s_flag & S_GBL)
+        nglob += 1;
+      sp = sp->s_sp;
+    }
+  }
 
-	/*
-	 * Banks.
-	 */
-	nbank = bankp->b_ref + 1;
+  /*
+   * Banks.
+   */
+  nbank = bankp->b_ref + 1;
 
-	/*
-	 * Modes
-	 */
-	nmode = 0;
-	for (i=0; i<16; i++) {
-		if (modep[i] != NULL) {
-			nmode += 1;
-		}
-	}
+  /*
+   * Modes
+   */
+  nmode = 0;
+  for (i = 0; i < 16; i++) {
+    if (modep[i] != NULL) {
+      nmode += 1;
+    }
+  }
 
-	/*
-	 * Output Radix and number of  areas and symbols
-	 */
-	if (xflag == 0) {
-		fprintf(ofp, "X%c%d\n", (int) hilo ? 'H' : 'L', a_bytes);
-		fprintf(ofp, "H %X areas %X global symbols %X banks %X modes\n", narea, nglob, nbank, nmode);
-	} else
-	if (xflag == 1) {
-		fprintf(ofp, "Q%c%d\n", (int) hilo ? 'H' : 'L', a_bytes);
-		fprintf(ofp, "H %o areas %o global symbols %o banks %o modes\n", narea, nglob, nbank, nmode);
-	} else
-	if (xflag == 2) {
-		fprintf(ofp, "D%c%d\n", (int) hilo ? 'H' : 'L', a_bytes);
-		fprintf(ofp, "H %u areas %u global symbols %u banks %u modes\n", narea, nglob, nbank, nmode);
-	}		
+  /*
+   * Output Radix and number of  areas and symbols
+   */
+  if (xflag == 0) {
+    fprintf(ofp, "X%c%d\n", (int)hilo ? 'H' : 'L', a_bytes);
+    fprintf(ofp, "H %X areas %X global symbols %X banks %X modes\n", narea,
+            nglob, nbank, nmode);
+  } else if (xflag == 1) {
+    fprintf(ofp, "Q%c%d\n", (int)hilo ? 'H' : 'L', a_bytes);
+    fprintf(ofp, "H %o areas %o global symbols %o banks %o modes\n", narea,
+            nglob, nbank, nmode);
+  } else if (xflag == 2) {
+    fprintf(ofp, "D%c%d\n", (int)hilo ? 'H' : 'L', a_bytes);
+    fprintf(ofp, "H %u areas %u global symbols %u banks %u modes\n", narea,
+            nglob, nbank, nmode);
+  }
 
-	/*
-	 * Module name
-	 */
-	if (module[0]) {
-		fprintf(ofp, "M ");
-		ptr = &module[0];
-		fprintf(ofp, "%s\n", ptr);
-	}
+  /*
+   * Module name
+   */
+  if (module[0]) {
+    fprintf(ofp, "M ");
+    ptr = &module[0];
+    fprintf(ofp, "%s\n", ptr);
+  }
 
-	/*
-	 * Modes
-	 */
-	for (i=0; i<nmode; i++) {
-		outmode(i, modep[i]);
-	}
+  /*
+   * Modes
+   */
+  for (i = 0; i < nmode; i++) {
+    outmode(i, modep[i]);
+  }
 
-	/*
-	 * Banks.
-	 */
-	for (i=0; i<nbank; ++i) {
-		bp = bankp;
-		while (bp->b_ref != i)
-			bp = bp->b_bp;
-		outbank(bp);
-	}
+  /*
+   * Banks.
+   */
+  for (i = 0; i < nbank; ++i) {
+    bp = bankp;
+    while (bp->b_ref != i)
+      bp = bp->b_bp;
+    outbank(bp);
+  }
 
-	/*
-	 * Global references and absolutes.
-	 */
-	rn = 0;
-	for (i=0; i<NHASH; ++i) {
-		sp = symhash[i];
-		while (sp) {
-			if (sp->s_area==NULL && sp->s_flag&S_GBL) {
-				sp->s_ref = rn++;
-				outsym(sp);
-			}
-			sp = sp->s_sp;
-		}
-	}
+  /*
+   * Global references and absolutes.
+   */
+  rn = 0;
+  for (i = 0; i < NHASH; ++i) {
+    sp = symhash[i];
+    while (sp) {
+      if (sp->s_area == NULL && sp->s_flag & S_GBL) {
+        sp->s_ref = rn++;
+        outsym(sp);
+      }
+      sp = sp->s_sp;
+    }
+  }
 
-	/*
-	 * Global relocatables.
-	 */
-	for (i=0; i<narea; ++i) {
-		ap = areap;
-		while (ap->a_ref != i)
-			ap = ap->a_ap;
-		outarea(ap);
-		for (j=0; j<NHASH; ++j) {
-			sp = symhash[j];
-			while (sp) {
-				if (sp->s_area==ap && sp->s_flag&S_GBL) {
-					sp->s_ref = rn++;
-					outsym(sp);
-				}
-				sp = sp->s_sp;
-			}
-		}
-	}
+  /*
+   * Global relocatables.
+   */
+  for (i = 0; i < narea; ++i) {
+    ap = areap;
+    while (ap->a_ref != i)
+      ap = ap->a_ap;
+    outarea(ap);
+    for (j = 0; j < NHASH; ++j) {
+      sp = symhash[j];
+      while (sp) {
+        if (sp->s_area == ap && sp->s_flag & S_GBL) {
+          sp->s_ref = rn++;
+          outsym(sp);
+        }
+        sp = sp->s_sp;
+      }
+    }
+  }
 }
 
 /*)Function	VOID	outmode(index, mp)
@@ -1370,30 +1416,27 @@ outgsd()
  *		The G line is sent to the .REL file.
  */
 
-VOID
-outmode(index, mp)
+VOID outmode(index, mp)
 int index;
 struct mode *mp;
 {
-	char *p;
-	int i, lines;
+  char *p;
+  int i, lines;
 
-	p = &mp->m_def[0];
-	lines = (a_bytes > 2) ? 2 : 1;
+  p = &mp->m_def[0];
+  lines = (a_bytes > 2) ? 2 : 1;
 
-	for (i=0; i<lines; i++) {
-		if (xflag == 0) {
-			fprintf(ofp, "G %02X %02X", index, i*16);
-		} else
-		if (xflag == 1) {
-			fprintf(ofp, "G %03o %03o", index, i*16);
-		} else
-		if (xflag == 2) {
-			fprintf(ofp, "G %03u %03u", index, i*16);
-		}		
-		out(p + i*16, 16);
-		fprintf(ofp, "\n");
-	}
+  for (i = 0; i < lines; i++) {
+    if (xflag == 0) {
+      fprintf(ofp, "G %02X %02X", index, i * 16);
+    } else if (xflag == 1) {
+      fprintf(ofp, "G %03o %03o", index, i * 16);
+    } else if (xflag == 2) {
+      fprintf(ofp, "G %03u %03u", index, i * 16);
+    }
+    out(p + i * 16, 16);
+    fprintf(ofp, "\n");
+  }
 }
 
 /*)Function	VOID	outbank(bp)
@@ -1418,37 +1461,49 @@ struct mode *mp;
  *		The B line is sent to the .REL file.
  */
 
-VOID
-outbank(bp)
+VOID outbank(bp)
 struct bank *bp;
 {
-	char * frmt;
+  char *frmt;
 
-	fprintf(ofp, "B ");
-	fprintf(ofp, "%s", &bp->b_id[0]);
+  fprintf(ofp, "B ");
+  fprintf(ofp, "%s", &bp->b_id[0]);
 
-#ifdef	LONGINT
-	switch(xflag) {
-	default:
-	case 0:	frmt = " base %lX size %lX map %lX flags %X";	break;
-	case 1: frmt = " base %lo size %lo map %lo flags %o";	break;
-	case 2: frmt = " base %lu size %lu map %lu flags %u";	break;
-	}
+#ifdef LONGINT
+  switch (xflag) {
+  default:
+  case 0:
+    frmt = " base %lX size %lX map %lX flags %X";
+    break;
+  case 1:
+    frmt = " base %lo size %lo map %lo flags %o";
+    break;
+  case 2:
+    frmt = " base %lu size %lu map %lu flags %u";
+    break;
+  }
 #else
-	switch(xflag) {
-	default:
-	case 0:	frmt = " base %X size %X map %X flags %X";	break;
-	case 1: frmt = " base %o size %o map %o flags %o";	break;
-	case 2: frmt = " base %u size %u map %u flags %u";	break;
-	}
+  switch (xflag) {
+  default:
+  case 0:
+    frmt = " base %X size %X map %X flags %X";
+    break;
+  case 1:
+    frmt = " base %o size %o map %o flags %o";
+    break;
+  case 2:
+    frmt = " base %u size %u map %u flags %u";
+    break;
+  }
 #endif
 
-	fprintf(ofp, frmt, bp->b_base & a_mask, bp->b_size & a_mask, bp->b_map & a_mask, bp->b_flag);
-	if ((bp->b_fsfx != NULL) && *bp->b_fsfx) {
-		fprintf(ofp, " fsfx %s\n", bp->b_fsfx);
-	} else {
-		fprintf(ofp, "\n");
-	}
+  fprintf(ofp, frmt, bp->b_base & a_mask, bp->b_size & a_mask,
+          bp->b_map & a_mask, bp->b_flag);
+  if ((bp->b_fsfx != NULL) && *bp->b_fsfx) {
+    fprintf(ofp, " fsfx %s\n", bp->b_fsfx);
+  } else {
+    fprintf(ofp, "\n");
+  }
 }
 
 /*)Function	VOID	outarea(ap)
@@ -1478,77 +1533,108 @@ struct bank *bp;
  *		then default attributes are specified.
  */
 
-VOID
-outarea(ap)
+VOID outarea(ap)
 struct area *ap;
 {
-	int a_flag;
-	struct bank *bp;
-	char * frmt;
+  int a_flag;
+  struct bank *bp;
+  char *frmt;
 
-	a_flag = ap->a_flag;
-	switch(a_flag & (A_ABS | A_OVR)) {
-	case A_CON:	a_flag |= (A_REL | A_CON);	break;
-	case A_OVR:	a_flag |= (A_ABS | A_OVR);	break;
-	case A_REL:	a_flag |= (A_REL | A_CON);	break;
-	case A_ABS:	a_flag |= (A_ABS | A_OVR);	break;
-	default:	a_flag |= (A_REL | A_CON);	break;
-	}
+  a_flag = ap->a_flag;
+  switch (a_flag & (A_ABS | A_OVR)) {
+  case A_CON:
+    a_flag |= (A_REL | A_CON);
+    break;
+  case A_OVR:
+    a_flag |= (A_ABS | A_OVR);
+    break;
+  case A_REL:
+    a_flag |= (A_REL | A_CON);
+    break;
+  case A_ABS:
+    a_flag |= (A_ABS | A_OVR);
+    break;
+  default:
+    a_flag |= (A_REL | A_CON);
+    break;
+  }
 
-	fprintf(ofp, "A ");
-	fprintf(ofp, "%s", &ap->a_id[0]);
+  fprintf(ofp, "A ");
+  fprintf(ofp, "%s", &ap->a_id[0]);
 
-#ifdef	LONGINT
-	switch(xflag) {
-	default:
-	case 0:	frmt = " size %lX flags %X";	break;
-	case 1: frmt = " size %lo flags %o";	break;
-	case 2: frmt = " size %lu flags %u";	break;
-	}
+#ifdef LONGINT
+  switch (xflag) {
+  default:
+  case 0:
+    frmt = " size %lX flags %X";
+    break;
+  case 1:
+    frmt = " size %lo flags %o";
+    break;
+  case 2:
+    frmt = " size %lu flags %u";
+    break;
+  }
 #else
-	switch(xflag) {
-	default:
-	case 0:	frmt = " size %X flags %X";	break;
-	case 1: frmt = " size %o flags %o";	break;
-	case 2: frmt = " size %u flags %u";	break;
-	}
+  switch (xflag) {
+  default:
+  case 0:
+    frmt = " size %X flags %X";
+    break;
+  case 1:
+    frmt = " size %o flags %o";
+    break;
+  case 2:
+    frmt = " size %u flags %u";
+    break;
+  }
 #endif
 
-	fprintf(ofp, frmt, ap->a_size & a_mask, a_flag);
+  fprintf(ofp, frmt, ap->a_size & a_mask, a_flag);
 
-	bp = ap->b_bp;
-	if (((ap->a_flag & A_BNK) == A_BNK) && (bp != NULL)) {
-		if (xflag == 0) {
-			fprintf(ofp, " bank %X", bp->b_ref);
-		} else
-		if (xflag == 1) {
-			fprintf(ofp, " bank %o", bp->b_ref);
-		} else
-		if (xflag == 2) {
-			fprintf(ofp, " bank %u", bp->b_ref);
-		}
-	}
+  bp = ap->b_bp;
+  if (((ap->a_flag & A_BNK) == A_BNK) && (bp != NULL)) {
+    if (xflag == 0) {
+      fprintf(ofp, " bank %X", bp->b_ref);
+    } else if (xflag == 1) {
+      fprintf(ofp, " bank %o", bp->b_ref);
+    } else if (xflag == 2) {
+      fprintf(ofp, " bank %u", bp->b_ref);
+    }
+  }
 
-	if (ap->a_bndry != 0) {
-#ifdef	LONGINT
-		switch(xflag) {
-		default:
-		case 0:	frmt = " bndry %lX";	break;
-		case 1: frmt = " bndry %lo";	break;
-		case 2: frmt = " bndry %lu";	break;
-		}
+  if (ap->a_bndry != 0) {
+#ifdef LONGINT
+    switch (xflag) {
+    default:
+    case 0:
+      frmt = " bndry %lX";
+      break;
+    case 1:
+      frmt = " bndry %lo";
+      break;
+    case 2:
+      frmt = " bndry %lu";
+      break;
+    }
 #else
-		switch(xflag) {
-		default:
-		case 0:	frmt = " bndry %X";	break;
-		case 1: frmt = " bndry %o";	break;
-		case 2: frmt = " bndry %u";	break;
-		}
+    switch (xflag) {
+    default:
+    case 0:
+      frmt = " bndry %X";
+      break;
+    case 1:
+      frmt = " bndry %o";
+      break;
+    case 2:
+      frmt = " bndry %u";
+      break;
+    }
 #endif
-		fprintf(ofp, frmt, ap->a_bndry);
-	}
+    fprintf(ofp, frmt, ap->a_bndry);
+  }
 
-	fprintf(ofp, "\n");
+  fprintf(ofp, "\n");
 }
 
 /*)Function	VOID	outsym(sp)
@@ -1575,85 +1661,120 @@ struct area *ap;
  *		The S line is sent to the .REL file.
  */
 
-VOID
-outsym(sp)
+VOID outsym(sp)
 struct sym *sp;
 {
-	char *frmt;
-	a_uint s_addr;
+  char *frmt;
+  a_uint s_addr;
 
-	/*
-	 * Truncate (int) to N-Bytes
-	 */
-	s_addr = sp->s_addr & a_mask;
+  /*
+   * Truncate (int) to N-Bytes
+   */
+  s_addr = sp->s_addr & a_mask;
 
-	fprintf(ofp, "S ");
-	fprintf(ofp, "%s", &sp->s_id[0]);
-	fprintf(ofp, " %s", sp->s_type==S_NEW ? "Ref" : "Def");
+  fprintf(ofp, "S ");
+  fprintf(ofp, "%s", &sp->s_id[0]);
+  fprintf(ofp, " %s", sp->s_type == S_NEW ? "Ref" : "Def");
 
-#ifdef	LONGINT
-	switch(xflag) {
-	default:
-	case 0:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%04lX\n"; break;
-		case 3:	frmt = "%06lX\n"; break;
-		case 4:	frmt = "%08lX\n"; break;
-		}
-		break;
+#ifdef LONGINT
+  switch (xflag) {
+  default:
+  case 0:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%04lX\n";
+      break;
+    case 3:
+      frmt = "%06lX\n";
+      break;
+    case 4:
+      frmt = "%08lX\n";
+      break;
+    }
+    break;
 
-	case 1:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%06lo\n"; break;
-		case 3:	frmt = "%08lo\n"; break;
-		case 4:	frmt = "%011lo\n"; break;
-		}
-		break;
+  case 1:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%06lo\n";
+      break;
+    case 3:
+      frmt = "%08lo\n";
+      break;
+    case 4:
+      frmt = "%011lo\n";
+      break;
+    }
+    break;
 
-	case 2:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%05lu\n"; break;
-		case 3:	frmt = "%08lu\n"; break;
-		case 4:	frmt = "%010lu\n"; break;
-		}
-		break;
-	}
+  case 2:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%05lu\n";
+      break;
+    case 3:
+      frmt = "%08lu\n";
+      break;
+    case 4:
+      frmt = "%010lu\n";
+      break;
+    }
+    break;
+  }
 #else
-	switch(xflag) {
-	default:
-	case 0:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%04X\n"; break;
-		case 3:	frmt = "%06X\n"; break;
-		case 4:	frmt = "%08X\n"; break;
-		}
-		break;
+  switch (xflag) {
+  default:
+  case 0:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%04X\n";
+      break;
+    case 3:
+      frmt = "%06X\n";
+      break;
+    case 4:
+      frmt = "%08X\n";
+      break;
+    }
+    break;
 
-	case 1:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%06o\n"; break;
-		case 3:	frmt = "%08o\n"; break;
-		case 4:	frmt = "%011o\n"; break;
-		}
-		break;
+  case 1:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%06o\n";
+      break;
+    case 3:
+      frmt = "%08o\n";
+      break;
+    case 4:
+      frmt = "%011o\n";
+      break;
+    }
+    break;
 
-	case 2:
-		switch(a_bytes) {
-		default:
-		case 2:	frmt = "%05u\n"; break;
-		case 3:	frmt = "%08u\n"; break;
-		case 4:	frmt = "%010u\n"; break;
-		}
-		break;
-	}
+  case 2:
+    switch (a_bytes) {
+    default:
+    case 2:
+      frmt = "%05u\n";
+      break;
+    case 3:
+      frmt = "%08u\n";
+      break;
+    case 4:
+      frmt = "%010u\n";
+      break;
+    }
+    break;
+  }
 #endif
 
-	fprintf(ofp, frmt, s_addr);
+  fprintf(ofp, frmt, s_addr);
 }
 
 /*)Function	VOID	out(p, n)
@@ -1678,22 +1799,19 @@ struct sym *sp;
  *		Data is sent to the .REL file.
  */
 
-VOID
-out(p, n)
+VOID out(p, n)
 char *p;
 int n;
 {
-	while (n--) {
-		if (xflag == 0) {
-			fprintf(ofp, " %02X", (*p++)&0377);
-		} else
-		if (xflag == 1) {
-			fprintf(ofp, " %03o", (*p++)&0377);
-		} else
-		if (xflag == 2) {
-			fprintf(ofp, " %03u", (*p++)&0377);
-		}
-	}
+  while (n--) {
+    if (xflag == 0) {
+      fprintf(ofp, " %02X", (*p++) & 0377);
+    } else if (xflag == 1) {
+      fprintf(ofp, " %03o", (*p++) & 0377);
+    } else if (xflag == 2) {
+      fprintf(ofp, " %03u", (*p++) & 0377);
+    }
+  }
 }
 
 /*)Function	VOID	out_lb(v, t)
@@ -1719,15 +1837,14 @@ int n;
  *		Pointers to data and relocation buffers incremented by 1.
  */
 
-VOID
-out_lb(v, t)
+VOID out_lb(v, t)
 a_uint v;
 int t;
 {
-	if (cp < &cb[NCODE]) {
-		*cp++ = (char) v;
-		*cpt++ = t;
-	}
+  if (cp < &cb[NCODE]) {
+    *cp++ = (char)v;
+    *cpt++ = t;
+  }
 }
 
 /*)Function	VOID	out_lw(v, t)
@@ -1752,28 +1869,25 @@ int t;
  *		Listing data processed.
  */
 
-VOID
-out_lw(v, t)
+VOID out_lw(v, t)
 a_uint v;
 int t;
 {
-	out_lxb(2, v, t);
+  out_lxb(2, v, t);
 }
 
-VOID
-out_l3b(v, t)
+VOID out_l3b(v, t)
 a_uint v;
 int t;
 {
-	out_lxb(3, v, t);
+  out_lxb(3, v, t);
 }
 
-VOID
-out_l4b(v, t)
+VOID out_l4b(v, t)
 a_uint v;
 int t;
 {
-	out_lxb(4, v, t);
+  out_lxb(4, v, t);
 }
 
 /*)Function	VOID	out_lxb(i, v, t)
@@ -1797,23 +1911,30 @@ int t;
  *		i list bytes are processed.
  */
 
-VOID
-out_lxb(i, v, t)
+VOID out_lxb(i, v, t)
 int i;
 a_uint v;
 int t;
 {
-	if ((int) hilo) {
-		if (i >= 4) out_lb(frthbyte(v),t&R_RELOC ? t|R_BYT4 : 0);
-		if (i >= 3) out_lb(thrdbyte(v),t&R_RELOC ? t|R_BYT3 : 0);
-		if (i >= 2) out_lb(hibyte(v),t&R_RELOC ? t|R_HIGH : 0);
-		if (i >= 1) out_lb(lobyte(v),t);
-	} else {
-		if (i >= 1) out_lb(lobyte(v),t);
-		if (i >= 2) out_lb(hibyte(v),t&R_RELOC ? t|R_HIGH : 0);
-		if (i >= 3) out_lb(thrdbyte(v),t&R_RELOC ? t|R_BYT3 : 0);
-		if (i >= 4) out_lb(frthbyte(v),t&R_RELOC ? t|R_BYT4 : 0);
-	}
+  if ((int)hilo) {
+    if (i >= 4)
+      out_lb(frthbyte(v), t & R_RELOC ? t | R_BYT4 : 0);
+    if (i >= 3)
+      out_lb(thrdbyte(v), t & R_RELOC ? t | R_BYT3 : 0);
+    if (i >= 2)
+      out_lb(hibyte(v), t & R_RELOC ? t | R_HIGH : 0);
+    if (i >= 1)
+      out_lb(lobyte(v), t);
+  } else {
+    if (i >= 1)
+      out_lb(lobyte(v), t);
+    if (i >= 2)
+      out_lb(hibyte(v), t & R_RELOC ? t | R_HIGH : 0);
+    if (i >= 3)
+      out_lb(thrdbyte(v), t & R_RELOC ? t | R_BYT3 : 0);
+    if (i >= 4)
+      out_lb(frthbyte(v), t & R_RELOC ? t | R_BYT4 : 0);
+  }
 }
 
 /*)Function	VOID	out_rw(v)
@@ -1837,17 +1958,16 @@ int t;
  *		Pointer to relocation buffer incremented by 2.
  */
 
-VOID
-out_rw(v)
+VOID out_rw(v)
 a_uint v;
 {
-	if ((int) hilo) {
-		*relp++ = hibyte(v);
-		*relp++ = lobyte(v);
-	} else {
-		*relp++ = lobyte(v);
-		*relp++ = hibyte(v);
-	}
+  if ((int)hilo) {
+    *relp++ = hibyte(v);
+    *relp++ = lobyte(v);
+  } else {
+    *relp++ = lobyte(v);
+    *relp++ = hibyte(v);
+  }
 }
 
 /*)Function	VOID	out_txb(i, v)
@@ -1874,22 +1994,29 @@ a_uint v;
  *		T Line buffer updated.
  */
 
-VOID
-out_txb(i, v)
+VOID out_txb(i, v)
 int i;
 a_uint v;
 {
-	if ((int) hilo) {
-		if (i >= 4) *txtp++ = frthbyte(v);
-		if (i >= 3) *txtp++ = thrdbyte(v);
-		if (i >= 2) *txtp++ = hibyte(v);
-		if (i >= 1) *txtp++ = lobyte(v);
-	} else {
-		if (i >= 1) *txtp++ = lobyte(v);
-		if (i >= 2) *txtp++ = hibyte(v);
-		if (i >= 3) *txtp++ = thrdbyte(v);
-		if (i >= 4) *txtp++ = frthbyte(v);
-	}
+  if ((int)hilo) {
+    if (i >= 4)
+      *txtp++ = frthbyte(v);
+    if (i >= 3)
+      *txtp++ = thrdbyte(v);
+    if (i >= 2)
+      *txtp++ = hibyte(v);
+    if (i >= 1)
+      *txtp++ = lobyte(v);
+  } else {
+    if (i >= 1)
+      *txtp++ = lobyte(v);
+    if (i >= 2)
+      *txtp++ = hibyte(v);
+    if (i >= 3)
+      *txtp++ = thrdbyte(v);
+    if (i >= 4)
+      *txtp++ = frthbyte(v);
+  }
 }
 
 /*)Function	int	lobyte(v)
@@ -1915,32 +2042,26 @@ a_uint v;
  *		none
  */
 
-int
-lobyte(v)
+int lobyte(v)
 a_uint v;
 {
-	return ((int) (v&0377));
+  return ((int)(v & 0377));
 }
 
-int
-hibyte(v)
+int hibyte(v)
 a_uint v;
 {
-	return ((int) ((v>>8)&0377));
+  return ((int)((v >> 8) & 0377));
 }
 
-int
-thrdbyte(v)
+int thrdbyte(v)
 a_uint v;
 {
-	return ((int) ((v>>16)&0377));
+  return ((int)((v >> 16) & 0377));
 }
 
-int
-frthbyte(v)
+int frthbyte(v)
 a_uint v;
 {
-	return ((int) ((v>>24)&0377));
+  return ((int)((v >> 24) & 0377));
 }
-
-

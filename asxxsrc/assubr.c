@@ -64,23 +64,22 @@
  *		error code array eb[] or the parse terminated.
  */
 
-VOID
-err(c)
+VOID err(c)
 int c;
 {
-	char *p;
+  char *p;
 
-	aserr++;
-	p = eb;
-	while (p < ep)
-		if (*p++ == c)
-			return;
-	if (p < &eb[NERR]) {
-		*p++ = c;
-		ep = p;
-	}
-	if (c == 'q')
-		longjmp(jump_env, -1);
+  aserr++;
+  p = eb;
+  while (p < ep)
+    if (*p++ == c)
+      return;
+  if (p < &eb[NERR]) {
+    *p++ = c;
+    ep = p;
+  }
+  if (c == 'q')
+    longjmp(jump_env, -1);
 }
 
 /*)Function	VOID	diag()
@@ -107,27 +106,25 @@ int c;
  *		none
  */
 
-VOID
-diag()
-{
-	char *p,*errstr;
+VOID diag() {
+  char *p, *errstr;
 
-	if (eb != ep) {
-		p = eb;
-		fprintf(stderr, "?ASxxxx-Error-<");
-		while (p < ep) {
-			fprintf(stderr, "%c", *p++);
-		}
-		fprintf(stderr, "> in line ");
-		fprintf(stderr, "%d", getlnm());
-		fprintf(stderr, " of %s\n", afn);
-		p = eb;
-		while (p < ep) {
-			if ((errstr = geterr(*p++)) != NULL) {
-				fprintf(stderr, "              %s\n", errstr);
-			}
-		}
-	}
+  if (eb != ep) {
+    p = eb;
+    fprintf(stderr, "?ASxxxx-Error-<");
+    while (p < ep) {
+      fprintf(stderr, "%c", *p++);
+    }
+    fprintf(stderr, "> in line ");
+    fprintf(stderr, "%d", getlnm());
+    fprintf(stderr, " of %s\n", afn);
+    p = eb;
+    while (p < ep) {
+      if ((errstr = geterr(*p++)) != NULL) {
+        fprintf(stderr, "              %s\n", errstr);
+      }
+    }
+  }
 }
 
 /*)Functions:	VOID	aerr()
@@ -155,54 +152,41 @@ diag()
 /*
  * Note an 'r' error.
  */
-VOID
-rerr()
-{
-	err('r');
-}
+VOID rerr() { err('r'); }
 
 /*
  * Note an 'a' error.
  */
-VOID
-aerr()
-{
-	err('a');
-}
+VOID aerr() { err('a'); }
 
 /*
  * Note a 'q' error.
  */
-VOID
-qerr()
-{
-	err('q');
-}
+VOID qerr() { err('q'); }
 
 /*
  * ASxxxx assembler errors
  */
 char *errors[] = {
-	"<.> use \". = . + <arg>\" not \". = <arg>\"",
-	"<a> machine specific addressing or addressing mode error",
-	"<b> address / direct page boundary error",
-	"<c> .bndry offset error",
-	"<d> direct page addressing error",
-	"<i> .include file error or an .if/.endif mismatch",
-	"<k> numerical conversion error",
-	"<m> multiple definitions error or macro recursion error",
-	"<n> .endm, .mexit, or .narg outside of a macro",
-	"<o> .org in REL area or directive / mnemonic error",
-	"<p> phase error: label location changing between passes 2 and 3",
-	"<q> missing or improper operators, terminators, or delimiters",
-	"<r> relocation error",
-	"<s> string substitution / recursion error",
-	"<u> undefined symbol encountered during assembly",
-	"<v> out of range signed / unsigned value",
-	"<z> divide by zero or mod of zero error",
-	NULL
-};
-	
+    "<.> use \". = . + <arg>\" not \". = <arg>\"",
+    "<a> machine specific addressing or addressing mode error",
+    "<b> address / direct page boundary error",
+    "<c> .bndry offset error",
+    "<d> direct page addressing error",
+    "<i> .include file error or an .if/.endif mismatch",
+    "<k> numerical conversion error",
+    "<m> multiple definitions error or macro recursion error",
+    "<n> .endm, .mexit, or .narg outside of a macro",
+    "<o> .org in REL area or directive / mnemonic error",
+    "<p> phase error: label location changing between passes 2 and 3",
+    "<q> missing or improper operators, terminators, or delimiters",
+    "<r> relocation error",
+    "<s> string substitution / recursion error",
+    "<u> undefined symbol encountered during assembly",
+    "<v> out of range signed / unsigned value",
+    "<z> divide by zero or mod of zero error",
+    NULL};
+
 /*)Function:	char	*geterr(c)
  *
  *		int	c		the error code character
@@ -224,19 +208,16 @@ char *errors[] = {
  *		A pointer to the appropriate
  *		error code string is returned.
  */
-char *
-geterr(c)
+char *geterr(c)
 int c;
 {
-	int i;
+  int i;
 
-	for (i=0; errors[i]!=NULL; i++) {
-		if (c == errors[i][1]) {
-			return(errors[i]);
-		}
-	}
-	sprintf(erb, "<%c> %.*s", c, (int) (sizeof(erb)-5), ib);
-	return(erb);
+  for (i = 0; errors[i] != NULL; i++) {
+    if (c == errors[i][1]) {
+      return (errors[i]);
+    }
+  }
+  sprintf(erb, "<%c> %.*s", c, (int)(sizeof(erb) - 5), ib);
+  return (erb);
 }
-
-

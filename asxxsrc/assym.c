@@ -92,40 +92,38 @@
  *			file ___pst.c.
  */
 
-VOID
-syminit()
-{
-	struct mne  *mp;
-	struct mne **mpp;
-	struct sym  *sp;
-	struct sym **spp;
-	int h;
+VOID syminit() {
+  struct mne *mp;
+  struct mne **mpp;
+  struct sym *sp;
+  struct sym **spp;
+  int h;
 
-	mpp = &mnehash[0];
-	while (mpp < &mnehash[NHASH])
-		*mpp++ = NULL;
-	mp = &mne[0];
-	for (;;) {
-		h = hash(mp->m_id, 1);
-		mp->m_mp = mnehash[h];
-		mnehash[h] = mp;
-		if (mp->m_flag&S_EOL)
-			break;
-		++mp;
-	}
+  mpp = &mnehash[0];
+  while (mpp < &mnehash[NHASH])
+    *mpp++ = NULL;
+  mp = &mne[0];
+  for (;;) {
+    h = hash(mp->m_id, 1);
+    mp->m_mp = mnehash[h];
+    mnehash[h] = mp;
+    if (mp->m_flag & S_EOL)
+      break;
+    ++mp;
+  }
 
-	spp = &symhash[0];
-	while (spp < &symhash[NHASH])
-		*spp++ = NULL;
-	sp = &sym[0];
-	for (;;) {
-		h = hash(sp->s_id, zflag);
-		sp->s_sp = symhash[h];
-		symhash[h] = sp;
-		if (sp->s_flag&S_EOL)
-			break;
-		++sp;
-	}
+  spp = &symhash[0];
+  while (spp < &symhash[NHASH])
+    *spp++ = NULL;
+  sp = &sym[0];
+  for (;;) {
+    h = hash(sp->s_id, zflag);
+    sp->s_sp = symhash[h];
+    symhash[h] = sp;
+    if (sp->s_flag & S_EOL)
+      break;
+    ++sp;
+  }
 }
 
 /*)Function	area *	alookup(id)
@@ -149,22 +147,21 @@ syminit()
  *		none
  */
 
-struct area *
-alookup(id)
+struct area *alookup(id)
 char *id;
 {
-	struct area *ap;
+  struct area *ap;
 
-	ap = areap;
-	while (ap) {
-		/*
-		 * JLH: case insensitive lookup always
-		 */
-		if(symeq(id, ap->a_id, 1))
-			return (ap);
-		ap = ap->a_ap;
-	}
-	return(NULL);
+  ap = areap;
+  while (ap) {
+    /*
+     * JLH: case insensitive lookup always
+     */
+    if (symeq(id, ap->a_id, 1))
+      return (ap);
+    ap = ap->a_ap;
+  }
+  return (NULL);
 }
 
 /*)Function	bank *	blookup(id)
@@ -188,22 +185,21 @@ char *id;
  *		none
  */
 
-struct bank *
-blookup(id)
+struct bank *blookup(id)
 char *id;
 {
-	struct bank *bp;
+  struct bank *bp;
 
-	bp = bankp;
-	while (bp) {
-		/*
-		 * JLH: case insensitive lookup always
-		 */
-		if(symeq(id, bp->b_id, 1))
-			return (bp);
-		bp = bp->b_bp;
-	}
-	return(NULL);
+  bp = bankp;
+  while (bp) {
+    /*
+     * JLH: case insensitive lookup always
+     */
+    if (symeq(id, bp->b_id, 1))
+      return (bp);
+    bp = bp->b_bp;
+  }
+  return (NULL);
 }
 
 /*)Function	def *	dlookup(id)
@@ -227,20 +223,19 @@ char *id;
  *		none
  */
 
-struct def *
-dlookup(id)
+struct def *dlookup(id)
 char *id;
 {
-	struct def *dp;
+  struct def *dp;
 
-	dp = defp;
-	while (dp) {
-		if (symeq(id, dp->d_id, zflag)) {
-			break;
-		}
-		dp = dp->d_dp;
-	}
-	return(dp);
+  dp = defp;
+  while (dp) {
+    if (symeq(id, dp->d_id, zflag)) {
+      break;
+    }
+    dp = dp->d_dp;
+  }
+  return (dp);
 }
 
 /*)Function	mne *	mlookup(id)
@@ -266,24 +261,23 @@ char *id;
  *		none
  */
 
-struct mne *
-mlookup(id)
+struct mne *mlookup(id)
 char *id;
 {
-	struct mne *mp;
-	int h;
+  struct mne *mp;
+  int h;
 
-	/*
-	 * JLH: case insensitive lookup always
-	 */
-	h = hash(id, 1);
-	mp = mnehash[h];
-	while (mp) {
-		if(symeq(id, mp->m_id, 1))
-			return (mp);
-		mp = mp->m_mp;
-	}
-	return (NULL);
+  /*
+   * JLH: case insensitive lookup always
+   */
+  h = hash(id, 1);
+  mp = mnehash[h];
+  while (mp) {
+    if (symeq(id, mp->m_id, 1))
+      return (mp);
+    mp = mp->m_mp;
+  }
+  return (NULL);
 }
 
 /*)Function	sym *	slookup(id)
@@ -311,21 +305,20 @@ char *id;
  *		none
  */
 
-struct sym *
-slookup(id)
+struct sym *slookup(id)
 char *id;
 {
-	struct sym *sp;
-	int h;
+  struct sym *sp;
+  int h;
 
-	h = hash(id, zflag);
-	sp = symhash[h];
-	while (sp) {
-		if(symeq(id, sp->s_id, zflag))
-			return (sp);
-		sp = sp->s_sp;
-	}
-	return (NULL);
+  h = hash(id, zflag);
+  sp = symhash[h];
+  while (sp) {
+    if (symeq(id, sp->s_id, zflag))
+      return (sp);
+    sp = sp->s_sp;
+  }
+  return (NULL);
 }
 
 /*)Function	sym *	lookup(id)
@@ -358,31 +351,30 @@ char *id;
  *		for the new sym structure the assembly terminates.
  */
 
-struct sym *
-lookup(id)
+struct sym *lookup(id)
 char *id;
 {
-	struct sym *sp;
-	int h;
+  struct sym *sp;
+  int h;
 
-	h = hash(id, zflag);
-	sp = symhash[h];
-	while (sp) {
-		if(symeq(id, sp->s_id, zflag))
-			return (sp);
-		sp = sp->s_sp;
-	}
-	sp = (struct sym *) new (sizeof(struct sym));
-	sp->s_sp = symhash[h];
-	symhash[h] = sp;
-	sp->s_tsym = NULL;
-	sp->s_id = strsto(id);
-	sp->s_type = S_NEW;
-	sp->s_flag = 0;
-	sp->s_area = NULL;
-	sp->s_ref = 0;
-	sp->s_addr = 0;
-	return (sp);
+  h = hash(id, zflag);
+  sp = symhash[h];
+  while (sp) {
+    if (symeq(id, sp->s_id, zflag))
+      return (sp);
+    sp = sp->s_sp;
+  }
+  sp = (struct sym *)new (sizeof(struct sym));
+  sp->s_sp = symhash[h];
+  symhash[h] = sp;
+  sp->s_tsym = NULL;
+  sp->s_id = strsto(id);
+  sp->s_type = S_NEW;
+  sp->s_flag = 0;
+  sp->s_area = NULL;
+  sp->s_ref = 0;
+  sp->s_addr = 0;
+  return (sp);
 }
 
 /*)Function	VOID	symglob()
@@ -407,20 +399,18 @@ char *id;
  *		Symbol types changed.
  */
 
-VOID
-symglob()
-{
-	struct sym *sp;
-	int i;
+VOID symglob() {
+  struct sym *sp;
+  int i;
 
-	for (i=0; i<NHASH; ++i) {
-		sp = symhash[i];
-		while (sp != NULL) {
-			if (sp->s_type == S_NEW && !(sp->s_flag & S_LCL))
-				sp->s_flag |= S_GBL;
-			sp = sp->s_sp;
-		}
-	}
+  for (i = 0; i < NHASH; ++i) {
+    sp = symhash[i];
+    while (sp != NULL) {
+      if (sp->s_type == S_NEW && !(sp->s_flag & S_LCL))
+        sp->s_flag |= S_GBL;
+      sp = sp->s_sp;
+    }
+  }
 }
 
 /*)Function	VOID	allglob()
@@ -445,20 +435,18 @@ symglob()
  *		Symbol types changed.
  */
 
-VOID
-allglob()
-{
-	struct sym *sp;
-	int i;
+VOID allglob() {
+  struct sym *sp;
+  int i;
 
-	for (i=0; i<NHASH; ++i) {
-		sp = symhash[i];
-		while (sp != NULL) {
-			if (sp != &dot && sp->s_type == S_USER && !(sp->s_flag & S_LCL))
-				sp->s_flag |= S_GBL;
-			sp = sp->s_sp;
-		}
-	}
+  for (i = 0; i < NHASH; ++i) {
+    sp = symhash[i];
+    while (sp != NULL) {
+      if (sp != &dot && sp->s_type == S_USER && !(sp->s_flag & S_LCL))
+        sp->s_flag |= S_GBL;
+      sp = sp->s_sp;
+    }
+  }
 }
 
 /*)Function	int	symeq(p1, p2, flag)
@@ -488,31 +476,30 @@ allglob()
  *
  */
 
-int
-symeq(p1, p2, flag)
+int symeq(p1, p2, flag)
 char *p1, *p2;
 int flag;
 {
-	int n;
-	n = strlen(p1) + 1;
-	if(flag) {
-		/*
-		 * Case Insensitive Compare
-		 */
-		do {
-			if (ccase[*p1++ & 0x007F] != ccase[*p2++ & 0x007F])
-				return (0);
-		} while (--n);
-	} else {
-		/*
-		 * Case Sensitive Compare
-		 */
-		do {
-			if (*p1++ != *p2++)
-				return (0);
-		} while (--n);
-	}
-	return (1);
+  int n;
+  n = strlen(p1) + 1;
+  if (flag) {
+    /*
+     * Case Insensitive Compare
+     */
+    do {
+      if (ccase[*p1++ & 0x007F] != ccase[*p2++ & 0x007F])
+        return (0);
+    } while (--n);
+  } else {
+    /*
+     * Case Sensitive Compare
+     */
+    do {
+      if (*p1++ != *p2++)
+        return (0);
+    } while (--n);
+  }
+  return (1);
 }
 
 /*)Function	int	hash(p, flag)
@@ -539,29 +526,28 @@ int flag;
  *	side effects:
  *		none
  */
- 
-int
-hash(p, flag)
+
+int hash(p, flag)
 char *p;
 int flag;
 {
-	int h;
+  int h;
 
-	h = 0;
-	while (*p) {
-		if(flag) {
-			/*
-			 * Case Insensitive Hash
-			 */
-			h += ccase[*p++ & 0x007F];
-		} else {
-			/*
-			 * Case Sensitive Hash
-			 */
-			h += *p++;
-		}
-	}
-	return (h&HMASK);
+  h = 0;
+  while (*p) {
+    if (flag) {
+      /*
+       * Case Insensitive Hash
+       */
+      h += ccase[*p++ & 0x007F];
+    } else {
+      /*
+       * Case Sensitive Hash
+       */
+      h += *p++;
+    }
+  }
+  return (h & HMASK);
 }
 
 /*)Function	char *	strsto(str)
@@ -595,51 +581,50 @@ int flag;
  *		Space allocated for string, string copied
  *		to space.  Out of Space terminates assembler.
  */
- 
+
 /*
  * To avoid wasting memory headers on small allocations, we
  * allocate a big chunk and parcel it out as required.
  * These static variables remember our hunk.
  */
 
-#define	STR_SPC	1024
+#define STR_SPC 1024
 
-static	char *	pnext = NULL;
-static	int	bytes = 0;
-   
-char *
-strsto(str)
+static char *pnext = NULL;
+static int bytes = 0;
+
+char *strsto(str)
 char *str;
 {
-	int  len;
-	char *p;
-   
-	/*
-	 * What we need, including a null.
-	 */
-	len = strlen(str) + 1;
+  int len;
+  char *p;
 
-	if (len > bytes) {
-		/*
-		 * No space.  Allocate a new hunk.
-		 * We lose the pointer to any old hunk.
-		 * We don't care, as the names are never deleted.
-		*/
-		pnext = (char *) new (STR_SPC);
-		bytes = STR_SPC;
-		asmblk += 1;
-	}
+  /*
+   * What we need, including a null.
+   */
+  len = strlen(str) + 1;
 
-	/*
-	 * Copy the name and terminating null.
-	 */
-	p = pnext;
-	strcpy(p, str);
+  if (len > bytes) {
+    /*
+     * No space.  Allocate a new hunk.
+     * We lose the pointer to any old hunk.
+     * We don't care, as the names are never deleted.
+     */
+    pnext = (char *)new (STR_SPC);
+    bytes = STR_SPC;
+    asmblk += 1;
+  }
 
-	pnext += len;
-	bytes -= len;
+  /*
+   * Copy the name and terminating null.
+   */
+  p = pnext;
+  strcpy(p, str);
 
-	return(p);
+  pnext += len;
+  bytes -= len;
+
+  return (p);
 }
 
 /*)Function	char *	new(n)
@@ -669,27 +654,25 @@ char *str;
  *		enable memory deallocation by asfree().
  */
 
-char *
-new(n)
-unsigned int n;
+char *new(n) unsigned int n;
 {
-	struct memlnk *lnk;
-	VOID *p;
+  struct memlnk *lnk;
+  VOID *p;
 
-	if ((lnk = (struct memlnk *) malloc (sizeof(struct memlnk))) == NULL) {
-		fprintf(stderr, "Out of space!\n");
-		asexit(ER_FATAL);
-	}
-	lnk->next = (asxmem == NULL) ? NULL : asxmem;
-	lnk->ptr = NULL;
-	asxmem = lnk;
+  if ((lnk = (struct memlnk *)malloc(sizeof(struct memlnk))) == NULL) {
+    fprintf(stderr, "Out of space!\n");
+    asexit(ER_FATAL);
+  }
+  lnk->next = (asxmem == NULL) ? NULL : asxmem;
+  lnk->ptr = NULL;
+  asxmem = lnk;
 
-	if ((p = (VOID *) malloc (n)) == NULL) {
-		fprintf(stderr, "Out of space!\n");
-		asexit(ER_FATAL);
-	}
-	asxmem->ptr = p;
-	return (p);
+  if ((p = (VOID *)malloc(n)) == NULL) {
+    fprintf(stderr, "Out of space!\n");
+    asexit(ER_FATAL);
+  }
+  asxmem->ptr = p;
+  return (p);
 }
 
 /*)Function	VOID	asfree()
@@ -709,18 +692,15 @@ unsigned int n;
  *		Memory is freed.
  */
 
-VOID
-asfree()
-{
-	VOID *p;
+VOID asfree() {
+  VOID *p;
 
-	while (asxmem != NULL) {
-		if ((p = asxmem->ptr) != NULL) {
-			free(p);
-		}
-		p = (VOID *) asxmem;
-		asxmem = asxmem->next;
-		free(p);
-	}
+  while (asxmem != NULL) {
+    if ((p = asxmem->ptr) != NULL) {
+      free(p);
+    }
+    p = (VOID *)asxmem;
+    asxmem = asxmem->next;
+    free(p);
+  }
 }
-

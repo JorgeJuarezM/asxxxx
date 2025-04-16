@@ -41,11 +41,11 @@
  *	structures, and variables used in the assembler.
  */
 
-int	aserr;		/*	ASxxxx error counter
-			 */
-jmp_buf	jump_env;	/*	compiler dependent structure
-			 *	used by setjmp() and longjmp()
-			 */
+int aserr;        /*	ASxxxx error counter
+                   */
+jmp_buf jump_env; /*	compiler dependent structure
+                   *	used by setjmp() and longjmp()
+                   */
 
 /*
  *	The asmf structure contains the information
@@ -72,21 +72,21 @@ jmp_buf	jump_env;	/*	compiler dependent structure
  *		char	afn[FILSPC];	File Name
  *	};
  */
-struct	asmf	*asmc;	/*	Pointer to the current
-			 *	source input structure
-			 */
-struct	asmf	*asmo;	/*	The pointer to the first
-			 *	command line insert structure
-			 */
-struct	asmf	*asmp;	/*	The pointer to the first assembler
-			 *	source file structure of a linked list
-			 */
-struct	asmf	*asmi;	/*	Queued pointer to an include file
-			 *	source input structure
-			 */
-struct	asmf	*asmq;	/*	Queued pointer to a macro
-			 *	source input structure
-			 */
+struct asmf *asmc; /*	Pointer to the current
+                    *	source input structure
+                    */
+struct asmf *asmo; /*	The pointer to the first
+                    *	command line insert structure
+                    */
+struct asmf *asmp; /*	The pointer to the first assembler
+                    *	source file structure of a linked list
+                    */
+struct asmf *asmi; /*	Queued pointer to an include file
+                    *	source input structure
+                    */
+struct asmf *asmq; /*	Queued pointer to a macro
+                    *	source input structure
+                    */
 
 /*
  *	The mcrdef structure contains the
@@ -126,18 +126,19 @@ struct	asmf	*asmq;	/*	Queued pointer to a macro
  *		int		type;		macro type
  *		int		rptcnt;		repeat counter
  *		int		nest;		macro nesting counter
- *		int		narg;		number of macro defintion arguments
- *		struct strlst * bgnarg;		link to first macro defintion argument
- *		struct strlst * endarg;		link to last macro definition argument
- *		int		xarg;		number of macro expansion arguments
- *		struct strlst * bgnxrg;		link to first macro expansion argument
- *		struct strlst * endxrg;		link to last macro xpansion argument
+ *		int		narg;		number of macro defintion
+ *arguments struct strlst * bgnarg;		link to first macro defintion
+ *argument struct strlst * endarg;		link to last macro definition
+ *argument int		xarg;		number of macro expansion arguments
+ *		struct strlst * bgnxrg;		link to first macro expansion
+ *argument struct strlst * endxrg;		link to last macro xpansion
+ *argument
  *	};
  */
-struct mcrdef *	mcrlst;	/*	link to list of defined macros
-			 */
-struct mcrdef *	mcrp;	/*	link to list of defined macros
-			 */
+struct mcrdef *mcrlst; /*	link to list of defined macros
+                        */
+struct mcrdef *mcrp;   /*	link to list of defined macros
+                        */
 
 /*
  *	The memlnk structure is a linked list
@@ -161,177 +162,177 @@ struct mcrdef *	mcrp;	/*	link to list of defined macros
  *		VOID *		ptr;		pointer to allocated memory
  *	};
  */
-struct memlnk * asxmem;	/*	Assembler Memory Allocation Structure
-			 */
-struct memlnk * pmcrmem;/*	First Macro Memory Allocation Structure
-			 */
-struct memlnk * mcrmem;	/*	Macro Memory Allocation Structure
-			 */
-int	asmblk;		/*	new data blocks allocated
-			 */
-int	mcrblk;		/*	new data blocks allocated
-			 */
-int	incfil;		/*	include file nesting counter
-			 */
-int	maxinc;		/*	maximum include file nesting encountered
-			 */
-int	mcrfil;		/*	macro nesting counter
-			 */
-int	maxmcr;		/*	maximum macro nesting encountered
-			 */
-int	flevel;		/*	IF-ELSE-ENDIF flag (false != 0)
-			 */
-int	ftflevel;	/*	IIFF-IIFT-IIFTF FLAG
-			 */
-int	tlevel;		/*	current conditional level
-			 */
-int	lnlist;		/*	LIST-NLIST options
-			 */
-int	ifcnd[MAXIF+1];	/*	array of IF statement condition
-			 *	values (0 = FALSE) indexed by tlevel
-			 */
-int	iflvl[MAXIF+1];	/*	array of IF-ELSE-ENDIF flevel
-			 *	values indexed by tlevel
-			 */
-char	afn[FILSPC];	/*	current input file specification
-			 */
-int	afp;		/*	current input file path length
-			 */
-char	afntmp[FILSPC];	/*	temporary input file specification
-			 */
-int	afptmp;		/*	temporary input file path length
-			 */
-int	srcline;	/*	current source line number
-			 */
-int	asmline;	/*	current assembler file line number
-			 */
-int	incline;	/*	current include file line number
-			 */
-int	mcrline;	/*	current macro line number
-			 */
-int	radix;		/*	current number conversion radix:
-			 *	2 (binary), 8 (octal), 10 (decimal),
-			 *	16 (hexadecimal)
-			 */
-int	line;		/*	current assembler source
-			 *	line number
-			 */
-int	page;		/*	current page number
-			 */
-int	lop;		/*	current line number on page
-			 */
-time_t	curtim;		/*	pointer to the current time string
-			 */
-int	pass;		/*	assembler pass number
-			 */
-int	aflag;		/*	-a, make all symbols global flag
-			 */
-int	bflag;		/*	-b(b), listing modes flag
-			 */
-int	cflag;		/*	-c, disable cycle counts in listing flag
-			 */
-int	fflag;		/*	-f(f), relocations flagged flag
-			 */
-int	gflag;		/*	-g, make undefined symbols global flag
-			 */
-int	hflag;		/*	-h, diagnostic help printout flag
-			 */
-int	iflag;		/*	-i, insert command line string flag
-			 */
-int	jflag;		/*	-j, enable NoICE Debug Symbols
-			 */
-int	lflag;		/*	-l, generate listing flag
-			 */
-int	oflag;		/*	-o, generate relocatable output flag
-			 */
-int	pflag;		/*	-p, disable listing pagination
-			 */
-int	rflag;		/*	-r, line numbers output to .lst to .rst hint file
-			 */
-int	sflag;		/*	-s, generate symbol table flag
-			 */
-int	tflag;		/*	-t, output diagnostic parameters from assembler
-			 */
-int	uflag;		/*	-u, disable .list/.nlist processing flag
-			 */
-int	vflag;		/*	-v, enable out of range signed / unsigned errors
-			 */
-int	wflag;		/*	-w, enable wide listing format
-			 */
-int	xflag;		/*	-x, listing radix flag
-			 */
-int	yflag;		/*	-y, enable SDCC Debug Symbols
-			 */
-int	zflag;		/*	-z, disable symbol case sensitivity
-			 */
-int	a_bytes;	/*	REL file T Line address length
-			 */
-a_uint	a_mask;		/*	Address Mask
-			 */
-a_uint	s_mask;		/*	Sign Mask
-			 */
-a_uint	v_mask;		/*	Value Mask
-			 */
-a_uint	p_mask;		/*	Page Mask
-			 */
-int	as_msb;		/*	current MSB byte select
-			 *	0 == low byte
-			 *	1 == high byte
-			 *	2 == third byte
-			 *	3 == fourth byte
-			 */
-a_uint	laddr;		/*	address of current assembler line
-			 *	or value of .if argument
-			 */
-a_uint	fuzz;		/*	tracks pass to pass changes in the
-			 *	address of symbols caused by
-			 *	variable length instruction formats
-			 */
-int	lmode;		/*	listing mode
-			 */
-char *	eqt_area;	/*	pointer to the area name
-			 *	associated with lmode = ELIST
-			 */
-char	*ep;		/*	pointer into error list
-			 *	array eb[NERR]
-			 */
-char	eb[NERR];	/*	array of generated error codes
-			 */
-char	*ip;		/*	pointer into the assembler-source
-			 *	text line in ib[]
-			 */
-char	ib[NINPUT*2];	/*	assembler-source text line for processing
-			 */
-char	ic[NINPUT*2];	/*	assembler-source text line for listing
-			 */
-char	*il;		/*	pointer to the assembler-source
-			 *	text line to be listed
-			 */
-char	*cp;		/*	pointer to assembler output
-			 *	array cb[]
-			 */
-char	cb[NCODE];	/*	array of assembler output values
-			 */
-int	*cpt;		/*	pointer to assembler relocation type
-			 *	output array cbt[]
-			 */
-int	cbt[NCODE];	/*	array of assembler relocation types
-			 *	describing the data in cb[]
-			 */
-int	opcycles;	/*	opcode execution cycles
-			 */
-char	tb[NTITL];	/*	Title string buffer
-			 */
-char	stb[NSBTL];	/*	Subtitle string buffer
-			 */
-char	erb[NINPUT+4];	/*	Error string buffer
-			 */
+struct memlnk *asxmem;  /*	Assembler Memory Allocation Structure
+                         */
+struct memlnk *pmcrmem; /*	First Macro Memory Allocation Structure
+                         */
+struct memlnk *mcrmem;  /*	Macro Memory Allocation Structure
+                         */
+int asmblk;             /*	new data blocks allocated
+                         */
+int mcrblk;             /*	new data blocks allocated
+                         */
+int incfil;             /*	include file nesting counter
+                         */
+int maxinc;             /*	maximum include file nesting encountered
+                         */
+int mcrfil;             /*	macro nesting counter
+                         */
+int maxmcr;             /*	maximum macro nesting encountered
+                         */
+int flevel;             /*	IF-ELSE-ENDIF flag (false != 0)
+                         */
+int ftflevel;           /*	IIFF-IIFT-IIFTF FLAG
+                         */
+int tlevel;             /*	current conditional level
+                         */
+int lnlist;             /*	LIST-NLIST options
+                         */
+int ifcnd[MAXIF + 1];   /*	array of IF statement condition
+                         *	values (0 = FALSE) indexed by tlevel
+                         */
+int iflvl[MAXIF + 1];   /*	array of IF-ELSE-ENDIF flevel
+                         *	values indexed by tlevel
+                         */
+char afn[FILSPC];       /*	current input file specification
+                         */
+int afp;                /*	current input file path length
+                         */
+char afntmp[FILSPC];    /*	temporary input file specification
+                         */
+int afptmp;             /*	temporary input file path length
+                         */
+int srcline;            /*	current source line number
+                         */
+int asmline;            /*	current assembler file line number
+                         */
+int incline;            /*	current include file line number
+                         */
+int mcrline;            /*	current macro line number
+                         */
+int radix;              /*	current number conversion radix:
+                         *	2 (binary), 8 (octal), 10 (decimal),
+                         *	16 (hexadecimal)
+                         */
+int line;               /*	current assembler source
+                         *	line number
+                         */
+int page;               /*	current page number
+                         */
+int lop;                /*	current line number on page
+                         */
+time_t curtim;          /*	pointer to the current time string
+                         */
+int pass;               /*	assembler pass number
+                         */
+int aflag;              /*	-a, make all symbols global flag
+                         */
+int bflag;              /*	-b(b), listing modes flag
+                         */
+int cflag;              /*	-c, disable cycle counts in listing flag
+                         */
+int fflag;              /*	-f(f), relocations flagged flag
+                         */
+int gflag;              /*	-g, make undefined symbols global flag
+                         */
+int hflag;              /*	-h, diagnostic help printout flag
+                         */
+int iflag;              /*	-i, insert command line string flag
+                         */
+int jflag;              /*	-j, enable NoICE Debug Symbols
+                         */
+int lflag;              /*	-l, generate listing flag
+                         */
+int oflag;              /*	-o, generate relocatable output flag
+                         */
+int pflag;              /*	-p, disable listing pagination
+                         */
+int rflag;              /*	-r, line numbers output to .lst to .rst hint file
+                         */
+int sflag;              /*	-s, generate symbol table flag
+                         */
+int tflag;              /*	-t, output diagnostic parameters from assembler
+                         */
+int uflag;              /*	-u, disable .list/.nlist processing flag
+                         */
+int vflag;              /*	-v, enable out of range signed / unsigned errors
+                         */
+int wflag;              /*	-w, enable wide listing format
+                         */
+int xflag;              /*	-x, listing radix flag
+                         */
+int yflag;              /*	-y, enable SDCC Debug Symbols
+                         */
+int zflag;              /*	-z, disable symbol case sensitivity
+                         */
+int a_bytes;            /*	REL file T Line address length
+                         */
+a_uint a_mask;          /*	Address Mask
+                         */
+a_uint s_mask;          /*	Sign Mask
+                         */
+a_uint v_mask;          /*	Value Mask
+                         */
+a_uint p_mask;          /*	Page Mask
+                         */
+int as_msb;             /*	current MSB byte select
+                         *	0 == low byte
+                         *	1 == high byte
+                         *	2 == third byte
+                         *	3 == fourth byte
+                         */
+a_uint laddr;           /*	address of current assembler line
+                         *	or value of .if argument
+                         */
+a_uint fuzz;            /*	tracks pass to pass changes in the
+                         *	address of symbols caused by
+                         *	variable length instruction formats
+                         */
+int lmode;              /*	listing mode
+                         */
+char *eqt_area;         /*	pointer to the area name
+                         *	associated with lmode = ELIST
+                         */
+char *ep;               /*	pointer into error list
+                         *	array eb[NERR]
+                         */
+char eb[NERR];          /*	array of generated error codes
+                         */
+char *ip;               /*	pointer into the assembler-source
+                         *	text line in ib[]
+                         */
+char ib[NINPUT * 2];    /*	assembler-source text line for processing
+                         */
+char ic[NINPUT * 2];    /*	assembler-source text line for listing
+                         */
+char *il;               /*	pointer to the assembler-source
+                         *	text line to be listed
+                         */
+char *cp;               /*	pointer to assembler output
+                         *	array cb[]
+                         */
+char cb[NCODE];         /*	array of assembler output values
+                         */
+int *cpt;               /*	pointer to assembler relocation type
+                         *	output array cbt[]
+                         */
+int cbt[NCODE];         /*	array of assembler relocation types
+                         *	describing the data in cb[]
+                         */
+int opcycles;           /*	opcode execution cycles
+                         */
+char tb[NTITL];         /*	Title string buffer
+                         */
+char stb[NSBTL];        /*	Subtitle string buffer
+                         */
+char erb[NINPUT + 4];   /*	Error string buffer
+                         */
 
-char	symtbl[] = { "Symbol Table" };
-char	aretbl[] = { "Area Table" };
+char symtbl[] = {"Symbol Table"};
+char aretbl[] = {"Area Table"};
 
-char	module[NCPS+2];	/*	module name string
-			 */
+char module[NCPS + 2]; /*	module name string
+                        */
 
 /*
  *	The mne structure is a linked list of the assembler
@@ -355,7 +356,7 @@ char	module[NCPS+2];	/*	module name string
  *		a_uint	m_valu;		Value
  *	};
  */
-struct	mne	*mnehash[NHASH];
+struct mne *mnehash[NHASH];
 
 /*
  *	The sym structure is a linked list of symbols defined
@@ -382,19 +383,18 @@ struct	mne	*mnehash[NHASH];
  *		a_uint	s_addr;		Address
  *	};
  */
-struct	sym	sym[] = {
-    {	NULL,	NULL,	".",	    S_USER, 0,			NULL,0,0 },
-    {	NULL,	NULL,	".__.ABS.", S_USER, S_ASG|S_GBL,	NULL,0,0 },
-    {	NULL,	NULL,	".__.CPU.", S_USER, S_ASG|S_LCL,	NULL,0,0 },
-    {	NULL,	NULL,	".__.H$L.", S_USER, S_ASG|S_LCL,	NULL,0,0 },
-    {	NULL,	NULL,	".__.$$$.", S_USER, S_ASG|S_LCL|S_EOL,	NULL,0,0 }
-};
+struct sym sym[] = {
+    {NULL, NULL, ".", S_USER, 0, NULL, 0, 0},
+    {NULL, NULL, ".__.ABS.", S_USER, S_ASG | S_GBL, NULL, 0, 0},
+    {NULL, NULL, ".__.CPU.", S_USER, S_ASG | S_LCL, NULL, 0, 0},
+    {NULL, NULL, ".__.H$L.", S_USER, S_ASG | S_LCL, NULL, 0, 0},
+    {NULL, NULL, ".__.$$$.", S_USER, S_ASG | S_LCL | S_EOL, NULL, 0, 0}};
 
-struct	sym	*symp;		/*	pointer to a symbol structure
-				 */
-struct	sym *symhash[NHASH];	/*	array of pointers to NHASH
-				 *	linked symbol lists
-				 */
+struct sym *symp;           /*	pointer to a symbol structure
+                             */
+struct sym *symhash[NHASH]; /*	array of pointers to NHASH
+                             *	linked symbol lists
+                             */
 
 /*
  *	The area structure contains the parameter values for a
@@ -425,7 +425,7 @@ struct	sym *symhash[NHASH];	/*	array of pointers to NHASH
  *
  * Pointer to an area structure
  */
-struct	area	*areap = &area[1];
+struct area *areap = &area[1];
 
 /*
  *	The bank structure contains the parameter values for a
@@ -457,7 +457,7 @@ struct	area	*areap = &area[1];
  *
  *	Pointer to a bank structure
  */
-struct	bank	*bankp = &bank[1];
+struct bank *bankp = &bank[1];
 
 /*
  *	The def structure is used by the .define assembler
@@ -474,75 +474,103 @@ struct	bank	*bankp = &bank[1];
  *	{
  *		struct def	*d_dp;		link to next define
  *		char		*d_id;		defined string
- *		char		*d_define;	string to substitute for defined string
- *		int		d_dflag;	(1) .defined / (0) .undefined
+ *		char		*d_define;	string to substitute for defined
+ *string int		d_dflag;	(1) .defined / (0) .undefined
  *	};
  *
  *	Pointer to a def structure
  */
-struct	def	*defp = NULL;
+struct def *defp = NULL;
 
-
-FILE	*hfp;		/*	.lst to .rst hint file handle
-			 */
-FILE	*lfp;		/*	list output file handle
-			 */
-FILE	*ofp;		/*	relocation output file handle
-			 */
-FILE	*tfp;		/*	symbol table output file handle
-			 */
-char	txt[NTXT];	/*	T Line Values
-			 */
-char	rel[NREL];	/*	R Line Values
-			 */
-char	*txtp = &txt[0];/*	Pointer to T Line Values
-			 */
-char	*relp = &rel[0];/*	Pointer to R Line Values
-			 */
+FILE *hfp;            /*	.lst to .rst hint file handle
+                       */
+FILE *lfp;            /*	list output file handle
+                       */
+FILE *ofp;            /*	relocation output file handle
+                       */
+FILE *tfp;            /*	symbol table output file handle
+                       */
+char txt[NTXT];       /*	T Line Values
+                       */
+char rel[NREL];       /*	R Line Values
+                       */
+char *txtp = &txt[0]; /*	Pointer to T Line Values
+                       */
+char *relp = &rel[0]; /*	Pointer to R Line Values
+                       */
 
 /*
  *	an array of character types,
  *	one per ASCII character
  */
-char	ctype[128] = {
-/*NUL*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*BS*/	ILL,	SPACE,	ILL,	ILL,	SPACE,	ILL,	ILL,	ILL,
-/*DLE*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*CAN*/	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,	ILL,
-/*SPC*/	SPACE,	ETC,	ETC,	ETC,	LETTER,	BINOP,	BINOP,	ETC,
-/*(*/	ETC,	ETC,	BINOP,	BINOP,	ETC,	BINOP,	LETTER,	BINOP,
-/*0*/	DGT2,	DGT2,	DGT8,	DGT8,	DGT8,	DGT8,	DGT8,	DGT8,
-/*8*/	DGT10,	DGT10,	ETC,	ETC,	BINOP,	ETC,	BINOP,	ETC,
-/*@*/	ETC,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LETTER,
-/*H*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*P*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*X*/	LETTER,	LETTER,	LETTER,	ETC,	ETC,	ETC,	BINOP,	LETTER,
-/*`*/	ETC,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LTR16,	LETTER,
-/*h*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*p*/	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,	LETTER,
-/*x*/	LETTER,	LETTER,	LETTER,	ETC,	BINOP,	ETC,	ETC,	ETC
-};
+char ctype[128] = {
+    /*NUL*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*BS*/ ILL,    SPACE,  ILL,    ILL,
+    SPACE,         ILL,    ILL,    ILL,
+    /*DLE*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*CAN*/ ILL,   ILL,    ILL,    ILL,
+    ILL,           ILL,    ILL,    ILL,
+    /*SPC*/ SPACE, ETC,    ETC,    ETC,
+    LETTER,        BINOP,  BINOP,  ETC,
+    /*(*/ ETC,     ETC,    BINOP,  BINOP,
+    ETC,           BINOP,  LETTER, BINOP,
+    /*0*/ DGT2,    DGT2,   DGT8,   DGT8,
+    DGT8,          DGT8,   DGT8,   DGT8,
+    /*8*/ DGT10,   DGT10,  ETC,    ETC,
+    BINOP,         ETC,    BINOP,  ETC,
+    /*@*/ ETC,     LTR16,  LTR16,  LTR16,
+    LTR16,         LTR16,  LTR16,  LETTER,
+    /*H*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*P*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*X*/ LETTER,  LETTER, LETTER, ETC,
+    ETC,           ETC,    BINOP,  LETTER,
+    /*`*/ ETC,     LTR16,  LTR16,  LTR16,
+    LTR16,         LTR16,  LTR16,  LETTER,
+    /*h*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*p*/ LETTER,  LETTER, LETTER, LETTER,
+    LETTER,        LETTER, LETTER, LETTER,
+    /*x*/ LETTER,  LETTER, LETTER, ETC,
+    BINOP,         ETC,    ETC,    ETC};
 
 /*
  *	an array of characters which
  *	perform the case translation function
  */
-char	ccase[128] = {
-/*NUL*/	'\000',	'\001',	'\002',	'\003',	'\004',	'\005',	'\006',	'\007',
-/*BS*/	'\010',	'\011',	'\012',	'\013',	'\014',	'\015',	'\016',	'\017',
-/*DLE*/	'\020',	'\021',	'\022',	'\023',	'\024',	'\025',	'\026',	'\027',
-/*CAN*/	'\030',	'\031',	'\032',	'\033',	'\034',	'\035',	'\036',	'\037',
-/*SPC*/	'\040',	'\041',	'\042',	'\043',	'\044',	'\045',	'\046',	'\047',
-/*(*/	'\050',	'\051',	'\052',	'\053',	'\054',	'\055',	'\056',	'\057',
-/*0*/	'\060',	'\061',	'\062',	'\063',	'\064',	'\065',	'\066',	'\067',
-/*8*/	'\070',	'\071',	'\072',	'\073',	'\074',	'\075',	'\076',	'\077',
-/*@*/	'\100',	'\141',	'\142',	'\143',	'\144',	'\145',	'\146',	'\147',
-/*H*/	'\150',	'\151',	'\152',	'\153',	'\154',	'\155',	'\156',	'\157',
-/*P*/	'\160',	'\161',	'\162',	'\163',	'\164',	'\165',	'\166',	'\167',
-/*X*/	'\170',	'\171',	'\172',	'\133',	'\134',	'\135',	'\136',	'\137',
-/*`*/	'\140',	'\141',	'\142',	'\143',	'\144',	'\145',	'\146',	'\147',
-/*h*/	'\150',	'\151',	'\152',	'\153',	'\154',	'\155',	'\156',	'\157',
-/*p*/	'\160',	'\161',	'\162',	'\163',	'\164',	'\165',	'\166',	'\167',
-/*x*/	'\170',	'\171',	'\172',	'\173',	'\174',	'\175',	'\176',	'\177'
-};
-
+char ccase[128] = {
+    /*NUL*/ '\000', '\001', '\002', '\003',
+    '\004',         '\005', '\006', '\007',
+    /*BS*/ '\010',  '\011', '\012', '\013',
+    '\014',         '\015', '\016', '\017',
+    /*DLE*/ '\020', '\021', '\022', '\023',
+    '\024',         '\025', '\026', '\027',
+    /*CAN*/ '\030', '\031', '\032', '\033',
+    '\034',         '\035', '\036', '\037',
+    /*SPC*/ '\040', '\041', '\042', '\043',
+    '\044',         '\045', '\046', '\047',
+    /*(*/ '\050',   '\051', '\052', '\053',
+    '\054',         '\055', '\056', '\057',
+    /*0*/ '\060',   '\061', '\062', '\063',
+    '\064',         '\065', '\066', '\067',
+    /*8*/ '\070',   '\071', '\072', '\073',
+    '\074',         '\075', '\076', '\077',
+    /*@*/ '\100',   '\141', '\142', '\143',
+    '\144',         '\145', '\146', '\147',
+    /*H*/ '\150',   '\151', '\152', '\153',
+    '\154',         '\155', '\156', '\157',
+    /*P*/ '\160',   '\161', '\162', '\163',
+    '\164',         '\165', '\166', '\167',
+    /*X*/ '\170',   '\171', '\172', '\133',
+    '\134',         '\135', '\136', '\137',
+    /*`*/ '\140',   '\141', '\142', '\143',
+    '\144',         '\145', '\146', '\147',
+    /*h*/ '\150',   '\151', '\152', '\153',
+    '\154',         '\155', '\156', '\157',
+    /*p*/ '\160',   '\161', '\162', '\163',
+    '\164',         '\165', '\166', '\167',
+    /*x*/ '\170',   '\171', '\172', '\173',
+    '\174',         '\175', '\176', '\177'};
