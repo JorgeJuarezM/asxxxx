@@ -26,8 +26,8 @@
 /*
  * Internal Debug Values
  */
-#define	LNK_DEBUG	0
-#define	HLR_DEBUG	0
+#define LNK_DEBUG 0
+#define HLR_DEBUG 0
 
 #include "aslink.h"
 
@@ -68,7 +68,7 @@
  *	local variables:
  *		char *	frmt		string format
  *		char	np[]		new page string
- *		char	tp[]		temporary string	
+ *		char	tp[]		temporary string
  *
  *	global variables:
  *		time_t	curtim		current time string pointer
@@ -83,54 +83,61 @@
  *		The page and line counters are updated.
  */
 
-VOID
-newpag(fp)
+VOID newpag(fp)
 FILE *fp;
 {
-	char *frmt;
-	char np[80];
-	char tp[80];
-	/*
-	 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
-	 *ASxxxx Linker Vxx.xx                                                    Page 1
-	 */
- 	/*
-	 * Total newpag() string length is 78 characters.
-	 */
-	sprintf(np, "ASxxxx Linker %-64s", VERSION);
-	/*
-	 * Right justify page number in string.
-	 */
-	sprintf(tp, "Page %u", ++page);
-	strncpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
-	/*
-	 * Output string.
-	 */
-	fprintf(fp, "\f%s\n", np);
-	/*
-	 *12345678901234567890123456789012345678901234567890123456789012345678901234567890
-	 *Hexadecimal [16-Bits]                                 Sun Sep 15 17:22:25 2013
-	 */
-	/*
-	 * Total string length is 78 characters.
-	 */
-	switch(xflag) {
-	default:
-	case 0:	frmt = "Hexadecimal [%d-Bits]"; break;
-	case 1:	frmt = "Octal [%d-Bits]"; break;
-	case 2:	frmt = "Decimal [%d-Bits]"; break;
-	}
-	sprintf(tp, frmt, 8 * a_bytes);
-	sprintf(np, "%-78s", tp);
-	/*
-	 * Right justify current time in string.
-	 */
-	strncpy(&np[strlen(np) - 24], ctime(&curtim), 24);
-	/*
-	 * Output string.
-	 */
-	fprintf(fp, "%s\n", np);
-	lop = 3;
+  char *frmt;
+  char np[80];
+  char tp[80];
+  /*
+   *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+   *ASxxxx Linker Vxx.xx                                                    Page
+   *1
+   */
+  /*
+   * Total newpag() string length is 78 characters.
+   */
+  sprintf(np, "ASxxxx Linker %-64s", VERSION);
+  /*
+   * Right justify page number in string.
+   */
+  sprintf(tp, "Page %u", ++page);
+  strncpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
+  /*
+   * Output string.
+   */
+  fprintf(fp, "\f%s\n", np);
+  /*
+   *12345678901234567890123456789012345678901234567890123456789012345678901234567890
+   *Hexadecimal [16-Bits]                                 Sun Sep 15 17:22:25
+   *2013
+   */
+  /*
+   * Total string length is 78 characters.
+   */
+  switch (xflag) {
+  default:
+  case 0:
+    frmt = "Hexadecimal [%d-Bits]";
+    break;
+  case 1:
+    frmt = "Octal [%d-Bits]";
+    break;
+  case 2:
+    frmt = "Decimal [%d-Bits]";
+    break;
+  }
+  sprintf(tp, frmt, 8 * a_bytes);
+  sprintf(np, "%-78s", tp);
+  /*
+   * Right justify current time in string.
+   */
+  strncpy(&np[strlen(np) - 24], ctime(&curtim), 24);
+  /*
+   * Output string.
+   */
+  fprintf(fp, "%s\n", np);
+  lop = 3;
 }
 
 /*)Function	int	dgt(rdx,str,n)
@@ -155,18 +162,17 @@ FILE *fp;
  *		none
  */
 
-int
-dgt(rdx, str, n)
+int dgt(rdx, str, n)
 int rdx, n;
 char *str;
 {
-	int i;
+  int i;
 
-	for (i=0; i<n; i++) {
-		if ((ctype[*str++ & 0x007F] & rdx) == 0)
-			return(0);
-	}
-	return(1);
+  for (i = 0; i < n; i++) {
+    if ((ctype[*str++ & 0x007F] & rdx) == 0)
+      return (0);
+  }
+  return (1);
 }
 
 /*)Function	VOID	slew(xp, yp)
@@ -205,161 +211,209 @@ char *str;
  *		The page line and the page count may be updated.
  */
 
-VOID
-slew(xp,yp)
+VOID slew(xp, yp)
 struct area *xp;
 struct bank *yp;
 {
-	int i, n;
-	char *frmta, *frmtb, *ptr;
- 	a_uint	ai, aj;
+  int i, n;
+  char *frmta, *frmtb, *ptr;
+  a_uint ai, aj;
 
-       	if (lop++ >= NLPP) {
-		newpag(mfp);
-		if (*yp->b_id) {
-			fprintf(mfp, "[ Bank == %s ]\n", yp->b_id);
-			lop += 1;
-		}
-		fprintf(mfp, "\n");
-		fprintf(mfp,
-			"Area                       Addr   ");
-		fprintf(mfp,
-			"     Size        Decimal Bytes (Attributes)\n");
-		fprintf(mfp,
-			"--------------------       ----   ");
-		fprintf(mfp,
-			"     ----        ------- ----- ------------\n");
+  if (lop++ >= NLPP) {
+    newpag(mfp);
+    if (*yp->b_id) {
+      fprintf(mfp, "[ Bank == %s ]\n", yp->b_id);
+      lop += 1;
+    }
+    fprintf(mfp, "\n");
+    fprintf(mfp, "Area                       Addr   ");
+    fprintf(mfp, "     Size        Decimal Bytes (Attributes)\n");
+    fprintf(mfp, "--------------------       ----   ");
+    fprintf(mfp, "     ----        ------- ----- ------------\n");
 
-		ai = xp->a_addr & a_mask;
-		aj = ((1 + (A4_WLMSK & xp->a_flag)) * xp->a_size) & a_mask;
+    ai = xp->a_addr & a_mask;
+    aj = ((1 + (A4_WLMSK & xp->a_flag)) * xp->a_size) & a_mask;
 
-		/*
-		 * Output Area Header
-		 */
-		ptr = &xp->a_id[0];
-		fprintf(mfp, "%-19.19s", ptr);
-#ifdef	LONGINT
-		switch(a_bytes) {
-		default:
-		case 2:
-			switch(xflag) {
-			default:
-			case 0: frmta = "        %04lX        %04lX"; break;
-			case 1: frmta = "      %06lo      %06lo"; break;
-			case 2: frmta = "       %05lu       %05lu"; break;
-			}
-			frmtb = " =      %6lu. bytes "; break;
-		case 3:
-			switch(xflag) {
-			default:
-			case 0: frmta = "      %06lX      %06lX"; break;
-			case 1: frmta = "    %08lo    %08lo"; break;
-			case 2: frmta = "    %08lu    %08lu"; break;
-			}
-			frmtb = " =    %8lu. bytes "; break;
-		case 4:
-			switch(xflag) {
-			default:
-			case 0: frmta = "    %08lX    %08lX"; break;
-			case 1: frmta = " %011lo %011lo"; break;
-			case 2: frmta = "  %010lu  %010lu"; break;
-			}
-			frmtb = " =  %10lu. bytes "; break;
-		}
+    /*
+     * Output Area Header
+     */
+    ptr = &xp->a_id[0];
+    fprintf(mfp, "%-19.19s", ptr);
+#ifdef LONGINT
+    switch (a_bytes) {
+    default:
+    case 2:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "        %04lX        %04lX";
+        break;
+      case 1:
+        frmta = "      %06lo      %06lo";
+        break;
+      case 2:
+        frmta = "       %05lu       %05lu";
+        break;
+      }
+      frmtb = " =      %6lu. bytes ";
+      break;
+    case 3:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "      %06lX      %06lX";
+        break;
+      case 1:
+        frmta = "    %08lo    %08lo";
+        break;
+      case 2:
+        frmta = "    %08lu    %08lu";
+        break;
+      }
+      frmtb = " =    %8lu. bytes ";
+      break;
+    case 4:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "    %08lX    %08lX";
+        break;
+      case 1:
+        frmta = " %011lo %011lo";
+        break;
+      case 2:
+        frmta = "  %010lu  %010lu";
+        break;
+      }
+      frmtb = " =  %10lu. bytes ";
+      break;
+    }
 #else
-		switch(a_bytes) {
-		default:
-		case 2:
-			switch(xflag) {
-			default:
-			case 0: frmta = "        %04X        %04X"; break;
-			case 1: frmta = "      %06o      %06o"; break;
-			case 2: frmta = "       %05u       %05u"; break;
-			}
-			frmtb = " =      %6u. bytes "; break;
-		case 3:
-			switch(xflag) {
-			default:
-			case 0: frmta = "      %06X      %06X"; break;
-			case 1: frmta = "    %08o    %08o"; break;
-			case 2: frmta = "    %08u    %08u"; break;
-			}
-			frmtb = " =    %8u. bytes "; break;
-		case 4:
-			switch(xflag) {
-			default:
-			case 0: frmta = "    %08X    %08X"; break;
-			case 1: frmta = " %011o %011o"; break;
-			case 2: frmta = "  %010u  %010u"; break;
-			}
-			frmtb = " =  %10u. bytes "; break;
-		}
+    switch (a_bytes) {
+    default:
+    case 2:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "        %04X        %04X";
+        break;
+      case 1:
+        frmta = "      %06o      %06o";
+        break;
+      case 2:
+        frmta = "       %05u       %05u";
+        break;
+      }
+      frmtb = " =      %6u. bytes ";
+      break;
+    case 3:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "      %06X      %06X";
+        break;
+      case 1:
+        frmta = "    %08o    %08o";
+        break;
+      case 2:
+        frmta = "    %08u    %08u";
+        break;
+      }
+      frmtb = " =    %8u. bytes ";
+      break;
+    case 4:
+      switch (xflag) {
+      default:
+      case 0:
+        frmta = "    %08X    %08X";
+        break;
+      case 1:
+        frmta = " %011o %011o";
+        break;
+      case 2:
+        frmta = "  %010u  %010u";
+        break;
+      }
+      frmtb = " =  %10u. bytes ";
+      break;
+    }
 #endif
-		fprintf(mfp, frmta, ai, aj);
-		fprintf(mfp, frmtb, aj);
+    fprintf(mfp, frmta, ai, aj);
+    fprintf(mfp, frmtb, aj);
 
-		if ((xp->a_flag & A4_ABS) == A4_ABS) {
-			fprintf(mfp, "(ABS");
-		} else {
-			fprintf(mfp, "(REL");
-		}
-		if ((xp->a_flag & A4_OVR) == A4_OVR) {
-			fprintf(mfp, ",OVR");
-		} else {
-			fprintf(mfp, ",CON");
-		}
-		if ((xp->a_flag & A4_PAG) == A4_PAG) {
-			fprintf(mfp, ",PAG");
-		}
-		if ((xp->a_flag & A4_DSEG) == A4_DSEG) {
-			fprintf(mfp, ",DSEG");
-		} else {
-			fprintf(mfp, ",CSEG");
-		}
-		fprintf(mfp, ")\n");
+    if ((xp->a_flag & A4_ABS) == A4_ABS) {
+      fprintf(mfp, "(ABS");
+    } else {
+      fprintf(mfp, "(REL");
+    }
+    if ((xp->a_flag & A4_OVR) == A4_OVR) {
+      fprintf(mfp, ",OVR");
+    } else {
+      fprintf(mfp, ",CON");
+    }
+    if ((xp->a_flag & A4_PAG) == A4_PAG) {
+      fprintf(mfp, ",PAG");
+    }
+    if ((xp->a_flag & A4_DSEG) == A4_DSEG) {
+      fprintf(mfp, ",DSEG");
+    } else {
+      fprintf(mfp, ",CSEG");
+    }
+    fprintf(mfp, ")\n");
 
-		if ((xp->a_flag & A4_PAG) == A4_PAG) {
-			ai = (ai & 0xFF);
-			aj = (aj > 256);
-			if (ai || aj) { fprintf(mfp, "  "); lop += 1; }
-			if (ai)       { fprintf(mfp, " Boundary"); }
-			if (ai & aj)  { fprintf(mfp, " /"); }
-			if (aj)       { fprintf(mfp, " Length"); }
-			if (ai || aj) { fprintf(mfp, " Error\n"); }
-		}
+    if ((xp->a_flag & A4_PAG) == A4_PAG) {
+      ai = (ai & 0xFF);
+      aj = (aj > 256);
+      if (ai || aj) {
+        fprintf(mfp, "  ");
+        lop += 1;
+      }
+      if (ai) {
+        fprintf(mfp, " Boundary");
+      }
+      if (ai & aj) {
+        fprintf(mfp, " /");
+      }
+      if (aj) {
+        fprintf(mfp, " Length");
+      }
+      if (ai || aj) {
+        fprintf(mfp, " Error\n");
+      }
+    }
 
-		if (wflag) {
-			putc('\n', mfp);
-			fprintf(mfp,
-			"         Value  Global                          ");
-			fprintf(mfp,
-			"   Global Defined In Module\n");
-			fprintf(mfp,
-			"         -----  --------------------------------");
-			fprintf(mfp,
-			"   ------------------------\n");
-		} else {
-			switch(a_bytes) {
-			default:
-			case 2:	frmta = "   Value  Global   ";
-				frmtb = "   -----  ------   ";
-				n = 4; break;
-			case 3:
-			case 4:	frmta = "        Value  Global    ";
-				frmtb = "        -----  ------    ";
-				n = 3; break;
-			}
-			putc('\n', mfp);
-			for(i=0;i<n;++i)
-				fprintf(mfp, "%s", frmta);
-			putc('\n', mfp);
-			for(i=0;i<n;++i)
-				fprintf(mfp, "%s", frmtb);
-			putc('\n', mfp);
-		}
+    if (wflag) {
+      putc('\n', mfp);
+      fprintf(mfp, "         Value  Global                          ");
+      fprintf(mfp, "   Global Defined In Module\n");
+      fprintf(mfp, "         -----  --------------------------------");
+      fprintf(mfp, "   ------------------------\n");
+    } else {
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmta = "   Value  Global   ";
+        frmtb = "   -----  ------   ";
+        n = 4;
+        break;
+      case 3:
+      case 4:
+        frmta = "        Value  Global    ";
+        frmtb = "        -----  ------    ";
+        n = 3;
+        break;
+      }
+      putc('\n', mfp);
+      for (i = 0; i < n; ++i)
+        fprintf(mfp, "%s", frmta);
+      putc('\n', mfp);
+      for (i = 0; i < n; ++i)
+        fprintf(mfp, "%s", frmtb);
+      putc('\n', mfp);
+    }
 
-		lop += 9;
-	}
+    lop += 9;
+  }
 }
 
 /*)Function	VOID	lstarea(xp, yp)
@@ -408,257 +462,308 @@ struct bank *yp;
  *		Map output generated.
  */
 
-VOID
-lstarea(xp, yp)
+VOID lstarea(xp, yp)
 struct area *xp;
 struct bank *yp;
 {
-	struct areax *oxp;
-	int i, j, n;
-	char *frmt, *ptr;
-	int nmsym;
-	a_uint a0, ai, aj;
-	struct sym *sp;
-	struct sym **p;
+  struct areax *oxp;
+  int i, j, n;
+  char *frmt, *ptr;
+  int nmsym;
+  a_uint a0, ai, aj;
+  struct sym *sp;
+  struct sym **p;
 
-	/*
-	 * Find number of symbols in area
-	 */
-	nmsym = 0;
-	oxp = xp->a_axp;
-	while (oxp) {
-		for (i=0; i<NHASH; i++) {
-			sp = symhash[i];
-			while (sp != NULL) {
-				if ((oxp == sp->s_axp) && !sp->s_flag) {
-					++nmsym;
-				}
-				sp = sp->s_sp;
-			}
-		}
-		oxp = oxp->a_axp;
-	}
+  /*
+   * Find number of symbols in area
+   */
+  nmsym = 0;
+  oxp = xp->a_axp;
+  while (oxp) {
+    for (i = 0; i < NHASH; i++) {
+      sp = symhash[i];
+      while (sp != NULL) {
+        if ((oxp == sp->s_axp) && !sp->s_flag) {
+          ++nmsym;
+        }
+        sp = sp->s_sp;
+      }
+    }
+    oxp = oxp->a_axp;
+  }
 
-	if ((nmsym == 0) && (xp->a_size == 0)) {
-		return;
-	}
+  if ((nmsym == 0) && (xp->a_size == 0)) {
+    return;
+  }
 
-	lop = NLPP;
-	slew(xp, yp);
+  lop = NLPP;
+  slew(xp, yp);
 
-	if (nmsym == 0) {
-		return;
-	}
+  if (nmsym == 0) {
+    return;
+  }
 
-	/*
-	 * Allocate space for an array of pointers to symbols
-	 * and load array.
-	 */
-	if ( (p = (struct sym **) malloc (nmsym*sizeof(struct sym *))) == NULL) {
-		fprintf(mfp, "Insufficient space to build Map Segment.\n");
-		return;
-	}
-	nmsym = 0;
-	oxp = xp->a_axp;
-	while (oxp) {
-		for (i=0; i<NHASH; i++) {
-			sp = symhash[i];
-			while (sp != NULL) {
-				if ((oxp == sp->s_axp) && !sp->s_flag) {
-					p[nmsym++] = sp;
-				}
-				sp = sp->s_sp;
-			}
-		}
-		oxp = oxp->a_axp;
-	}
+  /*
+   * Allocate space for an array of pointers to symbols
+   * and load array.
+   */
+  if ((p = (struct sym **)malloc(nmsym * sizeof(struct sym *))) == NULL) {
+    fprintf(mfp, "Insufficient space to build Map Segment.\n");
+    return;
+  }
+  nmsym = 0;
+  oxp = xp->a_axp;
+  while (oxp) {
+    for (i = 0; i < NHASH; i++) {
+      sp = symhash[i];
+      while (sp != NULL) {
+        if ((oxp == sp->s_axp) && !sp->s_flag) {
+          p[nmsym++] = sp;
+        }
+        sp = sp->s_sp;
+      }
+    }
+    oxp = oxp->a_axp;
+  }
 
-	/*
-	 * Bubble Sort of Addresses in Symbol Table Array
-	 */
-	j = 1;
-	while (j) {
-		j = 0;
-		sp = p[0];
-		a0 = sp->s_addr + sp->s_axp->a_addr;
-		for (i=1; i<nmsym; ++i) {
-			sp = p[i];
-			ai = sp->s_addr + sp->s_axp->a_addr;
-			if (a0 > ai) {
-				j = 1;
-				p[i] = p[i-1];
-				p[i-1] = sp;
-			}
-			a0 = ai;
-		}
-	}
+  /*
+   * Bubble Sort of Addresses in Symbol Table Array
+   */
+  j = 1;
+  while (j) {
+    j = 0;
+    sp = p[0];
+    a0 = sp->s_addr + sp->s_axp->a_addr;
+    for (i = 1; i < nmsym; ++i) {
+      sp = p[i];
+      ai = sp->s_addr + sp->s_axp->a_addr;
+      if (a0 > ai) {
+        j = 1;
+        p[i] = p[i - 1];
+        p[i - 1] = sp;
+      }
+      a0 = ai;
+    }
+  }
 
-	/*
-	 * Repeat Counter
-	 */
-	switch(a_bytes) {
-	default:
-	case 2: n = 4; break;
-	case 3:
-	case 4: n = 3; break;
-	}
+  /*
+   * Repeat Counter
+   */
+  switch (a_bytes) {
+  default:
+  case 2:
+    n = 4;
+    break;
+  case 3:
+  case 4:
+    n = 3;
+    break;
+  }
 
-	/*
-	 * Symbol Table Output
-	 */
-	i = 0;
-	while (i < nmsym) {
-		if (wflag) {
-			slew(xp, yp);
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "        "; break;
-			case 3:
-			case 4: frmt = "   "; break;
-			}
-			fprintf(mfp, "%s", frmt);
-		} else
-		if ((i % n) == 0) {
-			slew(xp, yp);
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "  "; break;
-			case 3:
-			case 4: frmt = "  "; break;
-			}
-			fprintf(mfp, "%s", frmt);
-		}
+  /*
+   * Symbol Table Output
+   */
+  i = 0;
+  while (i < nmsym) {
+    if (wflag) {
+      slew(xp, yp);
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "        ";
+        break;
+      case 3:
+      case 4:
+        frmt = "   ";
+        break;
+      }
+      fprintf(mfp, "%s", frmt);
+    } else if ((i % n) == 0) {
+      slew(xp, yp);
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "  ";
+        break;
+      case 3:
+      case 4:
+        frmt = "  ";
+        break;
+      }
+      fprintf(mfp, "%s", frmt);
+    }
 
-		sp = p[i];
-		aj = (sp->s_addr + sp->s_axp->a_addr) & a_mask;
-#ifdef	LONGINT
-		switch(a_bytes) {
-		default:
-		case 2:
-			switch(xflag) {
-			default:
-			case 0: frmt = "  %04lX  "; break;
-			case 1: frmt = "%06lo  "; break;
-			case 2: frmt = " %05lu  "; break;
-			}
-			break;
-		case 3:
-			switch(xflag) {
-			default:
-			case 0: frmt = "     %06lX  "; break;
-			case 1: frmt = "   %08lo  "; break;
-			case 2: frmt = "   %08lu  "; break;
-			}
-			break;
-		case 4:
-			switch(xflag) {
-			default:
-			case 0: frmt = "   %08lX  "; break;
-			case 1: frmt = "%011lo  "; break;
-			case 2: frmt = " %010lu  "; break;
-			}
-			break;
-		}
+    sp = p[i];
+    aj = (sp->s_addr + sp->s_axp->a_addr) & a_mask;
+#ifdef LONGINT
+    switch (a_bytes) {
+    default:
+    case 2:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "  %04lX  ";
+        break;
+      case 1:
+        frmt = "%06lo  ";
+        break;
+      case 2:
+        frmt = " %05lu  ";
+        break;
+      }
+      break;
+    case 3:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "     %06lX  ";
+        break;
+      case 1:
+        frmt = "   %08lo  ";
+        break;
+      case 2:
+        frmt = "   %08lu  ";
+        break;
+      }
+      break;
+    case 4:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "   %08lX  ";
+        break;
+      case 1:
+        frmt = "%011lo  ";
+        break;
+      case 2:
+        frmt = " %010lu  ";
+        break;
+      }
+      break;
+    }
 #else
-		switch(a_bytes) {
-		default:
-		case 2:
-			switch(xflag) {
-			default:
-			case 0: frmt = "  %04X  "; break;
-			case 1: frmt = "%06o  "; break;
-			case 2: frmt = " %05u  "; break;
-			}
-			break;
-		case 3:
-			switch(xflag) {
-			default:
-			case 0: frmt = "     %06X  "; break;
-			case 1: frmt = "   %08o  "; break;
-			case 2: frmt = "   %08u  "; break;
-			}
-			break;
-		case 4:
-			switch(xflag) {
-			default:
-			case 0: frmt = "   %08X  "; break;
-			case 1: frmt = "%011o  "; break;
-			case 2: frmt = " %010u  "; break;
-			}
-			break;
-		}
+    switch (a_bytes) {
+    default:
+    case 2:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "  %04X  ";
+        break;
+      case 1:
+        frmt = "%06o  ";
+        break;
+      case 2:
+        frmt = " %05u  ";
+        break;
+      }
+      break;
+    case 3:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "     %06X  ";
+        break;
+      case 1:
+        frmt = "   %08o  ";
+        break;
+      case 2:
+        frmt = "   %08u  ";
+        break;
+      }
+      break;
+    case 4:
+      switch (xflag) {
+      default:
+      case 0:
+        frmt = "   %08X  ";
+        break;
+      case 1:
+        frmt = "%011o  ";
+        break;
+      case 2:
+        frmt = " %010u  ";
+        break;
+      }
+      break;
+    }
 #endif
-		fprintf(mfp, frmt, aj);
+    fprintf(mfp, frmt, aj);
 
-		ptr = &sp->s_id[0];
+    ptr = &sp->s_id[0];
 
 #if NOICE
-		/*
-		 * NoICE output of symbol
-		 */
-		if (jflag) DefineNoICE(ptr, aj, yp);
+    /*
+     * NoICE output of symbol
+     */
+    if (jflag)
+      DefineNoICE(ptr, aj, yp);
 #endif
 
 #if SDCDB
-		/*
-		 * SDCDB output of symbol
-		 */
-		if (yflag) DefineSDCDB(ptr, aj);
+    /*
+     * SDCDB output of symbol
+     */
+    if (yflag)
+      DefineSDCDB(ptr, aj);
 #endif
 
-		if (wflag) {
-			fprintf(mfp, "%-32.32s", ptr);
-			i++;
-			ptr = &sp->m_id[0];
-			if(ptr) {
-				fprintf(mfp, "   %-.28s", ptr);
-			}
-		} else {
-			switch(a_bytes) {
-			default:
-			case 2: frmt = "%-8.8s"; break;
-			case 3:
-			case 4: frmt = "%-9.9s"; break;
-			}
-			fprintf(mfp, frmt, ptr);
-			if (++i < nmsym)
-				if (i % n != 0)
-					fprintf(mfp, " | ");
-		}
-		if (wflag || (i % n == 0)) {
-			putc('\n', mfp);
-		}
-	}
-	if (i % n != 0) {
-		putc('\n', mfp);
-	}
-	free(p);
+    if (wflag) {
+      fprintf(mfp, "%-32.32s", ptr);
+      i++;
+      ptr = &sp->m_id[0];
+      if (ptr) {
+        fprintf(mfp, "   %-.28s", ptr);
+      }
+    } else {
+      switch (a_bytes) {
+      default:
+      case 2:
+        frmt = "%-8.8s";
+        break;
+      case 3:
+      case 4:
+        frmt = "%-9.9s";
+        break;
+      }
+      fprintf(mfp, frmt, ptr);
+      if (++i < nmsym)
+        if (i % n != 0)
+          fprintf(mfp, " | ");
+    }
+    if (wflag || (i % n == 0)) {
+      putc('\n', mfp);
+    }
+  }
+  if (i % n != 0) {
+    putc('\n', mfp);
+  }
+  free(p);
 }
 
 /*) Function	lsterr(err)
-*/
+ */
 
-VOID
-lsterr(err)
+VOID lsterr(err)
 int err;
 {
-	/*
-	 * Output an error line if required
-	 */
-	if (err) {
-		switch(ASxxxx_VERSION) {
-		case 3:
-			fprintf(rfp, "?ASlink-Warning-%s\n", errmsg3[err]);
-			break;
+  /*
+   * Output an error line if required
+   */
+  if (err) {
+    switch (ASxxxx_VERSION) {
+    case 3:
+      fprintf(rfp, "?ASlink-Warning-%s\n", errmsg3[err]);
+      break;
 
-		case 4:
-			fprintf(rfp, "?ASlink-Warning-%s\n", errmsg4[err]);
-			break;
+    case 4:
+      fprintf(rfp, "?ASlink-Warning-%s\n", errmsg4[err]);
+      break;
 
-		default:
-			break;
-		}
-	}
+    default:
+      break;
+    }
+  }
 }
 
 /* The Output Formats,  No Cycle Count
@@ -670,8 +775,8 @@ ee XXXX xx xx xx xx xx xx LLLLL *************	HEX(16)
 ee 000000 ooo ooo ooo ooo LLLLL *************	OCTAL(16)
 ee  DDDDD ddd ddd ddd ddd LLLLL *************	DECIMAL(16)
                      XXXX
-		   OOOOOO
-		    DDDDD
+                   OOOOOO
+                    DDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -681,8 +786,8 @@ ee    XXXXXX xx xx xx xx xx xx xx LLLLL *********	HEX(24)
 ee   OO000000 ooo ooo ooo ooo ooo LLLLL *********	OCTAL(24)
 ee   DDDDDDDD ddd ddd ddd ddd ddd LLLLL *********	DECIMAL(24)
                            XXXXXX
-			 OOOOOOOO
-			 DDDDDDDD
+                         OOOOOOOO
+                         DDDDDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -692,8 +797,8 @@ ee  XXXXXXXX xx xx xx xx xx xx xx LLLLL *********	HEX(32)
 eeOOOOO000000 ooo ooo ooo ooo ooo LLLLL *********	OCTAL(32)
 ee DDDDDDDDDD ddd ddd ddd ddd ddd LLLLL *********	DECIMAL(32)
                          XXXXXXXX
-		      OOOOOOOOOOO
-		       DDDDDDDDDD
+                      OOOOOOOOOOO
+                       DDDDDDDDDD
 */
 
 /* The Output Formats,  With Cycle Count [nn]
@@ -705,8 +810,8 @@ ee XXXX xx xx xx xx xx[nn]LLLLL *************	HEX(16)
 ee 000000 ooo ooo ooo [nn]LLLLL *************	OCTAL(16)
 ee  DDDDD ddd ddd ddd [nn]LLLLL *************	DECIMAL(16)
                      XXXX
-		   OOOOOO
-		    DDDDD
+                   OOOOOO
+                    DDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -716,8 +821,8 @@ ee    XXXXXX xx xx xx xx xx xx[nn]LLLLL *********	HEX(24)
 ee   OO000000 ooo ooo ooo ooo [nn]LLLLL *********	OCTAL(24)
 ee   DDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(24)
                            XXXXXX
-			 OOOOOOOO
-			 DDDDDDDD
+                         OOOOOOOO
+                         DDDDDDDD
 
 | Tabs- |       |       |       |       |       |
           11111111112222222222333333333344444-----
@@ -727,8 +832,8 @@ ee  XXXXXXXX xx xx xx xx xx xx[nn]LLLLL *********	HEX(32)
 eeOOOOO000000 ooo ooo ooo ooo [nn]LLLLL *********	OCTAL(32)
 ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
                          XXXXXXXX
-		      OOOOOOOOOOO
-		       DDDDDDDDDD
+                      OOOOOOOOOOO
+                       DDDDDDDDDD
 */
 
 /*)Function	VOID	lkulist(i)
@@ -745,8 +850,8 @@ ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
  *	output file.
  *
  *	local variables:
- *		a_uint	cpc		current program counter address in PC increments
- *		int	cbytes		bytes so far in T line
+ *		a_uint	cpc		current program counter address in PC
+ *increments int	cbytes		bytes so far in T line
  *
  *	global variables:
  *		int	a_bytes		T Line Address Bytes
@@ -778,93 +883,92 @@ ee DDDDDDDDDD ddd ddd ddd ddd [nn]LLLLL *********	DECIMAL(32)
  *		file associated with a .rel file.
  */
 
-VOID
-lkulist(i)
+VOID lkulist(i)
 int i;
 {
-	a_uint cpc;
-	int cbytes;
+  a_uint cpc;
+  int cbytes;
 
-	/*
-	 * Exit if listing file is not open
-	 */
-	if (tfp == NULL)
-		return;
+  /*
+   * Exit if listing file is not open
+   */
+  if (tfp == NULL)
+    return;
 
 #if LNK_DEBUG || HLR_DEBUG
-	fprintf(stdout, "lkulist: rtcnt = %d\n", rtcnt);
+  fprintf(stdout, "lkulist: rtcnt = %d\n", rtcnt);
 #endif
 
-	/*
-	 * Normal processing of LST to RST
-	 */
-	if (i) {
-		if (rtcnt == 0)
-			return;
-		/*
-		 * Line with only address
-		 */	
-		if (rtcnt == a_bytes) {
-			cpc = pc;
+  /*
+   * Normal processing of LST to RST
+   */
+  if (i) {
+    if (rtcnt == 0)
+      return;
+    /*
+     * Line with only address
+     */
+    if (rtcnt == a_bytes) {
+      cpc = pc;
 #if LNK_DEBUG || HLR_DEBUG
-			fprintf(stdout, "lkulist: (A,B) cpc = 0x%X\n", cpc);
+      fprintf(stdout, "lkulist: (A,B) cpc = 0x%X\n", cpc);
 #endif
-			if (hfp == NULL) {
-				lkalist(cpc);
-			} else {
-				hlrlist(cpc, 0, 0);
-			}
-		/*
-		 * Line with code bytes
-		 */
-		} else {
-			cpc = pc;
+      if (hfp == NULL) {
+        lkalist(cpc);
+      } else {
+        hlrlist(cpc, 0, 0);
+      }
+      /*
+       * Line with code bytes
+       */
+    } else {
+      cpc = pc;
 #if LNK_DEBUG || HLR_DEBUG
-			fprintf(stdout, "lkulist: (N,S,C,E) cpc = 0x%X\n", cpc);
+      fprintf(stdout, "lkulist: (N,S,C,E) cpc = 0x%X\n", cpc);
 #endif
-			cbytes = 0;
-			for (i=a_bytes; i < rtcnt; i++) {
-				if (rtflg[i]) {
-					if (hfp == NULL) {
-						lklist(cpc, (int) (rtval[i] & 0xFF), rterr[i]);
-					} else {
-						hlrlist(cpc, (int) (rtval[i] & 0xFF), rterr[i]);
-					}
-					cbytes += 1;
-					cpc += (cbytes % pcb) ? 0 : 1;
-				}
-			}
-		}
-	/*
-	 * Copy remainder of LST to RST
-	 */
-	} else {
-		if (gline == 0)
-			fprintf(rfp, "%s", rb);
+      cbytes = 0;
+      for (i = a_bytes; i < rtcnt; i++) {
+        if (rtflg[i]) {
+          if (hfp == NULL) {
+            lklist(cpc, (int)(rtval[i] & 0xFF), rterr[i]);
+          } else {
+            hlrlist(cpc, (int)(rtval[i] & 0xFF), rterr[i]);
+          }
+          cbytes += 1;
+          cpc += (cbytes % pcb) ? 0 : 1;
+        }
+      }
+    }
+    /*
+     * Copy remainder of LST to RST
+     */
+  } else {
+    if (gline == 0)
+      fprintf(rfp, "%s", rb);
 
-		while (gethlr(1)) {
-			if (listing & NLIST) {
-				continue;
-			}
-			if (getlst(1)) {
-				if ((lmode == ELIST) && (listing & LIST_EQT)) {
-					hlrelist();
-				}
-				fprintf(rfp, "%s", rb);
-			}
-		}
-		while (getlst(1)) {
-			fprintf(rfp, "%s", rb);
-		}
-		if (tfp != NULL) {
-			fclose(tfp);
-			tfp = NULL;
-		}
-		if (rfp != NULL) {
-			fclose(rfp);
-			rfp = NULL;
-		}
-	}
+    while (gethlr(1)) {
+      if (listing & NLIST) {
+        continue;
+      }
+      if (getlst(1)) {
+        if ((lmode == ELIST) && (listing & LIST_EQT)) {
+          hlrelist();
+        }
+        fprintf(rfp, "%s", rb);
+      }
+    }
+    while (getlst(1)) {
+      fprintf(rfp, "%s", rb);
+    }
+    if (tfp != NULL) {
+      fclose(tfp);
+      tfp = NULL;
+    }
+    if (rfp != NULL) {
+      fclose(rfp);
+      rfp = NULL;
+    }
+  }
 }
 
 /*)Function	VOID	lkalist(cpc)
@@ -915,125 +1019,214 @@ int i;
  *		updated to reflect the program relocation.
  */
 
-
-VOID
-lkalist(cpc)
+VOID lkalist(cpc)
 a_uint cpc;
 {
-	char str[16];
-	char *frmt;
-	int i, m, n, q, r;
+  char str[16];
+  char *frmt;
+  int i, m, n, q, r;
 
-	/*
-	 * Exit if listing file is not open
-	 */
-	if (tfp == NULL)
-		return;
+  /*
+   * Exit if listing file is not open
+   */
+  if (tfp == NULL)
+    return;
 
-	/*
-	 * Truncate (int) to N-Bytes
-	 */
-	cpc &= a_mask;
+  /*
+   * Truncate (int) to N-Bytes
+   */
+  cpc &= a_mask;
 
-	/*
-	 * Cleanup
-	 */
-	if (gline == 0) {
-		fprintf(rfp, "%s", rb);
-	}
+  /*
+   * Cleanup
+   */
+  if (gline == 0) {
+    fprintf(rfp, "%s", rb);
+  }
 
-	/*
-	 * Get next LST text line
-	 */
-loop:	if (getlst(1) == 0) {
-		return;
-	}
+  /*
+   * Get next LST text line
+   */
+loop:
+  if (getlst(1) == 0) {
+    return;
+  }
 
-	/*
-	 * Must have an address in the expected radix
-	 */
-#ifdef	LONGINT
-	switch(radix) {
-	default:
-	case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 4; q = 26; frmt = "%04lX"; break;
-		case 3: n = 6; m = 6; q = 34; frmt = "%06lX"; break;
-		case 4: n = 4; m = 8; q = 34; frmt = "%08lX"; break;
-		}
-		break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; m = 5; q = 26; frmt = "%05lu"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08lu"; break;
-		case 4: n = 3; m = 10; q = 34; frmt = "%010lu"; break;
-		}
-		break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 6; q = 26; frmt = "%06lo"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08lo"; break;
-		case 4: n = 2; m = 11; q = 34; frmt = "%011lo"; break;
-		}
-		break;
-	}
+  /*
+   * Must have an address in the expected radix
+   */
+#ifdef LONGINT
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 4;
+      q = 26;
+      frmt = "%04lX";
+      break;
+    case 3:
+      n = 6;
+      m = 6;
+      q = 34;
+      frmt = "%06lX";
+      break;
+    case 4:
+      n = 4;
+      m = 8;
+      q = 34;
+      frmt = "%08lX";
+      break;
+    }
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 4;
+      m = 5;
+      q = 26;
+      frmt = "%05lu";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08lu";
+      break;
+    case 4:
+      n = 3;
+      m = 10;
+      q = 34;
+      frmt = "%010lu";
+      break;
+    }
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 6;
+      q = 26;
+      frmt = "%06lo";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08lo";
+      break;
+    case 4:
+      n = 2;
+      m = 11;
+      q = 34;
+      frmt = "%011lo";
+      break;
+    }
+    break;
+  }
 #else
-	switch(radix) {
-	default:
-	case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 4; q = 26; frmt = "%04X"; break;
-		case 3: n = 6; m = 6; q = 34; frmt = "%06X"; break;
-		case 4: n = 4; m = 8; q = 34; frmt = "%08X"; break;
-		}
-		break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; m = 5; q = 26; frmt = "%05u"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08u"; break;
-		case 4: n = 3; m = 10; q = 34; frmt = "%010u"; break;
-		}
-		break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 6; q = 26; frmt = "%06o"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08o"; break;
-		case 4: n = 2; m = 11; q = 34; frmt = "%011o"; break;
-		}
-		break;
-	}
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 4;
+      q = 26;
+      frmt = "%04X";
+      break;
+    case 3:
+      n = 6;
+      m = 6;
+      q = 34;
+      frmt = "%06X";
+      break;
+    case 4:
+      n = 4;
+      m = 8;
+      q = 34;
+      frmt = "%08X";
+      break;
+    }
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 4;
+      m = 5;
+      q = 26;
+      frmt = "%05u";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08u";
+      break;
+    case 4:
+      n = 3;
+      m = 10;
+      q = 34;
+      frmt = "%010u";
+      break;
+    }
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 6;
+      q = 26;
+      frmt = "%06o";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08o";
+      break;
+    case 4:
+      n = 2;
+      m = 11;
+      q = 34;
+      frmt = "%011o";
+      break;
+    }
+    break;
+  }
 #endif
-	if (!dgt(r, &rb[n], m)) {
-		fprintf(rfp, "%s", rb);
-		goto loop;
-	}
-	if ((int) strlen(rb) > (n + m + 2)) {
-		for (i=(n+m); i<q; i++) {
-			if (rb[i] != ' ') {
-				fprintf(rfp, "%s", rb);
-				goto loop;
-			}
-		}
-	}
-	sprintf(str, frmt, cpc);
-	strncpy(&rb[n], str, m);
+  if (!dgt(r, &rb[n], m)) {
+    fprintf(rfp, "%s", rb);
+    goto loop;
+  }
+  if ((int)strlen(rb) > (n + m + 2)) {
+    for (i = (n + m); i < q; i++) {
+      if (rb[i] != ' ') {
+        fprintf(rfp, "%s", rb);
+        goto loop;
+      }
+    }
+  }
+  sprintf(str, frmt, cpc);
+  strncpy(&rb[n], str, m);
 
-	/*
-	 * Copy updated LST text line to RST
-	 */
-	fprintf(rfp, "%s", rb);
+  /*
+   * Copy updated LST text line to RST
+   */
+  fprintf(rfp, "%s", rb);
 }
 
 /*)Function	VOID	lklist(cpc,v,err)
@@ -1091,162 +1284,294 @@ loop:	if (getlst(1) == 0) {
  *		with updated data values and code addresses.
  */
 
-VOID
-lklist(cpc,v,err)
+VOID lklist(cpc, v, err)
 a_uint cpc;
 int v;
 int err;
 {
-	char str[16];
-	char *afrmt, *frmt;
-	int a, n, m, r, s, u;
+  char str[16];
+  char *afrmt, *frmt;
+  int a, n, m, r, s, u;
 
- 	/*
-	 * Exit if listing file is not open
-	 */
-	if (tfp == NULL)
-		return;
+  /*
+   * Exit if listing file is not open
+   */
+  if (tfp == NULL)
+    return;
 
-	/*
-	 * Truncate (int) to N-Bytes
-	 */
-	 cpc &= a_mask;
+  /*
+   * Truncate (int) to N-Bytes
+   */
+  cpc &= a_mask;
 
-	/*
-	 * Get next LST text line
-	 */
-loop:	if (gline) {
-		if (getlst(0) == 0) {
-			return;
-		}
-	}
+  /*
+   * Get next LST text line
+   */
+loop:
+  if (gline) {
+    if (getlst(0) == 0) {
+      return;
+    }
+  }
 
-	/*
-	 * Hex Listing
-	 */
-#ifdef	LONGINT
-	 switch(radix) {
-	 default:
-	 case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 8; s = 3; n = 3; m = 4; u = 6; afrmt = "%04lX"; break;
-		case 3: a = 13; s = 3; n = 6; m = 6; u = 7; afrmt = "%06lX"; break;
-		case 4: a = 13; s = 3; n = 4; m = 8; u = 7; afrmt = "%08lX"; break;
-		}
-		frmt = " %02X"; break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 4; m = 5; u = 4; afrmt = "%05lu"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08lu"; break;
-		case 4: a = 14; s = 4; n = 3; m = 10; u = 5; afrmt = "%010lu"; break;
-		}
-		frmt = " %03u"; break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 3; m = 6; u = 4; afrmt = "%06lo"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08lo"; break;
-		case 4: a = 14; s = 4; n = 2; m = 11; u = 5; afrmt = "%011lo"; break;
-		}
-		frmt = " %03o"; break;
-	}
+  /*
+   * Hex Listing
+   */
+#ifdef LONGINT
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 8;
+      s = 3;
+      n = 3;
+      m = 4;
+      u = 6;
+      afrmt = "%04lX";
+      break;
+    case 3:
+      a = 13;
+      s = 3;
+      n = 6;
+      m = 6;
+      u = 7;
+      afrmt = "%06lX";
+      break;
+    case 4:
+      a = 13;
+      s = 3;
+      n = 4;
+      m = 8;
+      u = 7;
+      afrmt = "%08lX";
+      break;
+    }
+    frmt = " %02X";
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 4;
+      m = 5;
+      u = 4;
+      afrmt = "%05lu";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08lu";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 3;
+      m = 10;
+      u = 5;
+      afrmt = "%010lu";
+      break;
+    }
+    frmt = " %03u";
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 3;
+      m = 6;
+      u = 4;
+      afrmt = "%06lo";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08lo";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 2;
+      m = 11;
+      u = 5;
+      afrmt = "%011lo";
+      break;
+    }
+    frmt = " %03o";
+    break;
+  }
 #else
-	 switch(radix) {
-	 default:
-	 case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 8; s = 3; n = 3; m = 4; u = 6; afrmt = "%04X"; break;
-		case 3: a = 13; s = 3; n = 6; m = 6; u = 7; afrmt = "%06X"; break;
-		case 4: a = 13; s = 3; n = 4; m = 8; u = 7; afrmt = "%08X"; break;
-		}
-		frmt = " %02X"; break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 4; m = 5; u = 4; afrmt = "%05u"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08u"; break;
-		case 4: a = 14; s = 4; n = 3; m = 10; u = 5; afrmt = "%010u"; break;
-		}
-		frmt = " %03u"; break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 3; m = 6; u = 4; afrmt = "%06o"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08o"; break;
-		case 4: a = 14; s = 4; n = 2; m = 11; u = 5; afrmt = "%011o"; break;
-		}
-		frmt = " %03o"; break;
-	}
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 8;
+      s = 3;
+      n = 3;
+      m = 4;
+      u = 6;
+      afrmt = "%04X";
+      break;
+    case 3:
+      a = 13;
+      s = 3;
+      n = 6;
+      m = 6;
+      u = 7;
+      afrmt = "%06X";
+      break;
+    case 4:
+      a = 13;
+      s = 3;
+      n = 4;
+      m = 8;
+      u = 7;
+      afrmt = "%08X";
+      break;
+    }
+    frmt = " %02X";
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 4;
+      m = 5;
+      u = 4;
+      afrmt = "%05u";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08u";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 3;
+      m = 10;
+      u = 5;
+      afrmt = "%010u";
+      break;
+    }
+    frmt = " %03u";
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 3;
+      m = 6;
+      u = 4;
+      afrmt = "%06o";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08o";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 2;
+      m = 11;
+      u = 5;
+      afrmt = "%011o";
+      break;
+    }
+    frmt = " %03o";
+    break;
+  }
 #endif
-	/*
-	 * Data Byte Pointer
-	 */
-	rp = &rb[a + (s * gcntr)];
+  /*
+   * Data Byte Pointer
+   */
+  rp = &rb[a + (s * gcntr)];
 
-	/*
-	 * Number must be of proper radix
-	 */
-	if (!dgt(r, rp, s-1)) {
-		fprintf(rfp, "%s", rb);
-		gline = 1;
-		goto loop;
-	}
+  /*
+   * Number must be of proper radix
+   */
+  if (!dgt(r, rp, s - 1)) {
+    fprintf(rfp, "%s", rb);
+    gline = 1;
+    goto loop;
+  }
 
-	/*
-	 * Output new data value, overwrite relocation codes
-	 */
-	sprintf(str, frmt, v);
-	strncpy(rp-1, str, s);
+  /*
+   * Output new data value, overwrite relocation codes
+   */
+  sprintf(str, frmt, v);
+  strncpy(rp - 1, str, s);
 
-	/*
-	 * Output relocated code address
-	 */
-	if (gcntr == 0) {
-		if (dgt(r, &rb[n], m)) {
-			sprintf(str, afrmt, cpc);
-			strncpy(&rb[n], str, m);
-		}
-	}
+  /*
+   * Output relocated code address
+   */
+  if (gcntr == 0) {
+    if (dgt(r, &rb[n], m)) {
+      sprintf(str, afrmt, cpc);
+      strncpy(&rb[n], str, m);
+    }
+  }
 
-	/*
-	 * Fix 'u' if [nn], cycles, is specified
-	 */
-	 if (rb[a + (s*u) - 1] == CYCNT_END) {
-	 	u -= 1;
-	}
-	/*
-	 * Output text line when updates finished
-	 */
-	if (++gcntr == u) {
-		fprintf(rfp, "%s", rb);
-		gline = 1;
-		/*
-		 * Output an error line if required
-		 */
-		if (err) {
-			switch(ASxxxx_VERSION) {
-			case 3:
-				fprintf(rfp, "?ASlink-Warning-%s\n", errmsg3[err]);
-				break;
+  /*
+   * Fix 'u' if [nn], cycles, is specified
+   */
+  if (rb[a + (s * u) - 1] == CYCNT_END) {
+    u -= 1;
+  }
+  /*
+   * Output text line when updates finished
+   */
+  if (++gcntr == u) {
+    fprintf(rfp, "%s", rb);
+    gline = 1;
+    /*
+     * Output an error line if required
+     */
+    if (err) {
+      switch (ASxxxx_VERSION) {
+      case 3:
+        fprintf(rfp, "?ASlink-Warning-%s\n", errmsg3[err]);
+        break;
 
-			case 4:
-				fprintf(rfp, "?ASlink-Warning-%s\n", errmsg4[err]);
-				break;
+      case 4:
+        fprintf(rfp, "?ASlink-Warning-%s\n", errmsg4[err]);
+        break;
 
-			default:
-				break;
-			}
-		}
-	}
+      default:
+        break;
+      }
+    }
+  }
 }
 
 /*)Function	int	getlst(ngline)
@@ -1279,36 +1604,35 @@ loop:	if (gline) {
  *		gline is set, and gcntr is cleared.
  */
 
-int
-getlst(ngline)
+int getlst(ngline)
 int ngline;
 {
-	int i;
+  int i;
 
-	/*
-	 * Set parameters
-	 */
-	gline = ngline;
-	gcntr = 0;
-	/*
-	 * Clear text line buffer
-	 */
-	for (i=0,rp=rb; i<sizeof(rb); i++) {
-		*rp++ = 0;
-	}
+  /*
+   * Set parameters
+   */
+  gline = ngline;
+  gcntr = 0;
+  /*
+   * Clear text line buffer
+   */
+  for (i = 0, rp = rb; i < sizeof(rb); i++) {
+    *rp++ = 0;
+  }
 
-	/*
-	 * Get next LST text line
-	 */
-	if (tfp != NULL) {
-		if (fgets(rb, sizeof(rb)-2, tfp) == NULL) {
-			fclose(tfp);
-			tfp = NULL;
-			fclose(rfp);
-			rfp = NULL;
-		}
-	}
-	return(tfp ? 1 : 0);
+  /*
+   * Get next LST text line
+   */
+  if (tfp != NULL) {
+    if (fgets(rb, sizeof(rb) - 2, tfp) == NULL) {
+      fclose(tfp);
+      tfp = NULL;
+      fclose(rfp);
+      rfp = NULL;
+    }
+  }
+  return (tfp ? 1 : 0);
 }
 
 /*)Function	VOID	hlrlist(cpc,v,err)
@@ -1381,203 +1705,218 @@ int ngline;
  *		with updated data values and code addresses.
  */
 
-VOID
-hlrlist(cpc,v,err)
+VOID hlrlist(cpc, v, err)
 a_uint cpc;
 int v;
 int err;
 {
- 	/*
-	 * Exit if listing file is not open
-	 */
-	if (tfp == NULL)
-		return;
+  /*
+   * Exit if listing file is not open
+   */
+  if (tfp == NULL)
+    return;
 
-	/*
-	 * Truncate (int) to N-Bytes
-	 */
-	 cpc &= a_mask;
+  /*
+   * Truncate (int) to N-Bytes
+   */
+  cpc &= a_mask;
 
-	/*
-	 * Get next HLR text line
-	 */
-lpHLR:	if (hline) {
-		if (gethlr(0) == 0) {
-			return;
-		}
-	}
+  /*
+   * Get next HLR text line
+   */
+lpHLR:
+  if (hline) {
+    if (gethlr(0) == 0) {
+      return;
+    }
+  }
 
-	/*
-	 * Get next LST text line
-	 */
-lpLST:	if (gline) {
-		if (getlst(0) == 0) {
-			return;
-		}
-	}
+  /*
+   * Get next LST text line
+   */
+lpLST:
+  if (gline) {
+    if (getlst(0) == 0) {
+      return;
+    }
+  }
 
 #if HLR_DEBUG
-	switch(lmode) {
-	default:
-	case NLIST:	fprintf(stdout, "hlrlist: NLIST\n");	break;
-	case SLIST:	fprintf(stdout, "hlrlist: SLIST\n");	break;
-	case ALIST:	fprintf(stdout, "hlrlist: ALIST\n");	break;
-	case BLIST:	fprintf(stdout, "hlrlist: BLIST\n");	break;
-	case CLIST:	fprintf(stdout, "hlrlist: CLIST\n");	break;
-	case ELIST:	fprintf(stdout, "hlrlist: ELIST\n");	break;
-	}
+  switch (lmode) {
+  default:
+  case NLIST:
+    fprintf(stdout, "hlrlist: NLIST\n");
+    break;
+  case SLIST:
+    fprintf(stdout, "hlrlist: SLIST\n");
+    break;
+  case ALIST:
+    fprintf(stdout, "hlrlist: ALIST\n");
+    break;
+  case BLIST:
+    fprintf(stdout, "hlrlist: BLIST\n");
+    break;
+  case CLIST:
+    fprintf(stdout, "hlrlist: CLIST\n");
+    break;
+  case ELIST:
+    fprintf(stdout, "hlrlist: ELIST\n");
+    break;
+  }
 #endif
 
-	switch(lmode) {
-	case NLIST:	/* No Listing */
-		if (bytcnt == bgncnt) {
-			if (bytcnt == 0) {
-				hline = 1;
-			} else {
-				if ((bytcnt ? --bytcnt : 0) == 0) {
-					hline = 1;
-				}
-				return;	/* Discard Byte */
-			}
-		} else {
-			if ((bytcnt ? --bytcnt : 0) == 0) {
-				hline = 1;
-			}
-			return;	/* Discard Byte */
-		}
-		break;
+  switch (lmode) {
+  case NLIST: /* No Listing */
+    if (bytcnt == bgncnt) {
+      if (bytcnt == 0) {
+        hline = 1;
+      } else {
+        if ((bytcnt ? --bytcnt : 0) == 0) {
+          hline = 1;
+        }
+        return; /* Discard Byte */
+      }
+    } else {
+      if ((bytcnt ? --bytcnt : 0) == 0) {
+        hline = 1;
+      }
+      return; /* Discard Byte */
+    }
+    break;
 
-	case SLIST:	/* Source Only */
-		if (bytcnt == bgncnt) {
-			lsterr(err);
-			if (listing && !(listing & HLR_NLST)) {
-				fprintf(rfp, "%s", rb);
+  case SLIST: /* Source Only */
+    if (bytcnt == bgncnt) {
+      lsterr(err);
+      if (listing && !(listing & HLR_NLST)) {
+        fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-				fprintf(stdout, "%s", rb);
+        fprintf(stdout, "%s", rb);
 #endif
-			}
-			if (bytcnt == 0) {
-				setgh();
-			} else {
-				if ((bytcnt ? --bytcnt : 0) == 0) {
-					setgh();
-				}
-				return;	/* Discard Byte */
-			}
-		} else {
-			if ((bytcnt ? --bytcnt : 0) == 0) {
-				setgh();
-			}
-			return;	/* Discard Byte */
-		}
-		break;
+      }
+      if (bytcnt == 0) {
+        setgh();
+      } else {
+        if ((bytcnt ? --bytcnt : 0) == 0) {
+          setgh();
+        }
+        return; /* Discard Byte */
+      }
+    } else {
+      if ((bytcnt ? --bytcnt : 0) == 0) {
+        setgh();
+      }
+      return; /* Discard Byte */
+    }
+    break;
 
-	case ALIST:	/* Address Only */
-	case BLIST:	/* Address Only With Allocation */
-		/*
-		 * Always called with rtcnt == 2
-		 * ----- bytcnt is ignored -----
-		 */
-		lsterr(err);
-		if (listing && !(listing & HLR_NLST)) {
-			hlralist(cpc);
-			fprintf(rfp, "%s", rb);
+  case ALIST: /* Address Only */
+  case BLIST: /* Address Only With Allocation */
+    /*
+     * Always called with rtcnt == 2
+     * ----- bytcnt is ignored -----
+     */
+    lsterr(err);
+    if (listing && !(listing & HLR_NLST)) {
+      hlralist(cpc);
+      fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-			fprintf(stdout, "%s", rb);
+      fprintf(stdout, "%s", rb);
 #endif
-		}
-		setgh();
-		return;	/* Discard Byte */
+    }
+    setgh();
+    return; /* Discard Byte */
 
-	case CLIST:	/* Code */
-		if (bytcnt == bgncnt) {
-			lsterr(err);
-			if (bytcnt == 0) {
-				if (listing && !(listing & HLR_NLST)) {
-					fprintf(rfp, "%s", rb);
+  case CLIST: /* Code */
+    if (bytcnt == bgncnt) {
+      lsterr(err);
+      if (bytcnt == 0) {
+        if (listing && !(listing & HLR_NLST)) {
+          fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-					fprintf(stdout, "%s", rb);
+          fprintf(stdout, "%s", rb);
 #endif
-				}
-				setgh();
-			} else {
-				if (listing && !(listing & HLR_NLST)) {
-					hlrclist(cpc,v);
-				}
-				if ((bytcnt ? --bytcnt : 0) == 0) {
-					if (listing && !(listing & HLR_NLST)) {
-						fprintf(rfp, "%s", rb);
+        }
+        setgh();
+      } else {
+        if (listing && !(listing & HLR_NLST)) {
+          hlrclist(cpc, v);
+        }
+        if ((bytcnt ? --bytcnt : 0) == 0) {
+          if (listing && !(listing & HLR_NLST)) {
+            fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-						fprintf(stdout, "%s", rb);
+            fprintf(stdout, "%s", rb);
 #endif
-					}
-					setgh();
-					return;	/* Discard Byte */
-				}
-			}
-		} else {
-			if (listing && !(listing & HLR_NLST)) {
-				hlrclist(cpc,v);
-			}
-			if ((bytcnt ? --bytcnt : 0) == 0) {
-				if (listing && !(listing & HLR_NLST)) {
-					fprintf(rfp, "%s", rb);
+          }
+          setgh();
+          return; /* Discard Byte */
+        }
+      }
+    } else {
+      if (listing && !(listing & HLR_NLST)) {
+        hlrclist(cpc, v);
+      }
+      if ((bytcnt ? --bytcnt : 0) == 0) {
+        if (listing && !(listing & HLR_NLST)) {
+          fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-					fprintf(stdout, "%s", rb);
+          fprintf(stdout, "%s", rb);
 #endif
-				}
-				setgh();
-			}
-			return;	/* Discard Byte */
-		}
-		break;
+        }
+        setgh();
+      }
+      return; /* Discard Byte */
+    }
+    break;
 
-	case ELIST:	/* Equate Processing */
-		if (bytcnt == bgncnt) {
-			lsterr(err);
-			if (listing && !(listing & HLR_NLST)) {
-				if (listing & LIST_EQT) {
-					hlrelist();
-				}
-				fprintf(rfp, "%s", rb);
+  case ELIST: /* Equate Processing */
+    if (bytcnt == bgncnt) {
+      lsterr(err);
+      if (listing && !(listing & HLR_NLST)) {
+        if (listing & LIST_EQT) {
+          hlrelist();
+        }
+        fprintf(rfp, "%s", rb);
 #if HLR_DEBUG
-				fprintf(stdout, "%s", rb);
+        fprintf(stdout, "%s", rb);
 #endif
-			}
-			if (bytcnt == 0) {
-				setgh();
-			} else {
-				if ((bytcnt ? --bytcnt : 0) == 0) {
-					setgh();
-				}
-				return;	/* Discard Byte */
-			}
-		} else {
-			if ((bytcnt ? --bytcnt : 0) == 0) {
-				setgh();
-			}
-			return;	/* Discard Byte */
-		}
-		break;
+      }
+      if (bytcnt == 0) {
+        setgh();
+      } else {
+        if ((bytcnt ? --bytcnt : 0) == 0) {
+          setgh();
+        }
+        return; /* Discard Byte */
+      }
+    } else {
+      if ((bytcnt ? --bytcnt : 0) == 0) {
+        setgh();
+      }
+      return; /* Discard Byte */
+    }
+    break;
 
-	default:
-		break;
-	}
+  default:
+    break;
+  }
 
-	if (hline) { goto lpHLR; }
-	if (gline) { goto lpLST; }
+  if (hline) {
+    goto lpHLR;
+  }
+  if (gline) {
+    goto lpLST;
+  }
 }
 
 /*)Function	VOID	setgh()
-*/
+ */
 
-VOID
-setgh()
-{
-	if (listing && !(listing & HLR_NLST)) {
-		gline = 1;
-	}
-	hline = 1;
+VOID setgh() {
+  if (listing && !(listing & HLR_NLST)) {
+    gline = 1;
+  }
+  hline = 1;
 }
 
 /*)Function	VOID	hlralist(cpc)
@@ -1638,248 +1977,468 @@ setgh()
  *		updated to reflect the program relocation.
  */
 
-VOID
-hlralist(cpc)
+VOID hlralist(cpc)
 a_uint cpc;
 {
-	char str[16];
-	char *frmt;
-	int i, m, n, q, r;
+  char str[16];
+  char *frmt;
+  int i, m, n, q, r;
 
-	/*
-	 * Must have an address in the expected radix
-	 */
-#ifdef	LONGINT
-	switch(radix) {
-	default:
-	case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 4; q = 26; frmt = "%04lX"; break;
-		case 3: n = 6; m = 6; q = 34; frmt = "%06lX"; break;
-		case 4: n = 4; m = 8; q = 34; frmt = "%08lX"; break;
-		}
-		break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; m = 5; q = 26; frmt = "%05lu"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08lu"; break;
-		case 4: n = 3; m = 10; q = 34; frmt = "%010lu"; break;
-		}
-		break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 6; q = 26; frmt = "%06lo"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08lo"; break;
-		case 4: n = 2; m = 11; q = 34; frmt = "%011lo"; break;
-		}
-		break;
-	}
+  /*
+   * Must have an address in the expected radix
+   */
+#ifdef LONGINT
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 4;
+      q = 26;
+      frmt = "%04lX";
+      break;
+    case 3:
+      n = 6;
+      m = 6;
+      q = 34;
+      frmt = "%06lX";
+      break;
+    case 4:
+      n = 4;
+      m = 8;
+      q = 34;
+      frmt = "%08lX";
+      break;
+    }
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 4;
+      m = 5;
+      q = 26;
+      frmt = "%05lu";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08lu";
+      break;
+    case 4:
+      n = 3;
+      m = 10;
+      q = 34;
+      frmt = "%010lu";
+      break;
+    }
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 6;
+      q = 26;
+      frmt = "%06lo";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08lo";
+      break;
+    case 4:
+      n = 2;
+      m = 11;
+      q = 34;
+      frmt = "%011lo";
+      break;
+    }
+    break;
+  }
 #else
-	switch(radix) {
-	default:
-	case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 4; q = 26; frmt = "%04X"; break;
-		case 3: n = 6; m = 6; q = 34; frmt = "%06X"; break;
-		case 4: n = 4; m = 8; q = 34; frmt = "%08X"; break;
-		}
-		break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2: n = 4; m = 5; q = 26; frmt = "%05u"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08u"; break;
-		case 4: n = 3; m = 10; q = 34; frmt = "%010u"; break;
-		}
-		break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2: n = 3; m = 6; q = 26; frmt = "%06o"; break;
-		case 3: n = 5; m = 8; q = 34; frmt = "%08o"; break;
-		case 4: n = 2; m = 11; q = 34; frmt = "%011o"; break;
-		}
-		break;
-	}
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 4;
+      q = 26;
+      frmt = "%04X";
+      break;
+    case 3:
+      n = 6;
+      m = 6;
+      q = 34;
+      frmt = "%06X";
+      break;
+    case 4:
+      n = 4;
+      m = 8;
+      q = 34;
+      frmt = "%08X";
+      break;
+    }
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 4;
+      m = 5;
+      q = 26;
+      frmt = "%05u";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08u";
+      break;
+    case 4:
+      n = 3;
+      m = 10;
+      q = 34;
+      frmt = "%010u";
+      break;
+    }
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      n = 3;
+      m = 6;
+      q = 26;
+      frmt = "%06o";
+      break;
+    case 3:
+      n = 5;
+      m = 8;
+      q = 34;
+      frmt = "%08o";
+      break;
+    case 4:
+      n = 2;
+      m = 11;
+      q = 34;
+      frmt = "%011o";
+      break;
+    }
+    break;
+  }
 #endif
 
-	/*
-	 * Must have an address
-	 * in the expected radix.
-	 */
-	if (listing & LIST_LOC) {
-		if (!dgt(r, &rb[n], m)) {
+  /*
+   * Must have an address
+   * in the expected radix.
+   */
+  if (listing & LIST_LOC) {
+    if (!dgt(r, &rb[n], m)) {
 #if HLR_DEBUG
-			fprintf(stdout, "hlralist: Bad LIST_LOC\n");
+      fprintf(stdout, "hlralist: Bad LIST_LOC\n");
 #endif
-			return;
-		}
-	}
-	/*
-	 * Must have blank data bytes
-	 */
-	if ((int) strlen(rb) > (n + m + 2)) {
-		for (i=(n+m); i<q; i++) {
-			if (rb[i] != ' ') {
+      return;
+    }
+  }
+  /*
+   * Must have blank data bytes
+   */
+  if ((int)strlen(rb) > (n + m + 2)) {
+    for (i = (n + m); i < q; i++) {
+      if (rb[i] != ' ') {
 #if HLR_DEBUG
-				fprintf(stdout, "hlralist: Bad Blank\n");
+        fprintf(stdout, "hlralist: Bad Blank\n");
 #endif
-				return;
-			}
-		}
-	}
-	if (listing & LIST_LOC) {
-		sprintf(str, frmt, cpc);
-		strncpy(&rb[n], str, m);
-	}
+        return;
+      }
+    }
+  }
+  if (listing & LIST_LOC) {
+    sprintf(str, frmt, cpc);
+    strncpy(&rb[n], str, m);
+  }
 }
 
 /*)Function	int	hlrclist()
-*/
+ */
 
-VOID
-hlrclist(cpc,v)
+VOID hlrclist(cpc, v)
 a_uint cpc;
 int v;
 {
-	char str[16];
-	char *afrmt, *dfrmt;
-	int a, n, m, r, s, u;
-	int i, j;
+  char str[16];
+  char *afrmt, *dfrmt;
+  int a, n, m, r, s, u;
+  int i, j;
 
-	/*
-	 *Listing Format
-	 */
-#ifdef	LONGINT
-	 switch(radix) {
-	 default:
-	 case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 8; s = 3; n = 3; m = 4; u = 6; afrmt = "%04lX"; break;
-		case 3: a = 13; s = 3; n = 6; m = 6; u = 7; afrmt = "%06lX"; break;
-		case 4: a = 13; s = 3; n = 4; m = 8; u = 7; afrmt = "%08lX"; break;
-		}
-		dfrmt = " %02X"; break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 4; m = 5; u = 4; afrmt = "%05lu"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08lu"; break;
-		case 4: a = 14; s = 4; n = 3; m = 10; u = 5; afrmt = "%010lu"; break;
-		}
-		dfrmt = " %03u"; break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 3; m = 6; u = 4; afrmt = "%06lo"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08lo"; break;
-		case 4: a = 14; s = 4; n = 2; m = 11; u = 5; afrmt = "%011lo"; break;
-		}
-		dfrmt = " %03o"; break;
-	}
+  /*
+   *Listing Format
+   */
+#ifdef LONGINT
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 8;
+      s = 3;
+      n = 3;
+      m = 4;
+      u = 6;
+      afrmt = "%04lX";
+      break;
+    case 3:
+      a = 13;
+      s = 3;
+      n = 6;
+      m = 6;
+      u = 7;
+      afrmt = "%06lX";
+      break;
+    case 4:
+      a = 13;
+      s = 3;
+      n = 4;
+      m = 8;
+      u = 7;
+      afrmt = "%08lX";
+      break;
+    }
+    dfrmt = " %02X";
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 4;
+      m = 5;
+      u = 4;
+      afrmt = "%05lu";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08lu";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 3;
+      m = 10;
+      u = 5;
+      afrmt = "%010lu";
+      break;
+    }
+    dfrmt = " %03u";
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 3;
+      m = 6;
+      u = 4;
+      afrmt = "%06lo";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08lo";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 2;
+      m = 11;
+      u = 5;
+      afrmt = "%011lo";
+      break;
+    }
+    dfrmt = " %03o";
+    break;
+  }
 #else
-	 switch(radix) {
-	 default:
-	 case 16:
-		r = RAD16;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 8; s = 3; n = 3; m = 4; u = 6; afrmt = "%04X"; break;
-		case 3: a = 13; s = 3; n = 6; m = 6; u = 7; afrmt = "%06X"; break;
-		case 4: a = 13; s = 3; n = 4; m = 8; u = 7; afrmt = "%08X"; break;
-		}
-		dfrmt = " %02X"; break;
-	case 10:
-		r = RAD10;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 4; m = 5; u = 4; afrmt = "%05u"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08u"; break;
-		case 4: a = 14; s = 4; n = 3; m = 10; u = 5; afrmt = "%010u"; break;
-		}
-		dfrmt = " %03u"; break;
-	case 8:
-		r = RAD8;
-		switch(a_bytes) {
-		default:
-		case 2:	a = 10; s = 4; n = 3; m = 6; u = 4; afrmt = "%06o"; break;
-		case 3: a = 14; s = 4; n = 5; m = 8; u = 5; afrmt = "%08o"; break;
-		case 4: a = 14; s = 4; n = 2; m = 11; u = 5; afrmt = "%011o"; break;
-		}
-		dfrmt = " %03o"; break;
-	}
+  switch (radix) {
+  default:
+  case 16:
+    r = RAD16;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 8;
+      s = 3;
+      n = 3;
+      m = 4;
+      u = 6;
+      afrmt = "%04X";
+      break;
+    case 3:
+      a = 13;
+      s = 3;
+      n = 6;
+      m = 6;
+      u = 7;
+      afrmt = "%06X";
+      break;
+    case 4:
+      a = 13;
+      s = 3;
+      n = 4;
+      m = 8;
+      u = 7;
+      afrmt = "%08X";
+      break;
+    }
+    dfrmt = " %02X";
+    break;
+  case 10:
+    r = RAD10;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 4;
+      m = 5;
+      u = 4;
+      afrmt = "%05u";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08u";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 3;
+      m = 10;
+      u = 5;
+      afrmt = "%010u";
+      break;
+    }
+    dfrmt = " %03u";
+    break;
+  case 8:
+    r = RAD8;
+    switch (a_bytes) {
+    default:
+    case 2:
+      a = 10;
+      s = 4;
+      n = 3;
+      m = 6;
+      u = 4;
+      afrmt = "%06o";
+      break;
+    case 3:
+      a = 14;
+      s = 4;
+      n = 5;
+      m = 8;
+      u = 5;
+      afrmt = "%08o";
+      break;
+    case 4:
+      a = 14;
+      s = 4;
+      n = 2;
+      m = 11;
+      u = 5;
+      afrmt = "%011o";
+      break;
+    }
+    dfrmt = " %03o";
+    break;
+  }
 #endif
-	/*
-	 * Fix 'u' if [nn], cycles, is specified
-	 */
-	 if (rb[a + (s*u) - 1] == CYCNT_END) {
-	 	u -= 1;
-	}
-	/*
-	 * Must have an address
-	 * in the expected radix.
-	 */
-	if (listing & LIST_LOC) {
-		if (!dgt(r, &rb[n], m)) {
+  /*
+   * Fix 'u' if [nn], cycles, is specified
+   */
+  if (rb[a + (s * u) - 1] == CYCNT_END) {
+    u -= 1;
+  }
+  /*
+   * Must have an address
+   * in the expected radix.
+   */
+  if (listing & LIST_LOC) {
+    if (!dgt(r, &rb[n], m)) {
 #if HLR_DEBUG
-			fprintf(stdout, "hlrclist: Bad LIST_LOC\n");
+      fprintf(stdout, "hlrclist: Bad LIST_LOC\n");
 #endif
-			return;
-		}
-	}
+      return;
+    }
+  }
 
-	/*
-	 * Data Byte Pointer
-	 */
-	u = (u > bytcnt) ? bytcnt : u;
+  /*
+   * Data Byte Pointer
+   */
+  u = (u > bytcnt) ? bytcnt : u;
 
-	/*
-	 * Must have data bytes
-	 * in the expected radix.
-	 */
-	if (listing & LIST_BIN) {
-		for (i=0,j=u; i<j; i++) {
-			if (!dgt(r, &rb[a + (s * i)], s-1)) {
+  /*
+   * Must have data bytes
+   * in the expected radix.
+   */
+  if (listing & LIST_BIN) {
+    for (i = 0, j = u; i < j; i++) {
+      if (!dgt(r, &rb[a + (s * i)], s - 1)) {
 #if HLR_DEBUG
-				fprintf(stdout, "hlrclist: Bad LIST_BIN\n");
+        fprintf(stdout, "hlrclist: Bad LIST_BIN\n");
 #endif
-				return;
-			}
-		}
-	}
+        return;
+      }
+    }
+  }
 
-	/*
-	 * Output relocated code address
-	 */
-	if (listing & LIST_LOC) {
-		if (gcntr == 0) {
-			sprintf(str, afrmt, cpc);
-			strncpy(&rb[n], str, m);
-		}
-	}
+  /*
+   * Output relocated code address
+   */
+  if (listing & LIST_LOC) {
+    if (gcntr == 0) {
+      sprintf(str, afrmt, cpc);
+      strncpy(&rb[n], str, m);
+    }
+  }
 
-	/*
-	 * Output new data value, overwrite relocation codes
-	 */
-	if (listing & LIST_BIN) {
-		sprintf(str, dfrmt, v);
-		strncpy(&rb[a + (s * gcntr) - 1], str, s);
-	}
-	gcntr++;
+  /*
+   * Output new data value, overwrite relocation codes
+   */
+  if (listing & LIST_BIN) {
+    sprintf(str, dfrmt, v);
+    strncpy(&rb[a + (s * gcntr) - 1], str, s);
+  }
+  gcntr++;
 }
 
 /*)Function	VOID	hlrelist()
@@ -1923,123 +2482,193 @@ int v;
  *		updated in the .rst line.
  */
 
-VOID
-hlrelist()
-{
-	char str[16];
-	char *afrmt;
-	int a, m, r;
-	int i;
-	a_uint eqtv;
+VOID hlrelist() {
+  char str[16];
+  char *afrmt;
+  int a, m, r;
+  int i;
+  a_uint eqtv;
 
-	if (eqt_id[0] != 0) {
-		/*
-		 *Listing Format
-		 */
-#ifdef	LONGINT
-		switch(radix) {
-		default:
-		case 16:
-			r = RAD16;
-			switch(a_bytes) {
-			default:
-			case 2:	a = 21; m = 4; afrmt = "%04lX"; break;
-			case 3: a = 27; m = 6; afrmt = "%06lX"; break;
-			case 4: a = 25; m = 8; afrmt = "%08lX"; break;
-			}
-			break;
-		case 10:
-			r = RAD10;
-			switch(a_bytes) {
-			default:
-			case 2: a = 20; m = 5; afrmt = "%05lu"; break;
-			case 3: a = 25; m = 8; afrmt = "%08lu"; break;
-			case 4: a = 23; m = 10; afrmt = "%010lu"; break;
-			}
-			break;
-		case 8:
-			r = RAD8;
-			switch(a_bytes) {
-			default:
-			case 2: a = 19; m = 6; afrmt = "%06lo"; break;
-			case 3: a = 25; m = 8; afrmt = "%08lo"; break;
-			case 4: a = 22; m = 11; afrmt = "%011lo"; break;
-			}
-			break;
-		}
+  if (eqt_id[0] != 0) {
+    /*
+     *Listing Format
+     */
+#ifdef LONGINT
+    switch (radix) {
+    default:
+    case 16:
+      r = RAD16;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 21;
+        m = 4;
+        afrmt = "%04lX";
+        break;
+      case 3:
+        a = 27;
+        m = 6;
+        afrmt = "%06lX";
+        break;
+      case 4:
+        a = 25;
+        m = 8;
+        afrmt = "%08lX";
+        break;
+      }
+      break;
+    case 10:
+      r = RAD10;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 20;
+        m = 5;
+        afrmt = "%05lu";
+        break;
+      case 3:
+        a = 25;
+        m = 8;
+        afrmt = "%08lu";
+        break;
+      case 4:
+        a = 23;
+        m = 10;
+        afrmt = "%010lu";
+        break;
+      }
+      break;
+    case 8:
+      r = RAD8;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 19;
+        m = 6;
+        afrmt = "%06lo";
+        break;
+      case 3:
+        a = 25;
+        m = 8;
+        afrmt = "%08lo";
+        break;
+      case 4:
+        a = 22;
+        m = 11;
+        afrmt = "%011lo";
+        break;
+      }
+      break;
+    }
 #else
-		switch(radix) {
-		default:
-		case 16:
-			r = RAD16;
-			switch(a_bytes) {
-			default:
-			case 2:	a = 21; m = 4; afrmt = "%04X"; break;
-			case 3: a = 27; m = 6; afrmt = "%06X"; break;
-			case 4: a = 25; m = 8; afrmt = "%08X"; break;
-			}
-			break;
-		case 10:
-			r = RAD10;
-			switch(a_bytes) {
-			default:
-			case 2: a = 20; m = 5; afrmt = "%05u"; break;
-			case 3: a = 25; m = 8; afrmt = "%08u"; break;
-			case 4: a = 23; m = 10; afrmt = "%010u"; break;
-			}
-			break;
-		case 8:
-			r = RAD8;
-			switch(a_bytes) {
-			default:
-			case 2: a = 19; m = 6; afrmt = "%06o"; break;
-			case 3: a = 25; m = 8; afrmt = "%08o"; break;
-			case 4: a = 22; m = 11; afrmt = "%011o"; break;
-			}
-			break;
-		}
+    switch (radix) {
+    default:
+    case 16:
+      r = RAD16;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 21;
+        m = 4;
+        afrmt = "%04X";
+        break;
+      case 3:
+        a = 27;
+        m = 6;
+        afrmt = "%06X";
+        break;
+      case 4:
+        a = 25;
+        m = 8;
+        afrmt = "%08X";
+        break;
+      }
+      break;
+    case 10:
+      r = RAD10;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 20;
+        m = 5;
+        afrmt = "%05u";
+        break;
+      case 3:
+        a = 25;
+        m = 8;
+        afrmt = "%08u";
+        break;
+      case 4:
+        a = 23;
+        m = 10;
+        afrmt = "%010u";
+        break;
+      }
+      break;
+    case 8:
+      r = RAD8;
+      switch (a_bytes) {
+      default:
+      case 2:
+        a = 19;
+        m = 6;
+        afrmt = "%06o";
+        break;
+      case 3:
+        a = 25;
+        m = 8;
+        afrmt = "%08o";
+        break;
+      case 4:
+        a = 22;
+        m = 11;
+        afrmt = "%011o";
+        break;
+      }
+      break;
+    }
 #endif
-		/*
-		 * Require a blank line between any
-		 * error codes and the equate value.
-		 */
-		for (i=2; i<a; i++) {
-			if (rb[i] != ' ') {
+    /*
+     * Require a blank line between any
+     * error codes and the equate value.
+     */
+    for (i = 2; i < a; i++) {
+      if (rb[i] != ' ') {
 #if HLR_DEBUG
-				fprintf(stdout, "hlrelist: Bad Blank\n");
+        fprintf(stdout, "hlrelist: Bad Blank\n");
 #endif
-				return;
-			}
-		}
-		/*
-		 * Require equate in correct radix.
-		 */
-		if (!dgt(r, &rb[a], m)) {
+        return;
+      }
+    }
+    /*
+     * Require equate in correct radix.
+     */
+    if (!dgt(r, &rb[a], m)) {
 #if HLR_DEBUG
-			fprintf(stdout, "hlrelist: Bad LIST_EQT\n");
+      fprintf(stdout, "hlrelist: Bad LIST_EQT\n");
 #endif
-			return;
-		}
-		/*
-		 * Evaluate the equate value.
-		 */
-		for (i=0,eqtv=0; i<m; i++) {
-			eqtv = eqtv*radix + digit(rb[a+i], radix);
-		}
+      return;
+    }
+    /*
+     * Evaluate the equate value.
+     */
+    for (i = 0, eqtv = 0; i < m; i++) {
+      eqtv = eqtv * radix + digit(rb[a + i], radix);
+    }
 
-		/*
-		 * Search current Header structure for
-		 * the correct area and relocation value.
-		 */
-		for (i=0; i<hp->h_narea; i++) {
-			if (symeq(eqt_id, hp->a_list[i]->a_bap->a_id, 1)) {
-				eqtv += hp->a_list[i]->a_addr;
-				sprintf(str, afrmt, eqtv & a_mask);
-				strncpy(&rb[a], str, m);
-				break;
-			}
-		}
-	}
+    /*
+     * Search current Header structure for
+     * the correct area and relocation value.
+     */
+    for (i = 0; i < hp->h_narea; i++) {
+      if (symeq(eqt_id, hp->a_list[i]->a_bap->a_id, 1)) {
+        eqtv += hp->a_list[i]->a_addr;
+        sprintf(str, afrmt, eqtv & a_mask);
+        strncpy(&rb[a], str, m);
+        break;
+      }
+    }
+  }
 }
 
 /*)Function	int	gethlr()
@@ -2081,52 +2710,58 @@ hlrelist()
  *		bytcnt, listing, lmode, and eqt_id.
  */
 
-int
-gethlr(nhline)
+int gethlr(nhline)
 int nhline;
 {
-	char hlr[128];
-	char *frmt;
-	int line;
-	int a, b;
+  char hlr[128];
+  char *frmt;
+  int line;
+  int a, b;
 
-	listing = 0;
-	lmode = 0;
-	bytcnt = 0;
-	bgncnt = 0;
-	if (hfp != NULL) {
-		if (fgets(hlr, sizeof(hlr), hfp) == NULL) {
-			fclose(hfp);
-			hfp = NULL;
+  listing = 0;
+  lmode = 0;
+  bytcnt = 0;
+  bgncnt = 0;
+  if (hfp != NULL) {
+    if (fgets(hlr, sizeof(hlr), hfp) == NULL) {
+      fclose(hfp);
+      hfp = NULL;
 #if HLR_DEBUG
-			fprintf(stdout, "gethlr: EOF Found\n");
+      fprintf(stdout, "gethlr: EOF Found\n");
 #endif
-		} else {
-			a = 0;
-			eqt_id[0] = 0;
-			if (hlr[1] == ' ') {
-				sscanf(hlr, "  %5u", &line);
-				a = 7;
-			}
-			switch(radix) {
-			default:
-			case 16:	frmt = " %02X %02X %02X";	b = 9;	break;
-			case 10:	frmt = " %03d %03d %03d";	b = 12;	break;
-			case 8:		frmt = " %03o %03o %03o";	b = 12;	break;
-			}
-			sscanf(&hlr[a], frmt, &listing, &lmode, &bytcnt);
-			a += b;
-			if (hlr[a] == ' ') {
-				sscanf(&hlr[a], " %s", eqt_id);
-			}
-			bgncnt = bytcnt;
+    } else {
+      a = 0;
+      eqt_id[0] = 0;
+      if (hlr[1] == ' ') {
+        sscanf(hlr, "  %5u", &line);
+        a = 7;
+      }
+      switch (radix) {
+      default:
+      case 16:
+        frmt = " %02X %02X %02X";
+        b = 9;
+        break;
+      case 10:
+        frmt = " %03d %03d %03d";
+        b = 12;
+        break;
+      case 8:
+        frmt = " %03o %03o %03o";
+        b = 12;
+        break;
+      }
+      sscanf(&hlr[a], frmt, &listing, &lmode, &bytcnt);
+      a += b;
+      if (hlr[a] == ' ') {
+        sscanf(&hlr[a], " %s", eqt_id);
+      }
+      bgncnt = bytcnt;
 #if HLR_DEBUG
-			fprintf(stdout, "%s", hlr);
+      fprintf(stdout, "%s", hlr);
 #endif
-		}
-	}
-	hline = nhline;
-	return(hfp ? 1 : 0);
+    }
+  }
+  hline = nhline;
+  return (hfp ? 1 : 0);
 }
-
-

@@ -73,23 +73,21 @@
  *		An lbpath structure may be created.
  */
 
-VOID
-addpath()
-{
-	struct lbpath *lbph, *lbp;
+VOID addpath() {
+  struct lbpath *lbph, *lbp;
 
-	lbph = (struct lbpath *) new (sizeof(struct lbpath));
-	if (lbphead == NULL) {
-		lbphead = lbph;
-	} else {
-		lbp = lbphead;
-		while (lbp->next)
-			lbp = lbp->next;
-		lbp->next = lbph;
-	}
-	unget(getnb());
-	lbph->path = (char *) new (strlen(ip)+1);
-	strcpy(lbph->path, ip);
+  lbph = (struct lbpath *)new (sizeof(struct lbpath));
+  if (lbphead == NULL) {
+    lbphead = lbph;
+  } else {
+    lbp = lbphead;
+    while (lbp->next)
+      lbp = lbp->next;
+    lbp->next = lbph;
+  }
+  unget(getnb());
+  lbph->path = (char *)new (strlen(ip) + 1);
+  strcpy(lbph->path, ip);
 }
 
 /*)Function	VOID	addlib()
@@ -118,20 +116,18 @@ addpath()
  *		the library search list.
  */
 
-VOID
-addlib()
-{
-	struct lbpath *lbph;
+VOID addlib() {
+  struct lbpath *lbph;
 
-	unget(getnb());
+  unget(getnb());
 
-	if (lbphead == NULL) {
-		addfile(NULL,ip);
-		return;
-	}	
-	for (lbph=lbphead; lbph; lbph=lbph->next) {
-		addfile(lbph->path,ip);
-	}
+  if (lbphead == NULL) {
+    addfile(NULL, ip);
+    return;
+  }
+  for (lbph = lbphead; lbph; lbph = lbph->next) {
+    addfile(lbph->path, ip);
+  }
 }
 
 /*)Function	VOID	addfile(path,libfil)
@@ -172,57 +168,56 @@ addlib()
  *		An lbname structure may be created.
  */
 
-VOID
-addfile(path,libfil)
+VOID addfile(path, libfil)
 char *path;
 char *libfil;
 {
-	FILE *fp;
-	char *str, *strend;
-	char *p, *q;
-	struct lbname *lbnh, *lbn;
+  FILE *fp;
+  char *str, *strend;
+  char *p, *q;
+  struct lbname *lbnh, *lbn;
 
-	if ((path != NULL) && (strchr(libfil,':') == NULL)){
-		str = (char *) malloc (strlen(path) + strlen(libfil) + 5);
-		strcpy(str,path);
-		strend = str + strlen(str) - 1;
-		if ((*libfil == '\\' && *strend == '\\') ||
-		    (*libfil ==  '/' && *strend ==  '/')) {
-			*strend = '\0';
-		}
-		strcat(str,libfil);
-	} else {
-		str = (char *) malloc (strlen(libfil) + 5);
-		strcpy(str,libfil);
-	}
-	p = libfil;
-	if (((q = strrchr(p,'\\')) != NULL) || ((q = strrchr(p,'/')) != NULL)) {
-		p = q;
-	}
-	if(strchr(p,FSEPX) == NULL) {
-		sprintf(&str[strlen(str)], "%clib", FSEPX);
-	}
-	if ((fp = fopen(str, "r")) != NULL) {
-		fclose(fp);
-		lbnh = (struct lbname *) new (sizeof(struct lbname));
-		if (lbnhead == NULL) {
-			lbnhead = lbnh;
-		} else {
-			lbn = lbnhead;
-			while (lbn->next)
-				lbn = lbn->next;
-			lbn->next = lbnh;
-		}
-		if ((path != NULL) && (strchr(libfil,':') == NULL)){
-			lbnh->path = path;
-		}
-		lbnh->libfil = (char *) new (strlen(libfil) + 1);
-		strcpy(lbnh->libfil,libfil);
-		lbnh->libspc = str;
-		lbnh->f_obj = objflg;
-	} else {
-		free(str);
-	}
+  if ((path != NULL) && (strchr(libfil, ':') == NULL)) {
+    str = (char *)malloc(strlen(path) + strlen(libfil) + 5);
+    strcpy(str, path);
+    strend = str + strlen(str) - 1;
+    if ((*libfil == '\\' && *strend == '\\') ||
+        (*libfil == '/' && *strend == '/')) {
+      *strend = '\0';
+    }
+    strcat(str, libfil);
+  } else {
+    str = (char *)malloc(strlen(libfil) + 5);
+    strcpy(str, libfil);
+  }
+  p = libfil;
+  if (((q = strrchr(p, '\\')) != NULL) || ((q = strrchr(p, '/')) != NULL)) {
+    p = q;
+  }
+  if (strchr(p, FSEPX) == NULL) {
+    sprintf(&str[strlen(str)], "%clib", FSEPX);
+  }
+  if ((fp = fopen(str, "r")) != NULL) {
+    fclose(fp);
+    lbnh = (struct lbname *)new (sizeof(struct lbname));
+    if (lbnhead == NULL) {
+      lbnhead = lbnh;
+    } else {
+      lbn = lbnhead;
+      while (lbn->next)
+        lbn = lbn->next;
+      lbn->next = lbnh;
+    }
+    if ((path != NULL) && (strchr(libfil, ':') == NULL)) {
+      lbnh->path = path;
+    }
+    lbnh->libfil = (char *)new (strlen(libfil) + 1);
+    strcpy(lbnh->libfil, libfil);
+    lbnh->libspc = str;
+    lbnh->f_obj = objflg;
+  } else {
+    free(str);
+  }
 }
 
 /*)Function	VOID	search()
@@ -256,42 +251,40 @@ char *libfil;
  *		containing the symbol will be imported and linked.
  */
 
-VOID
-search()
-{
-	struct sym *sp;
-	int i,symfnd;
+VOID search() {
+  struct sym *sp;
+  int i, symfnd;
 
-	/*
-	 * Look for undefined symbols.  Keep
-	 * searching until no more symbols are resolved.
-	 */
-	symfnd = 1;
-	while (symfnd) {
-		symfnd = 0;
-		/*
-		 * Look through all the symbols
-		 */
-		for (i=0; i<NHASH; ++i) {
-			sp = symhash[i];
-			while (sp) {
-				/* If we find an undefined symbol
-				 * (one where S_DEF is not set), then
-				 * try looking for it.  If we find it
-				 * in any of the libraries then
-				 * increment symfnd.  This will force
-				 * another pass of symbol searching and
-				 * make sure that back references work.
-				 */
-				if ((sp->s_type & S_DEF) == 0) {
-					if (fndsym(sp->s_id)) {
-						symfnd++;
-					}
-				}
-				sp = sp->s_sp;
-			}
-		}
-	}
+  /*
+   * Look for undefined symbols.  Keep
+   * searching until no more symbols are resolved.
+   */
+  symfnd = 1;
+  while (symfnd) {
+    symfnd = 0;
+    /*
+     * Look through all the symbols
+     */
+    for (i = 0; i < NHASH; ++i) {
+      sp = symhash[i];
+      while (sp) {
+        /* If we find an undefined symbol
+         * (one where S_DEF is not set), then
+         * try looking for it.  If we find it
+         * in any of the libraries then
+         * increment symfnd.  This will force
+         * another pass of symbol searching and
+         * make sure that back references work.
+         */
+        if ((sp->s_type & S_DEF) == 0) {
+          if (fndsym(sp->s_id)) {
+            symfnd++;
+          }
+        }
+        sp = sp->s_sp;
+      }
+    }
+  }
 }
 
 /*)Function	VOID	fndsym(name)
@@ -370,143 +363,141 @@ search()
  *		is linked.
  */
 
-int
-fndsym(name)
+int fndsym(name)
 char *name;
 {
-	FILE *libfp, *fp;
-	struct lbname *lbnh;
-	struct lbfile *lbfh, *lbf;
-	char relfil[NINPUT+2];
-	char buf[NINPUT+2];
-	char symname[NINPUT];
-	char *path,*str,*strend;
-	char *p, *q;
-	char c;
-	int lbscan;
+  FILE *libfp, *fp;
+  struct lbname *lbnh;
+  struct lbfile *lbfh, *lbf;
+  char relfil[NINPUT + 2];
+  char buf[NINPUT + 2];
+  char symname[NINPUT];
+  char *path, *str, *strend;
+  char *p, *q;
+  char c;
+  int lbscan;
 
-	/*
-	 * Search through every library in the linked list "lbnhead".
-	 */
+  /*
+   * Search through every library in the linked list "lbnhead".
+   */
 
-/*1*/	for (lbnh=lbnhead; lbnh; lbnh=lbnh->next) {
-		if ((libfp = fopen(lbnh->libspc, "r")) == NULL) {
-			fprintf(stderr, "Cannot open library file %s\n",
-				lbnh->libspc);
-			lkexit(ER_FATAL);
-		}
-		path = lbnh->path;
+  /*1*/ for (lbnh = lbnhead; lbnh; lbnh = lbnh->next) {
+    if ((libfp = fopen(lbnh->libspc, "r")) == NULL) {
+      fprintf(stderr, "Cannot open library file %s\n", lbnh->libspc);
+      lkexit(ER_FATAL);
+    }
+    path = lbnh->path;
 
-		/*
-		 * Read in a line from the library file.
-		 * This is the relative file specification
-		 * for a .REL file in this library.
-		 */
+    /*
+     * Read in a line from the library file.
+     * This is the relative file specification
+     * for a .REL file in this library.
+     */
 
-/*2*/		while (fgets(relfil, NINPUT, libfp) != NULL) {
-		    relfil[NINPUT+1] = '\0';
-		    chopcrlf(relfil);
-		    if (path != NULL) {
-			str = (char *) malloc (strlen(path)+strlen(relfil)+5);
-			strcpy(str,path);
-			strend = str + strlen(str) - 1;
-			if ((*relfil == '\\' && *strend == '\\') ||
-			    (*relfil ==  '/' && *strend ==  '/')) {
-				*strend = '\0';
-			}
-			strcat(str,relfil);
-		    } else {
-			str = (char *) malloc (strlen(relfil) + 5);
-			strcpy(str,relfil);
-		    }
-		    p = relfil;
-		    if (((q = strrchr(p,'\\')) != NULL) || ((q = strrchr(p,'/')) != NULL)) {
-			p = q;
-		    }
-		    if(strchr(p,FSEPX) == NULL) {
-			sprintf(&str[strlen(str)], "%crel", FSEPX);
-		    }
-		    /*
-		     * Scan only files not yet loaded
-		     */
-		    for (lbf=lbfhead, lbscan=1; lbf&&lbscan; lbf=lbf->next) {
-			if (strcmp(lbf->filspc,str) == 0) {
-			    lbscan = 0;
-			}
-		    }
-/*3*/		    if (lbscan && (fp = fopen(str, "r")) != NULL) {
+    /*2*/ while (fgets(relfil, NINPUT, libfp) != NULL) {
+      relfil[NINPUT + 1] = '\0';
+      chopcrlf(relfil);
+      if (path != NULL) {
+        str = (char *)malloc(strlen(path) + strlen(relfil) + 5);
+        strcpy(str, path);
+        strend = str + strlen(str) - 1;
+        if ((*relfil == '\\' && *strend == '\\') ||
+            (*relfil == '/' && *strend == '/')) {
+          *strend = '\0';
+        }
+        strcat(str, relfil);
+      } else {
+        str = (char *)malloc(strlen(relfil) + 5);
+        strcpy(str, relfil);
+      }
+      p = relfil;
+      if (((q = strrchr(p, '\\')) != NULL) || ((q = strrchr(p, '/')) != NULL)) {
+        p = q;
+      }
+      if (strchr(p, FSEPX) == NULL) {
+        sprintf(&str[strlen(str)], "%crel", FSEPX);
+      }
+      /*
+       * Scan only files not yet loaded
+       */
+      for (lbf = lbfhead, lbscan = 1; lbf && lbscan; lbf = lbf->next) {
+        if (strcmp(lbf->filspc, str) == 0) {
+          lbscan = 0;
+        }
+      }
+      /*3*/ if (lbscan && (fp = fopen(str, "r")) != NULL) {
 
-			/*
-			 * Read in the object file.  Look for lines that
-			 * begin with "S" and end with "D".  These are
-			 * symbol table definitions.  If we find one, see
-			 * if it is our symbol.  Make sure we only read in
-			 * our object file and don't go into the next one.
-			 */
-			
-/*4*/			while (fgets(buf, NINPUT, fp) != NULL) {
+        /*
+         * Read in the object file.  Look for lines that
+         * begin with "S" and end with "D".  These are
+         * symbol table definitions.  If we find one, see
+         * if it is our symbol.  Make sure we only read in
+         * our object file and don't go into the next one.
+         */
 
-			buf[NINPUT+1] = '\0';
-			chopcrlf(buf);
+        /*4*/ while (fgets(buf, NINPUT, fp) != NULL) {
 
-			/*
-			 * When a 'T line' is found terminate file scan.
-			 * All 'S lines' preceed 'T lines' in .REL files.
-			 */
-			if (buf[0] == 'T')
-				break;
+          buf[NINPUT + 1] = '\0';
+          chopcrlf(buf);
 
-			/*
-			 * Skip everything that's not a symbol record.
-			 */
-			if (buf[0] != 'S')
-				continue;
+          /*
+           * When a 'T line' is found terminate file scan.
+           * All 'S lines' preceed 'T lines' in .REL files.
+           */
+          if (buf[0] == 'T')
+            break;
 
-			sscanf(buf, "S %s %c", symname, &c);
+          /*
+           * Skip everything that's not a symbol record.
+           */
+          if (buf[0] != 'S')
+            continue;
 
-			/*
-			 * If we find a symbol definition for the
-			 * symbol we're looking for, load in the
-			 * file and add it to lbfhead so it gets
-			 * loaded on pass number 2.
-			 */
-/*5*/			if (strncmp(symname, name, NCPS) == 0 && c == 'D') {
+          sscanf(buf, "S %s %c", symname, &c);
 
-			lbfh = (struct lbfile *) new (sizeof(struct lbfile));
-			if (lbfhead == NULL) {
-				lbfhead = lbfh;
-			} else {
-				lbf = lbfhead;
-				while (lbf->next)
-					lbf = lbf->next;
-				lbf->next = lbfh;
-			}
-			lbfh->libspc = lbnh->libspc;
-			lbfh->filspc = str;
-			lbfh->relfil = (char *) new (strlen(relfil) + 1);
-			strcpy(lbfh->relfil,relfil);
-			lbfh->f_obj = lbnh->f_obj;
-			fclose(fp);
-			fclose(libfp);
-			obj_flag = lbfh->f_obj;
+          /*
+           * If we find a symbol definition for the
+           * symbol we're looking for, load in the
+           * file and add it to lbfhead so it gets
+           * loaded on pass number 2.
+           */
+          /*5*/ if (strncmp(symname, name, NCPS) == 0 && c == 'D') {
+
+            lbfh = (struct lbfile *)new (sizeof(struct lbfile));
+            if (lbfhead == NULL) {
+              lbfhead = lbfh;
+            } else {
+              lbf = lbfhead;
+              while (lbf->next)
+                lbf = lbf->next;
+              lbf->next = lbfh;
+            }
+            lbfh->libspc = lbnh->libspc;
+            lbfh->filspc = str;
+            lbfh->relfil = (char *)new (strlen(relfil) + 1);
+            strcpy(lbfh->relfil, relfil);
+            lbfh->f_obj = lbnh->f_obj;
+            fclose(fp);
+            fclose(libfp);
+            obj_flag = lbfh->f_obj;
 
 #if SDCDB
-			SDCDBcopy(str);
+            SDCDBcopy(str);
 #endif
 
-			loadfile(str);
-			return (1);
+            loadfile(str);
+            return (1);
 
 /*5*/			}
 
 /*4*/			}
-		    fclose(fp);
+fclose(fp);
 /*3*/		    }
-		    free(str);
+free(str);
 /*2*/		}
-		fclose(libfp);
+fclose(libfp);
 /*1*/	}
-	return(0);
+return (0);
 }
 
 /*)Function	VOID	library()
@@ -528,15 +519,13 @@ char *name;
  *		Links all files contained in the lbfile structures.
  */
 
-VOID
-library()
-{
-	struct lbfile *lbfh;
+VOID library() {
+  struct lbfile *lbfh;
 
-	for (lbfh=lbfhead; lbfh; lbfh=lbfh->next) {
-		obj_flag = lbfh->f_obj;
-		loadfile(lbfh->filspc);
-	}
+  for (lbfh = lbfhead; lbfh; lbfh = lbfh->next) {
+    obj_flag = lbfh->f_obj;
+    loadfile(lbfh->filspc);
+  }
 }
 
 /*)Function	VOID	loadfile(filspc)
@@ -564,19 +553,18 @@ library()
  *		If file exists it is linked.
  */
 
-VOID
-loadfile(filspc)
+VOID loadfile(filspc)
 char *filspc;
 {
-	FILE *fp;
-	char str[NINPUT];
+  FILE *fp;
+  char str[NINPUT];
 
-	if ((fp = fopen(filspc,"r")) != NULL) {
-		while (fgets(str, sizeof(str), fp) != NULL) {
-			chopcrlf(str);
-			ip = str;
-			link();
-		}
-		fclose(fp);
-	}
+  if ((fp = fopen(filspc, "r")) != NULL) {
+    while (fgets(str, sizeof(str), fp) != NULL) {
+      chopcrlf(str);
+      ip = str;
+      link();
+    }
+    fclose(fp);
+  }
 }

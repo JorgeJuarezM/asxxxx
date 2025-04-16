@@ -74,9 +74,10 @@ ASLINK		=	lkmain.o lkhead.o lkarea.o lkbank.o	\
 				lklist.o lkrloc.o lkrloc3.o lkrloc4.o	\
 				lksym.o lkout.o lknoice.o lksdcdb.o
 
-ASLINKSRC =	$(addprefix $(SRCLNK),$(ASLINK))
+ASLINKSRC	=	$(addprefix $(SRCLNK),$(ASLINK))
 $(ASLINK):	$(SRCMISC)alloc.h $(SRCLNK)aslink.h
 
 $(OUT_DIR)/aslink: directories $(ASLINKSRC)
 	$(LD) $(LDFLAGS) $(ASLINKSRC) -o $(OUT_DIR)/aslink
 	chmod 755 $(OUT_DIR)/aslink
+	$(MAKE) clean_object_files
