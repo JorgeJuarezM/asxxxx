@@ -66,6 +66,22 @@ $(OUT_DIR)/as8085: directories $(ASXXSRC) $(AS8085SRC)
 	$(MAKE) clean_object_files
 
 
+
+
+####################################################################
+# ASZ80
+####################################################################
+SRCZ80		=	$(ASXBAS)asz80/
+ASZ80 		=	z80adr.o z80mch.o z80pst.o
+ASZ80SRC 	=	$(addprefix $(SRCZ80),$(ASZ80))
+
+$(ASZ80SRC):	$(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRCZ80)z80.h
+
+$(OUT_DIR)/asz80: directories $(ASXXSRC) $(ASZ80SRC)
+	$(LD) $(LDFLAGS) $(ASXXSRC) $(ASZ80SRC) -o asz80
+	chmod 755 $(OUT_DIR)/asz80
+	$(MAKE) clean_object_files
+
 ####################################################################
 # ASLINK
 ####################################################################
