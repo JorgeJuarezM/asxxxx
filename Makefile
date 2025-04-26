@@ -3,7 +3,8 @@
 MKDIR_P :=	mkdir -p
 OUT_DIR :=	dist
 
-all: $(OUT_DIR)/as8085 $(OUT_DIR)/asz80 $(OUT_DIR)/aslink
+all: asz80 as8085 aslink
+	$(MAKE) clean_object_files
 
 directories: $(OUT_DIR)
 
@@ -63,10 +64,6 @@ AS8085SRC	=	$(addprefix $(SRC8085),$(AS8085))
 $(OUT_DIR)/as8085: directories $(ASXXSRC) $(AS8085SRC)
 	$(LD) $(LDFLAGS) $(ASXXSRC) $(AS8085SRC) -o $(OUT_DIR)/as8085
 	chmod 755 $(OUT_DIR)/as8085
-	$(MAKE) clean_object_files
-
-
-
 
 ####################################################################
 # ASZ80
@@ -80,7 +77,6 @@ $(ASZ80SRC):	$(SRCMISC)alloc.h $(SRCASX)asxxxx.h $(SRCZ80)z80.h
 $(OUT_DIR)/asz80: directories $(ASXXSRC) $(ASZ80SRC)
 	$(LD) $(LDFLAGS) $(ASXXSRC) $(ASZ80SRC) -o $(OUT_DIR)/asz80
 	chmod 755 $(OUT_DIR)/asz80
-	$(MAKE) clean_object_files
 
 ####################################################################
 # ASLINK
@@ -96,7 +92,8 @@ $(ASLINK):	$(SRCMISC)alloc.h $(SRCLNK)aslink.h
 $(OUT_DIR)/aslink: directories $(ASLINKSRC)
 	$(LD) $(LDFLAGS) $(ASLINKSRC) -o $(OUT_DIR)/aslink
 	chmod 755 $(OUT_DIR)/aslink
-	$(MAKE) clean_object_files
 
 
-z80: $(OUT_DIR)/asz80
+asz80: $(OUT_DIR)/asz80
+as8085: $(OUT_DIR)/as8085
+aslink: $(OUT_DIR)/aslink
