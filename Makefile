@@ -1,7 +1,10 @@
 .PHONY: directories all clean clean_object_files format
 
 MKDIR_P :=	mkdir -p
-OUT_DIR :=	dist
+
+ifndef OUT_DIR
+	OUT_DIR :=	dist
+endif
 
 all: asz80 as8085 aslink
 	$(MAKE) clean_object_files

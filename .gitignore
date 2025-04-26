@@ -1,0 +1,10 @@
+*.ihx
+*.map
+*.lst
+*.rst
+*.tap
+*.bas
+*.asm
+*.hlr
+_Makefile
+makefiles/
