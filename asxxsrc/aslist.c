@@ -1180,7 +1180,7 @@ int flag;
        * Right justify page number in string.
        */
       sprintf(tp, "Page %u", ++page);
-      memcpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
+      strncpy(&np[strlen(np) - strlen(tp)], tp, strlen(tp));
       /*
        * Output string.
        */
